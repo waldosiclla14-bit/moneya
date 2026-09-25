@@ -29,15 +29,15 @@ body {
 
 @layer components {
   .eyebrow {
-    @apply text-xs font-semibold uppercase tracking-[0.18em] text-clay;
+    @apply text-xs font-semibold uppercase tracking-[0.18em] text-clayDeep;
   }
 
   .btn-primary {
-    @apply rounded-xl bg-ink px-4 py-2 text-sm font-medium tracking-tight text-paper transition-colors duration-200 hover:bg-clay focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clay;
+    @apply rounded-xl bg-ink px-4 py-2.5 text-sm font-medium tracking-tight text-paper transition-colors duration-200 hover:bg-clay focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clay;
   }
 
   .btn-secondary {
-    @apply rounded-xl border border-hairline bg-surface px-4 py-2 text-sm font-medium text-ink transition-colors duration-200 hover:border-muted/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clay;
+    @apply rounded-xl border border-hairline bg-surface px-4 py-2.5 text-sm font-medium text-ink transition-colors duration-200 hover:border-muted/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clay;
   }
 
   .card {
