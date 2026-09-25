@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import type { User } from '@supabase/supabase-js';
 
 type Status = 'idle' | 'saving' | 'saved' | 'error';
@@ -25,9 +26,9 @@ export function SavePanel({
     return (
       <p className="rounded-xl bg-neutral-100 px-4 py-3 text-sm text-neutral-600">
         Inicia sesión para guardar este {label}:{' '}
-        <a href="/login" className="underline">
+        <Link href="/login" className="underline">
           Entrar
-        </a>{' '}
+        </Link>{' '}
         (hoy todo se calcula localmente en tu navegador).
       </p>
     );

@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 export default function Home() {
   return (
     <div className="space-y-8">
@@ -13,18 +15,18 @@ export default function Home() {
           Todo calculado de forma transparente: cada resultado muestra su fórmula y sus inputs.
         </p>
         <div className="mt-6 flex flex-wrap gap-3">
-          <a
+          <Link
             href="/simular"
             className="rounded-lg bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-700"
           >
             Probar el simulador
-          </a>
-          <a
+          </Link>
+          <Link
             href="/perfil"
             className="rounded-lg border border-neutral-300 px-4 py-2 text-sm font-medium hover:bg-neutral-100"
           >
             Hacer el test
-          </a>
+          </Link>
         </div>
       </section>
 
@@ -34,10 +36,10 @@ export default function Home() {
           { href: '/datos', t: 'Contexto LATAM', d: 'Indicadores de inclusión financiera con fuente. (V1: Global Findex 2025)' },
           { href: '/aprender', t: 'Aprender', d: 'Biblioteca de artículos sobre tus hábitos de dinero.' },
         ].map((c) => (
-          <a key={c.href} href={c.href} className="rounded-xl border border-neutral-200 bg-white p-5 hover:border-neutral-300">
+          <Link key={c.href} href={c.href} className="rounded-xl border border-neutral-200 bg-white p-5 hover:border-neutral-300">
             <h2 className="font-semibold">{c.t}</h2>
             <p className="mt-1 text-sm text-neutral-600">{c.d}</p>
-          </a>
+          </Link>
         ))}
       </section>
     </div>

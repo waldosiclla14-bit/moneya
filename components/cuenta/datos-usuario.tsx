@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { useSession } from '../../lib/supabase/use-session';
 import { createClientClient } from '../../lib/supabase/client';
 import { exportarDatosUsuario, eliminarDatosUsuario } from '../../lib/supabase/datos-usuario-repo';
@@ -17,9 +18,9 @@ export function DatosUsuario() {
     return (
       <p className="rounded-xl bg-neutral-100 px-4 py-3 text-sm text-neutral-600">
         Inicia sesión para exportar o eliminar tus datos:{' '}
-        <a href="/login" className="underline">
+        <Link href="/login" className="underline">
           Entrar
-        </a>
+        </Link>
         .
       </p>
     );

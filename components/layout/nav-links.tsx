@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 const links = [
   { href: '/simular', label: 'Simular' },
   { href: '/finanzas', label: 'Finanzas' },
@@ -13,9 +15,9 @@ export function NavLinks() {
   return (
     <div className="flex flex-wrap gap-x-5 gap-y-1 text-sm text-neutral-600">
       {links.map((l) => (
-        <a key={l.href} href={l.href} className="hover:text-neutral-900">
+        <Link key={l.href} href={l.href} className="hover:text-neutral-900">
           {l.label}
-        </a>
+        </Link>
       ))}
     </div>
   );
