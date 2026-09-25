@@ -17,10 +17,40 @@ const sans = Inter({
   display: 'swap',
 });
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://waldosiclla14-bit.github.io/moneya';
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || '';
+const CANONICAL = new URL(BASE_PATH || '/', SITE_URL).toString();
+const TITLE = 'MONEYA — Bienestar financiero';
+const DESCRIPTION =
+  'Entiende tus decisiones de dinero, no solo cuánto gastas. Diagnóstico conductual y simulación de escenarios.';
+
 export const metadata: Metadata = {
-  title: 'MONEYA — Bienestar financiero',
-  description: 'Entiende tus decisiones de dinero, no solo cuánto gastas. Diagnóstico conductual y simulación de escenarios.',
+  metadataBase: new URL(SITE_URL),
+  alternates: { canonical: CANONICAL },
+  title: TITLE,
+  description: DESCRIPTION,
+  openGraph: {
+    type: 'website',
+    locale: 'es_CL',
+    url: CANONICAL,
+    siteName: 'MONEYA',
+    title: TITLE,
+    description: DESCRIPTION,
+  },
+  twitter: {
+    card: 'summary',
+    title: TITLE,
+    description: DESCRIPTION,
+  },
 };
+
+const metas = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'MONEYA',
+  url: CANONICAL,
+  description: DESCRIPTION,
+});
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
@@ -47,6 +77,10 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
           <p>MONEYA no es asesoría financiera ni de inversión. Los resultados son estimaciones bajo escenarios.</p>
           <p className="mt-1 text-[11px] text-muted/80">CL · PE — Global Findex 2025 · Decides con datos, no con miedo.</p>
         </footer>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: metas }}
+        />
       </body>
     </html>
   );
