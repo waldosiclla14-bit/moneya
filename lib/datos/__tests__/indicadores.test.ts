@@ -18,10 +18,24 @@ describe('datos LATAM (Global Findex 2025)', () => {
     }
   });
 
-  it('regla PRD: la única cifra publicada es Chile cuenta 85,1 (2024); el resto en verificación', () => {
+  it('regla PRD: solo cifras verificadas del dataset oficial 2024 (Chile 85,1; Perú 59,3/31,4/20,8); el resto en verificación', () => {
     const conValor = VALORES.filter((v) => v.value !== null);
-    expect(conValor).toHaveLength(1);
-    expect(conValor[0]).toMatchObject({ countryCode: 'CL', key: 'account_ownership', value: 85.1, year: 2024 });
+    expect(conValor).toHaveLength(4);
+    expect(conValor).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ countryCode: 'CL', key: 'account_ownership', value: 85.1 }),
+        expect.objectContaining({ countryCode: 'PE', key: 'account_ownership', value: 59.3 }),
+        expect.objectContaining({ countryCode: 'PE', key: 'saved_formally_last_year', value: 31.4 }),
+        expect.objectContaining({ countryCode: 'PE', key: 'formal_credit_access', value: 20.8 }),
+      ]),
+    );
+    for (const v of conValor) expect(v.year).toBe(2024);
+    expect(VALORES.filter((v) => v.value === null).map((v) => `${v.countryCode}:${v.key}`)).toEqual([
+      'CL:saved_formally_last_year',
+      'CL:formal_credit_access',
+      'CL:emergency_funds',
+      'PE:emergency_funds',
+    ]);
   });
 
   it('los 4 indicadores tienen etiqueta, definición y código Findex', () => {

@@ -72,9 +72,9 @@ export const VALORES: readonly IndicadorValor[] = [
   { countryCode: 'CL', key: 'saved_formally_last_year', value: null, year: 2024 },
   { countryCode: 'CL', key: 'formal_credit_access', value: null, year: 2024 },
   { countryCode: 'CL', key: 'emergency_funds', value: null, year: 2024 },
-  { countryCode: 'PE', key: 'account_ownership', value: null, year: 2024 },
-  { countryCode: 'PE', key: 'saved_formally_last_year', value: null, year: 2024 },
-  { countryCode: 'PE', key: 'formal_credit_access', value: null, year: 2024 },
+  { countryCode: 'PE', key: 'account_ownership', value: 59.3, year: 2024 },
+  { countryCode: 'PE', key: 'saved_formally_last_year', value: 31.4, year: 2024 },
+  { countryCode: 'PE', key: 'formal_credit_access', value: 20.8, year: 2024 },
   { countryCode: 'PE', key: 'emergency_funds', value: null, year: 2024 },
 ];
 
@@ -89,5 +89,5 @@ export const FUENTE: FuenteInfo = {
   url: 'https://www.worldbank.org/en/publication/globalfindex',
   accessedAt: '2026-09-24',
   notes:
-    'Valores por país descargables (Excel/CSV/Stata/Databank): https://www.worldbank.org/en/publication/globalfindex/download-data. En MONEYA solo se publica la cifra verificada: Chile 2024 cuenta = 85,1%. El resto queda en verificación; nunca se inventan valores.',
+    'Valores por país descargables (Excel/CSV/Stata/Databank): https://www.worldbank.org/en/publication/globalfindex/download-data. En MONEYA solo se publican cifras verificadas del dataset oficial 2024: Chile cuenta = 85,1%; Perú cuenta = 59,3%, ahorro formal = 31,4%, crédito formal = 20,8%. La ronda 2024 no publica ahorro/crédito/digital para Chile (dash en el dataset), por lo que quedan "En verificación"; nunca se inventan valores.',
 };
