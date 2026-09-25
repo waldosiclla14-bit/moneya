@@ -32,7 +32,7 @@ export function MetricCard({
   return (
     <div className={`rounded-xl border p-4 ${tone}`}>
       <div className="text-sm text-neutral-600">{metric.label}</div>
-      <div className="mt-1 text-2xl font-semibold text-neutral-900">{formatMetricValue(metric)}</div>
+      <div className="mt-1 font-display text-3xl font-semibold tracking-tight text-neutral-900">{formatMetricValue(metric)}</div>
       <details className="mt-2 text-xs text-neutral-500">
         <summary className="cursor-pointer">Ver fórmula e inputs</summary>
         <p className="mt-1 italic">{metric.formula}</p>

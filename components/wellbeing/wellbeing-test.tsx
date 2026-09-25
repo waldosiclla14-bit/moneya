@@ -156,7 +156,7 @@ export function WellbeingTest() {
       {completas && resultado && (
         <section className="rounded-xl border border-emerald-200 bg-emerald-50 p-5">
           <h2 className="font-semibold text-emerald-900">Tu puntaje CFPB</h2>
-          <div className="mt-2 text-4xl font-bold text-emerald-900">
+          <div className="mt-2 font-display text-4xl font-semibold tracking-tight text-emerald-900">
             {resultado.score} <span className="text-lg font-semibold">/ 100</span>
           </div>
           <p className="mt-2 text-sm text-emerald-800">{resultado.note}</p>
@@ -164,7 +164,7 @@ export function WellbeingTest() {
             {resultado.dimensions.map((d) => (
               <div key={d.key} className="rounded-lg border border-emerald-100 bg-white p-4">
                 <div className="text-sm text-neutral-600">{d.label}</div>
-                <div className="mt-1 text-2xl font-semibold text-neutral-900">{d.value} / 100</div>
+                <div className="mt-1 font-display text-2xl font-semibold tracking-tight text-neutral-900">{d.value} / 100</div>
                 <details className="mt-2 text-xs text-neutral-500">
                   <summary className="cursor-pointer">Ver fórmula e ítems</summary>
                   <p className="mt-1 italic">{d.formula}</p>
