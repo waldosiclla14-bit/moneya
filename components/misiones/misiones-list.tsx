@@ -92,7 +92,7 @@ export function MisionesList() {
 
   return (
     <div className="space-y-5">
-      <div className="rounded-xl border border-neutral-200 bg-white p-5">
+      <div className="card p-5">
         <div className="flex items-center justify-between">
           <span className="text-sm text-neutral-600">Progreso</span>
           <span className="text-sm font-semibold">
@@ -116,12 +116,12 @@ export function MisionesList() {
         {MISIONES.map((mision) => {
           const status = progress[mision.slug] ?? 'no_iniciada';
           return (
-            <li key={mision.slug} className="rounded-xl border border-neutral-200 bg-white p-5">
+            <li key={mision.slug} className="card p-5">
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <div className="flex items-center gap-2">
                     <span className="text-sm font-semibold text-neutral-400">#{mision.sortOrder}</span>
-                    <h3 className="font-semibold text-neutral-900">{mision.title}</h3>
+                    <h3 className="font-display font-semibold text-neutral-900">{mision.title}</h3>
                   </div>
                   <p className="mt-1 text-sm text-neutral-600">{mision.description}</p>
                   <p className="mt-1 text-xs text-neutral-400">{mision.howToComplete}</p>

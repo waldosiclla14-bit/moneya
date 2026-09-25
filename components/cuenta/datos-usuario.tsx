@@ -73,7 +73,7 @@ export function DatosUsuario() {
   }
 
   return (
-    <div className="space-y-4 rounded-xl border border-neutral-200 bg-white p-5">
+    <div className="space-y-4 card p-5">
       <p className="text-sm text-neutral-600">
         Exportar genera un archivo JSON con todo lo que MONEYA guarda de ti. Eliminar borra esos mismos datos de
         la base (los registros de auditoría interna se conservan por seguridad).
@@ -83,7 +83,7 @@ export function DatosUsuario() {
           type="button"
           onClick={exportar}
           disabled={busy}
-          className="rounded-lg bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-700 disabled:opacity-50"
+          className="btn-primary"
         >
           Exportar mis datos (JSON)
         </button>

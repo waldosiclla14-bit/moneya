@@ -7,8 +7,8 @@ export function ContextoLatam() {
         {PAISES.map((pais) => {
           const filas = VALORES.filter((v) => v.countryCode === pais.code);
           return (
-            <section key={pais.code} className="rounded-xl border border-neutral-200 bg-white p-5">
-              <h2 className="font-semibold">{pais.name}</h2>
+            <section key={pais.code} className="card p-5">
+              <h2 className="font-display font-semibold">{pais.name}</h2>
               <p className="mt-1 text-[11px] uppercase tracking-wide text-neutral-400">
                 Población adulta · escala 0–100%
               </p>
@@ -52,7 +52,7 @@ export function ContextoLatam() {
         })}
       </div>
 
-      <details className="rounded-xl border border-neutral-200 bg-white p-5 text-sm">
+      <details className="card p-5 text-sm">
         <summary className="cursor-pointer font-medium text-neutral-800">Ficha de la fuente</summary>
         <div className="mt-3 space-y-2 text-neutral-700">
           <p>
@@ -61,7 +61,7 @@ export function ContextoLatam() {
           <p>{FUENTE.methodology}</p>
           <p>
             <span className="font-medium">Accedida:</span> {FUENTE.accessedAt} ·{' '}
-            <a href={FUENTE.url} target="_blank" rel="noreferrer" className="text-sky-700 underline">
+            <a href={FUENTE.url} target="_blank" rel="noreferrer" className="link-soft">
               {FUENTE.url}
             </a>
           </p>

@@ -19,8 +19,8 @@ export default function MetodologiaPage() {
         </p>
       </div>
 
-      <section className="rounded-xl border border-neutral-200 bg-white p-5">
-        <h2 className="font-semibold">Score de bienestar financiero (CFPB)</h2>
+      <section className="card p-5">
+        <h2 className="font-display font-semibold">Score de bienestar financiero (CFPB)</h2>
         <p className="mt-2 text-sm text-neutral-700">
           Se usa la CFPB Financial Well-Being Scale (10 ítems), escala validada y de dominio público. El score se
           calcula con el método IRT original: cada respuesta se codifica 0–4 y se suma en un total de rango 0–40.
@@ -38,8 +38,8 @@ export default function MetodologiaPage() {
         </details>
       </section>
 
-      <section className="rounded-xl border border-neutral-200 bg-white p-5">
-        <h2 className="font-semibold">Tus tres números financieros</h2>
+      <section className="card p-5">
+        <h2 className="font-display font-semibold">Tus tres números financieros</h2>
         <div className="mt-3 space-y-3 text-sm text-neutral-700">
           <p>
             <span className="font-medium">Meses de cobertura</span> = saldo líquido ÷ gastos esenciales. Cuántos
@@ -59,8 +59,8 @@ export default function MetodologiaPage() {
         </div>
       </section>
 
-      <section className="rounded-xl border border-neutral-200 bg-white p-5">
-        <h2 className="font-semibold">Diseño conductual</h2>
+      <section className="card p-5">
+        <h2 className="font-display font-semibold">Diseño conductual</h2>
         <p className="mt-2 text-sm text-neutral-700">
           MONEYA no se apoya en un solo autor: combina el consenso de la literatura de finanzas conductuales para
           el diagnóstico y las mecánicas, y autores narrativos para el tono.
@@ -91,8 +91,8 @@ export default function MetodologiaPage() {
         </p>
       </section>
 
-      <section className="rounded-xl border border-neutral-200 bg-white p-5">
-        <h2 className="font-semibold">Datos LATAM</h2>
+      <section className="card p-5">
+        <h2 className="font-display font-semibold">Datos LATAM</h2>
         <p className="mt-2 text-sm text-neutral-700">
           4 indicadores fijos (cuenta, ahorro formal, crédito formal, capacidad ante emergencias) para Chile y
           Perú, con la ficha de fuente completa en cada ficha: institución, año, metodología y enlace. La fuente es
@@ -101,8 +101,8 @@ export default function MetodologiaPage() {
         </p>
       </section>
 
-      <section className="rounded-xl border border-neutral-200 bg-white p-5">
-        <h2 className="font-semibold">Límites y ética</h2>
+      <section className="card p-5">
+        <h2 className="font-display font-semibold">Límites y ética</h2>
         <ul className="mt-3 list-disc space-y-2 pl-5 text-sm text-neutral-700">
           {reglas.map((r) => (
             <li key={r}>{r}</li>

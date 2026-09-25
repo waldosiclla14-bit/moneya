@@ -91,3 +91,13 @@ body {
     scroll-behavior: auto !important;
   }
 }
+
+@keyframes barra {
+  from {
+    width: 0;
+  }
+}
+
+.barra {
+  animation: barra var(--dur-base) var(--ease-out) backwards;
+}

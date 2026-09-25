@@ -116,8 +116,8 @@ export function FotoFinanciera() {
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr,1fr]">
       <div className="space-y-6">
-        <section className="rounded-xl border border-neutral-200 bg-white p-5">
-          <h2 className="font-semibold">Snapshot del mes</h2>
+        <section className="card p-5">
+          <h2 className="font-display font-semibold">Snapshot del mes</h2>
           <div className="mt-3 grid grid-cols-2 gap-3">
             <Field label="Mes" value={form.mes} onChange={(v) => set('mes', v)} />
             <Field label="Saldo líquido / ahorro" value={form.liquidez} onChange={(v) => set('liquidez', v)} />
@@ -129,9 +129,9 @@ export function FotoFinanciera() {
           </div>
         </section>
 
-        <section className="rounded-xl border border-neutral-200 bg-white p-5">
+        <section className="card p-5">
           <div className="flex items-center justify-between">
-            <h2 className="font-semibold">Deudas</h2>
+            <h2 className="font-display font-semibold">Deudas</h2>
             <button
               type="button"
               onClick={() => setDeudas((ds) => [...ds, deudaVacia()])}
@@ -198,15 +198,15 @@ export function FotoFinanciera() {
         <section>
           <h2 className="mb-2 font-semibold">Resumen del mes</h2>
           <div className="grid gap-3 sm:grid-cols-2">
-            <div className="rounded-xl border border-neutral-200 bg-white p-4 text-sm text-neutral-600">
+            <div className="card p-4 text-sm text-neutral-600">
               Ingreso total
               <div className="mt-1 text-xl font-semibold text-neutral-900">{money.format(margen.ingresoMensual)}</div>
             </div>
-            <div className="rounded-xl border border-neutral-200 bg-white p-4 text-sm text-neutral-600">
+            <div className="card p-4 text-sm text-neutral-600">
               Gastos del mes
               <div className="mt-1 text-xl font-semibold text-neutral-900">{money.format(margen.gastosMensuales)}</div>
             </div>
-            <div className="rounded-xl border border-neutral-200 bg-white p-4 text-sm text-neutral-600">
+            <div className="card p-4 text-sm text-neutral-600">
               Flujo del mes (sobra)
               <div
                 className={`mt-1 text-xl font-semibold ${margen.ahorroMensual < 0 ? 'text-red-600' : ''}`}
@@ -214,7 +214,7 @@ export function FotoFinanciera() {
                 {money.format(margen.ahorroMensual)}
               </div>
             </div>
-            <div className="rounded-xl border border-neutral-200 bg-white p-4 text-sm text-neutral-600">
+            <div className="card p-4 text-sm text-neutral-600">
               Deuda total
               <div className="mt-1 text-xl font-semibold text-neutral-900">
                 {money.format(deudas.reduce((a, d) => a + d.saldo, 0))}
@@ -223,9 +223,9 @@ export function FotoFinanciera() {
           </div>
         </section>
 
-        <section className="rounded-xl border border-neutral-200 bg-white p-5">
+        <section className="card p-5">
           <div className="flex items-center justify-between">
-            <h2 className="font-semibold">Tu tiempo vale dinero</h2>
+            <h2 className="font-display font-semibold">Tu tiempo vale dinero</h2>
             <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-[11px] text-neutral-500">
               Your Money or Your Life
             </span>
@@ -240,7 +240,7 @@ export function FotoFinanciera() {
           <div className="mt-3 rounded-lg border border-neutral-200 p-4">
             <div className="text-sm text-neutral-600">
               Ingreso mensual actual:{' '}
-              <span className="font-semibold text-neutral-900">{money.format(ingresoMes)}</span> (~{' '}
+              <span className="font-display font-semibold text-neutral-900">{money.format(ingresoMes)}</span> (~{' '}
               {money.format(equivalenciaPuntual.ingresoPorHora)} / hora)
             </div>
             <div className="mt-2 text-lg font-semibold text-neutral-900">

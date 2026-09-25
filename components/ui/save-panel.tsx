@@ -52,7 +52,7 @@ export function SavePanel({
         type="button"
         onClick={handle}
         disabled={status === 'saving'}
-        className="rounded-lg bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-700 disabled:opacity-50"
+        className="btn-primary"
       >
         {status === 'saving' ? 'Guardando…' : status === 'saved' ? 'Guardado' : `Guardar ${label}`}
       </button>

@@ -29,14 +29,14 @@ export function Library() {
         {visible.map((lesson) => {
           const open = openSlug === lesson.slug;
           return (
-            <article key={lesson.slug} className="rounded-xl border border-neutral-200 bg-white">
+            <article key={lesson.slug} className="card">
               <button
                 type="button"
                 onClick={() => setOpenSlug(open ? null : lesson.slug)}
                 className="w-full p-5 text-left"
               >
                 <div className="flex items-center justify-between gap-4">
-                  <h3 className="font-semibold text-neutral-900">{lesson.title}</h3>
+                  <h3 className="font-display font-semibold text-neutral-900">{lesson.title}</h3>
                   <span className="shrink-0 text-xs text-neutral-400">
                     {lesson.readingMinutes} min · {LESSON_TOPIC_LABELS[lesson.topic]}
                   </span>

@@ -49,8 +49,8 @@ export function WellbeingTest() {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-xl border border-neutral-200 bg-white p-5">
-        <h2 className="font-semibold">Escala de Bienestar Financiero del CFPB</h2>
+      <div className="card p-5">
+        <h2 className="font-display font-semibold">Escala de Bienestar Financiero del CFPB</h2>
         <p className="mt-1 text-sm text-neutral-600">
           Son 10 afirmaciones validadas (dominio público). Responde todas: obtienes un puntaje CFPB 0–100 y
           un desglose descriptivo por 4 ejes.
@@ -58,8 +58,8 @@ export function WellbeingTest() {
       </div>
 
       {(['describe', 'frequency'] as const).map((bloque) => (
-        <section key={bloque} className="rounded-xl border border-neutral-200 bg-white p-5">
-          <h3 className="font-semibold">{blockLabel(bloque)}</h3>
+        <section key={bloque} className="card p-5">
+          <h3 className="font-display font-semibold">{blockLabel(bloque)}</h3>
           <div className="mt-4 space-y-6">
             {CFPB_ITEMS.filter((i) => i.block === bloque).map((item) => (
               <fieldset key={item.key}>
@@ -89,8 +89,8 @@ export function WellbeingTest() {
         </section>
       ))}
 
-      <section className="rounded-xl border border-neutral-200 bg-white p-5">
-        <h3 className="font-semibold">Sobre ti</h3>
+      <section className="card p-5">
+        <h3 className="font-display font-semibold">Sobre ti</h3>
         <p className="mt-1 text-sm text-neutral-500">
           El puntaje CFPB se ajusta por tramo de edad según la tabla oficial.
         </p>
@@ -113,8 +113,8 @@ export function WellbeingTest() {
         </div>
       </section>
 
-      <section className="rounded-xl border border-neutral-200 bg-white p-5">
-        <h3 className="font-semibold">Tus hábitos de dinero <span className="text-xs font-normal text-neutral-400">· exploratorio</span></h3>
+      <section className="card p-5">
+        <h3 className="font-display font-semibold">Tus hábitos de dinero <span className="text-xs font-normal text-neutral-400">· exploratorio</span></h3>
         <p className="mt-1 text-sm text-neutral-500">
           10 preguntas propias de MONEYA para reflexionar. No generan puntaje: son exploratorias y
           no están validadas científicamente como la escala CFPB.
@@ -155,7 +155,7 @@ export function WellbeingTest() {
 
       {completas && resultado && (
         <section className="rounded-xl border border-emerald-200 bg-emerald-50 p-5">
-          <h2 className="font-semibold text-emerald-900">Tu puntaje CFPB</h2>
+          <h2 className="font-display font-semibold text-emerald-900">Tu puntaje CFPB</h2>
           <div className="mt-2 font-display text-4xl font-semibold tracking-tight text-emerald-900">
             {resultado.score} <span className="text-lg font-semibold">/ 100</span>
           </div>

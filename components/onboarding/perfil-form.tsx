@@ -58,7 +58,7 @@ export function PerfilForm() {
   }
 
   return (
-    <div className="rounded-xl border border-neutral-200 bg-white p-5">
+    <div className="card p-5">
       <div className="grid gap-4 sm:grid-cols-3">
         <label className="block">
           <span className="text-sm text-neutral-600">País</span>

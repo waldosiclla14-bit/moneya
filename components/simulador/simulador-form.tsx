@@ -101,8 +101,8 @@ export function SimuladorForm() {
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr,1fr]">
       <div className="space-y-6">
-        <section className="rounded-xl border border-neutral-200 bg-white p-5">
-          <h2 className="font-semibold">Tu mes actual</h2>
+        <section className="card p-5">
+          <h2 className="font-display font-semibold">Tu mes actual</h2>
           <div className="mt-3 grid grid-cols-2 gap-3">
             <Field label="Ingreso dependiente" value={form.dependiente} onChange={(v) => set('dependiente', v)} />
             <Field label="Ingreso independiente" value={form.independiente} onChange={(v) => set('independiente', v)} />
@@ -113,8 +113,8 @@ export function SimuladorForm() {
           </div>
         </section>
 
-        <section className="rounded-xl border border-neutral-200 bg-white p-5">
-          <h2 className="font-semibold">Escenario «qué pasa si»</h2>
+        <section className="card p-5">
+          <h2 className="font-display font-semibold">Escenario «qué pasa si»</h2>
           <div className="mt-3 space-y-3">
             <label className="block">
               <span className="text-sm text-neutral-600">Escenario</span>
@@ -190,7 +190,7 @@ export function SimuladorForm() {
           </div>
 
           {proyeccion.pasoAccionable && (
-            <div className="mt-4 rounded-xl border border-sky-200 bg-sky-50 p-4 text-sm text-sky-900">
+            <div className="mt-4 card p-4 text-sm text-neutral-800">
               <span className="font-medium">Sin obligación, un paso posible: </span>
               {proyeccion.pasoAccionable}
             </div>

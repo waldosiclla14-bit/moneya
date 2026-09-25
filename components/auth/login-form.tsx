@@ -76,7 +76,7 @@ export function LoginForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 rounded-xl border border-neutral-200 bg-white p-5">
+    <form onSubmit={handleSubmit} className="space-y-4 card p-5">
       <div className="flex gap-2">
         {(['entrar', 'crear'] as Modo[]).map((m) => (
           <button
@@ -84,7 +84,7 @@ export function LoginForm() {
             type="button"
             onClick={() => setModo(m)}
             className={`rounded-lg px-3 py-1.5 text-sm ${
-              modo === m ? 'bg-neutral-900 text-white' : 'border border-neutral-300 text-neutral-700'
+              modo === m ? 'bg-ink text-paper' : 'border border-hairline text-muted'
             }`}
           >
             {m === 'entrar' ? 'Entrar' : 'Crear cuenta'}
@@ -120,7 +120,7 @@ export function LoginForm() {
       <button
         type="submit"
         disabled={busy}
-        className="w-full rounded-lg bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-700 disabled:opacity-50"
+        className="btn-primary w-full"
       >
         {busy ? 'Un momento…' : modo === 'entrar' ? 'Entrar' : 'Crear cuenta'}
       </button>
@@ -135,7 +135,7 @@ export function LoginForm() {
         type="button"
         onClick={handleGoogle}
         disabled={busy}
-        className="w-full rounded-lg border border-neutral-300 px-4 py-2 text-sm font-medium hover:bg-neutral-100 disabled:opacity-50"
+        className="btn-secondary w-full"
       >
         Continuar con Google
       </button>
