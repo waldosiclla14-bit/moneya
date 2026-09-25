@@ -101,7 +101,7 @@ export function MisionesList() {
         </div>
         <div className="mt-2 h-2 overflow-hidden rounded-full bg-neutral-100">
           <div
-            className="h-full rounded-full bg-emerald-500 transition-all"
+            className="h-full rounded-full bg-emerald-500 transition-[width] duration-500 ease-out"
             style={{ width: `${(completadas / total) * 100}%` }}
           />
         </div>

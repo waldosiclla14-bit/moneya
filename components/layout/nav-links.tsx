@@ -15,11 +15,7 @@ export function NavLinks() {
   return (
     <div className="flex flex-wrap gap-x-5 gap-y-1 text-sm text-muted">
       {links.map((l) => (
-        <Link
-          key={l.href}
-          href={l.href}
-          className="transition-colors duration-200 hover:text-ink"
-        >
+        <Link key={l.href} href={l.href} className="nav-link">
           {l.label}
         </Link>
       ))}

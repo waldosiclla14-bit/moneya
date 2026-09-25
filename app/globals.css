@@ -12,6 +12,15 @@
   --hairline: 232 228 220;
   --clay: 180 83 42;
   --clay-deep: 151 72 31;
+  --dur-fast: 150ms;
+  --dur-base: 250ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+*:focus-visible {
+  outline: 2px solid rgb(var(--clay));
+  outline-offset: 2px;
+  border-radius: 2px;
 }
 
 body {
@@ -37,5 +46,48 @@ body {
 
   .link-soft {
     @apply text-muted underline decoration-hairline underline-offset-2 transition-colors duration-200 hover:text-ink hover:decoration-clay;
+  }
+
+  .nav-link {
+    @apply relative text-muted transition-colors;
+    transition-duration: var(--dur-base);
+    transition-timing-function: var(--ease-out);
+  }
+
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    bottom: -3px;
+    left: 0;
+    height: 1px;
+    background-color: rgb(var(--clay));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--dur-base) var(--ease-out);
+  }
+
+  .nav-link:hover {
+    color: rgb(var(--ink));
+  }
+
+  .nav-link:hover::after {
+    transform: scaleX(1);
+  }
+}
+
+.btn-primary,
+.btn-secondary {
+  @apply active:translate-y-px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
