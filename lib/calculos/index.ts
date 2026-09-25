@@ -9,3 +9,10 @@ export { simularEscenario } from './simulador';
 export type { Escenario, SimulationProyeccion } from './simulador';
 export { sumaCuotas, sumaSaldos, cuotasDesdeDeudas, DEUDA_TIPO_LABELS } from './deudas';
 export type { DeudaInput } from './deudas';
+export {
+  HORAS_LABORABLES_MES_DEFAULT,
+  ingresoPorHora,
+  horasDeIngreso,
+  equivalenciaHoras,
+} from './horasDeIngreso';
+export type { EquivalenciaHoras } from './horasDeIngreso';

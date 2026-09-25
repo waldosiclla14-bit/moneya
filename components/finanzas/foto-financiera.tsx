@@ -4,6 +4,9 @@ import { useMemo, useState } from 'react';
 import {
   analizarSnapshot,
   sumaCuotas,
+  equivalenciaHoras,
+  ingresoTotal,
+  HORAS_LABORABLES_MES_DEFAULT,
   DEUDA_TIPO_LABELS,
   type DeudaInput,
   type FinancialSnapshot,
@@ -16,6 +19,11 @@ import { createClientClient } from '../../lib/supabase/client';
 import { guardarSnapshotFinanciero, guardarDeuda } from '../../lib/supabase/finanzas-repo';
 
 const money = new Intl.NumberFormat('es-CL', { maximumFractionDigits: 0 });
+
+function formatoHoras(h: number): string {
+  if (h <= 0) return '0';
+  return h < 10 ? h.toFixed(1) : Math.round(h).toLocaleString('es-CL');
+}
 
 function toNum(v: string): number {
   const n = Number(v);
@@ -49,6 +57,8 @@ export function FotoFinanciera() {
   const { user, ready } = useSession();
   const [form, setForm] = useState(initialForm);
   const [deudas, setDeudas] = useState<DeudaInput[]>([]);
+  const [gastoPuntual, setGastoPuntual] = useState('300000');
+  const [horasLabMes, setHorasLabMes] = useState(String(HORAS_LABORABLES_MES_DEFAULT));
 
   const set = (key: keyof typeof form, value: string) => setForm((f) => ({ ...f, [key]: value }));
 
@@ -70,6 +80,22 @@ export function FotoFinanciera() {
   }, [form.dependiente, form.independiente, form.otros, form.esencial, form.noEsencial, form.liquidez, deudas]);
 
   const margen = useMemo(() => analizarSnapshot(snapshot), [snapshot]);
+
+  const ingresoMes = useMemo(() => ingresoTotal(snapshot.income), [snapshot]);
+
+  const horasMes = Number(horasLabMes) > 0 ? Number(horasLabMes) : HORAS_LABORABLES_MES_DEFAULT;
+  const equivalenciaPuntual = useMemo(
+    () => equivalenciaHoras(toNum(gastoPuntual), ingresoMes, horasMes),
+    [gastoPuntual, ingresoMes, horasMes],
+  );
+  const equivalenciaEsencial = useMemo(
+    () => equivalenciaHoras(snapshot.expenses.esencial, ingresoMes, horasMes),
+    [snapshot.expenses.esencial, ingresoMes, horasMes],
+  );
+  const equivalenciaNoEsencial = useMemo(
+    () => equivalenciaHoras(snapshot.expenses.noEsencial, ingresoMes, horasMes),
+    [snapshot.expenses.noEsencial, ingresoMes, horasMes],
+  );
 
   async function guardar() {
     const client = createClientClient();
@@ -194,6 +220,42 @@ export function FotoFinanciera() {
                 {money.format(deudas.reduce((a, d) => a + d.saldo, 0))}
               </div>
             </div>
+          </div>
+        </section>
+
+        <section className="rounded-xl border border-neutral-200 bg-white p-5">
+          <div className="flex items-center justify-between">
+            <h2 className="font-semibold">Tu tiempo vale dinero</h2>
+            <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-[11px] text-neutral-500">
+              Your Money or Your Life
+            </span>
+          </div>
+          <p className="mt-1 text-sm text-neutral-600">
+            Ver un gasto como horas de trabajo revela su costo real. Probá con una compra puntual.
+          </p>
+          <div className="mt-3 grid grid-cols-2 gap-3">
+            <Field label="Monto de la compra" value={gastoPuntual} onChange={setGastoPuntual} />
+            <Field label="Horas trabajadas al mes" value={horasLabMes} onChange={setHorasLabMes} />
+          </div>
+          <div className="mt-3 rounded-lg border border-neutral-200 p-4">
+            <div className="text-sm text-neutral-600">
+              Ingreso mensual actual:{' '}
+              <span className="font-semibold text-neutral-900">{money.format(ingresoMes)}</span> (~{' '}
+              {money.format(equivalenciaPuntual.ingresoPorHora)} / hora)
+            </div>
+            <div className="mt-2 text-lg font-semibold text-neutral-900">
+              Ese gasto equivale a ≈ {formatoHoras(equivalenciaPuntual.horas)} h de tu ingreso.
+            </div>
+            {(snapshot.expenses.esencial > 0 || snapshot.expenses.noEsencial > 0) && (
+              <p className="mt-2 text-sm text-neutral-500">
+                Este mes: gastos esenciales ≈ {formatoHoras(equivalenciaEsencial.horas)} h · gastos no esenciales ≈{' '}
+                {formatoHoras(equivalenciaNoEsencial.horas)} h
+              </p>
+            )}
+            <details className="mt-2 text-xs text-neutral-500">
+              <summary className="cursor-pointer">Ver fórmula</summary>
+              <p className="mt-1 italic">Horas = monto ÷ (ingreso mensual ÷ horas laborables del mes)</p>
+            </details>
           </div>
         </section>
 

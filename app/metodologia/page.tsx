@@ -60,6 +60,38 @@ export default function MetodologiaPage() {
       </section>
 
       <section className="rounded-xl border border-neutral-200 bg-white p-5">
+        <h2 className="font-semibold">Diseño conductual</h2>
+        <p className="mt-2 text-sm text-neutral-700">
+          MONEYA no se apoya en un solo autor: combina el consenso de la literatura de finanzas conductuales para
+          el diagnóstico y las mecánicas, y autores narrativos para el tono.
+        </p>
+        <ul className="mt-3 list-disc space-y-2 pl-5 text-sm text-neutral-700">
+          <li>
+            <span className="font-medium">Kahneman y Thaler</span> para el diseño de decisiones: el simulador y los
+            insights fuerzan a detenerse y calcular antes de decidir (Sistema 2), con mejores por defecto y sin
+            restringir opciones.
+          </li>
+          <li>
+            <span className="font-medium">Statman</span> para la base de la comparación social: el dinero cubre
+            necesidades utilitarias y expresivas, y el diagnóstico las separa explícitamente.
+          </li>
+          <li>
+            <span className="font-medium">Robin y Dominguez</span> para la mecánica de «horas de tu ingreso»:
+            ver un gasto como horas de trabajo revela su costo real.
+          </li>
+          <li>
+            <span className="font-medium">Housel</span> para el tono narrativo de la biblioteca, siempre con
+            redacción 100% original de MONEYA, nunca resúmenes de texto protegido.
+          </li>
+        </ul>
+        <p className="mt-3 text-xs text-neutral-500">
+          Referencias de tono en español hispanohablante: Sofía Macías («Pequeño Cerdo Capitalista»). Fuentes
+          prescriptivas (Kiyosaki, Ramsey, Sethi) se usan solo como vocabulario o contraejemplo; nunca como «la
+          forma correcta» de manejar dinero.
+        </p>
+      </section>
+
+      <section className="rounded-xl border border-neutral-200 bg-white p-5">
         <h2 className="font-semibold">Datos LATAM</h2>
         <p className="mt-2 text-sm text-neutral-700">
           4 indicadores fijos (cuenta, ahorro formal, crédito formal, capacidad ante emergencias) para Chile y
