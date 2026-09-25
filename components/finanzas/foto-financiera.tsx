@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react';
 import {
   analizarSnapshot,
+  analizarAtenciones,
   sumaCuotas,
   equivalenciaHoras,
   ingresoTotal,
@@ -12,7 +13,6 @@ import {
   type FinancialSnapshot,
   type LiabilityKind,
 } from '../../lib/calculos';
-import { MetricCard } from '../ui/metric-card';
 import { SavePanel } from '../ui/save-panel';
 import { useSession } from '../../lib/supabase/use-session';
 import { createClientClient } from '../../lib/supabase/client';
@@ -23,6 +23,16 @@ const money = new Intl.NumberFormat('es-CL', { maximumFractionDigits: 0 });
 function formatoHoras(h: number): string {
   if (h <= 0) return '0';
   return h < 10 ? h.toFixed(1) : Math.round(h).toLocaleString('es-CL');
+}
+
+function formatoMeses(v: number | null): string {
+  if (v === null) return '—';
+  return v < 10 ? v.toFixed(1) : Math.round(v).toString();
+}
+
+function formatoPorcentaje(v: number | null): string {
+  if (v === null) return '—';
+  return `${Math.round(v * 100)}%`;
 }
 
 function toNum(v: string): number {
@@ -80,6 +90,8 @@ export function FotoFinanciera() {
   }, [form.dependiente, form.independiente, form.otros, form.esencial, form.noEsencial, form.liquidez, deudas]);
 
   const margen = useMemo(() => analizarSnapshot(snapshot), [snapshot]);
+
+  const panorama = useMemo(() => analizarAtenciones(margen), [margen]);
 
   const ingresoMes = useMemo(() => ingresoTotal(snapshot.income), [snapshot]);
 
@@ -187,11 +199,86 @@ export function FotoFinanciera() {
 
       <div className="space-y-6">
         <section>
-          <h2 className="mb-2 font-semibold">Tus tres números</h2>
-          <div className="grid gap-3 sm:grid-cols-1">
-            <MetricCard metric={margen.mesesCobertura} />
-            <MetricCard metric={margen.ratioDeuda} />
-            <MetricCard metric={margen.concentracionIngreso} />
+          <h2 className="mb-2 font-display font-semibold">Panorama del mes</h2>
+
+          <div className="card p-5">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-sm text-neutral-600">Colchón · meses de gastos esenciales</p>
+                <p className="mt-1 font-display text-4xl font-semibold tracking-tight text-ink">
+                  {formatoMeses(margen.mesesCobertura.value)}
+                  <span className="ml-2 font-sans text-base font-medium text-neutral-500">meses</span>
+                </p>
+                <p className="mt-2 max-w-sm text-sm leading-relaxed text-neutral-500">
+                  Tu saldo líquido de <span className="font-semibold text-neutral-700">{money.format(margen.liquidBalance)}</span>{' '}
+                  cubre gastos esenciales de <span className="font-semibold text-neutral-700">{money.format(margen.gastosEsenciales)} por mes</span>.
+                </p>
+              </div>
+              <EstadoColchon value={margen.mesesCobertura.value} />
+            </div>
+            <details className="mt-3 text-xs text-neutral-500">
+              <summary className="cursor-pointer">Ver fórmula</summary>
+              <p className="mt-1 italic">{margen.mesesCobertura.formula} · umbrales: &lt; 3 meses → atención · ≥ 3 base estándar · ≥ 6 sólido</p>
+            </details>
+          </div>
+
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            <div className="card p-4">
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-sm text-neutral-600">Deuda · % del ingreso en cuotas</span>
+                <span
+                  className={`h-2 w-2 shrink-0 rounded-full ${margen.ratioDeuda.value !== null && margen.ratioDeuda.value >= 0.4 ? 'bg-clay' : 'bg-emerald-600'}`}
+                />
+              </div>
+              <p className="mt-1 font-display text-3xl font-semibold tracking-tight text-ink">
+                {formatoPorcentaje(margen.ratioDeuda.value)}
+              </p>
+              <details className="mt-2 text-xs text-neutral-500">
+                <summary className="cursor-pointer">Ver fórmula</summary>
+                <p className="mt-1 italic">{margen.ratioDeuda.formula} · atención ≥ 40%</p>
+              </details>
+            </div>
+            <div className="card p-4">
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-sm text-neutral-600">Concentración · fuente principal</span>
+                <span
+                  className={`h-2 w-2 shrink-0 rounded-full ${margen.concentracionIngreso.value !== null && margen.concentracionIngreso.value >= 0.6 ? 'bg-clay' : 'bg-emerald-600'}`}
+                />
+              </div>
+              <p className="mt-1 font-display text-3xl font-semibold tracking-tight text-ink">
+                {formatoPorcentaje(margen.concentracionIngreso.value)}
+              </p>
+              <details className="mt-2 text-xs text-neutral-500">
+                <summary className="cursor-pointer">Ver fórmula</summary>
+                <p className="mt-1 italic">{margen.concentracionIngreso.formula} · atención ≥ 60%</p>
+              </details>
+            </div>
+          </div>
+
+          <div className="mt-3 card p-5">
+            <p className="eyebrow">Qué necesita atención</p>
+            <ul className="mt-3 space-y-4">
+              {panorama.atenciones.map((a) => (
+                <li key={a.clave} className="flex gap-3">
+                  <span
+                    className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${a.nivel === 'atencion' ? 'bg-clay' : 'bg-emerald-600'}`}
+                  />
+                  <div>
+                    <p className="text-sm font-semibold text-ink">{a.titulo}</p>
+                    <p className="mt-0.5 text-sm leading-relaxed text-neutral-600">{a.detalle}</p>
+                    <details className="mt-1 text-xs text-neutral-500">
+                      <summary className="cursor-pointer">Ver criterio</summary>
+                      <p className="mt-1 italic">{a.formula}</p>
+                    </details>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="mt-3 card p-5">
+            <p className="eyebrow">Un paso posible</p>
+            <p className="mt-1 text-[15px] leading-relaxed text-ink">{panorama.paso}</p>
           </div>
         </section>
 
@@ -291,5 +378,34 @@ function Field({
         className="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2"
       />
     </label>
+  );
+}
+
+function EstadoColchon({ value }: { value: number | null }) {
+  if (value === null) {
+    return (
+      <span className="shrink-0 rounded-full bg-neutral-100 px-3 py-1 text-xs font-medium text-neutral-600">
+        Por definir
+      </span>
+    );
+  }
+  if (value < 3) {
+    return (
+      <span className="shrink-0 rounded-full bg-clay/10 px-3 py-1 text-xs font-medium text-clayDeep">
+        Enfocar colchón
+      </span>
+    );
+  }
+  if (value < 6) {
+    return (
+      <span className="shrink-0 rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
+        Base estándar
+      </span>
+    );
+  }
+  return (
+    <span className="shrink-0 rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
+      Sólido
+    </span>
   );
 }
