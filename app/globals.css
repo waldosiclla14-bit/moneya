@@ -4,8 +4,38 @@
 
 :root {
   color-scheme: light;
+  --paper: 250 249 245;
+  --cream: 242 240 235;
+  --surface: 255 255 255;
+  --ink: 31 30 29;
+  --muted: 107 102 94;
+  --hairline: 232 228 220;
+  --clay: 180 83 42;
+  --clay-deep: 151 72 31;
 }
 
 body {
-  @apply bg-neutral-50 text-neutral-900 antialiased;
+  @apply bg-paper font-sans text-ink antialiased;
+}
+
+@layer components {
+  .eyebrow {
+    @apply text-xs font-semibold uppercase tracking-[0.18em] text-clay;
+  }
+
+  .btn-primary {
+    @apply rounded-xl bg-ink px-4 py-2 text-sm font-medium tracking-tight text-paper transition-colors duration-200 hover:bg-clay focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clay;
+  }
+
+  .btn-secondary {
+    @apply rounded-xl border border-hairline bg-surface px-4 py-2 text-sm font-medium text-ink transition-colors duration-200 hover:border-muted/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clay;
+  }
+
+  .card {
+    @apply rounded-2xl border border-hairline bg-surface shadow-[0_1px_2px_rgba(28,25,21,0.05)];
+  }
+
+  .link-soft {
+    @apply text-muted underline decoration-hairline underline-offset-2 transition-colors duration-200 hover:text-ink hover:decoration-clay;
+  }
 }
