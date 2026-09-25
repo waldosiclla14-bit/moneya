@@ -1,0 +1,11 @@
+export * from './types';
+export * from './money';
+export { mesesDeCobertura } from './mesesCobertura';
+export { ratioDeuda } from './ratioDeuda';
+export { concentracionIngreso } from './concentracionIngreso';
+export { analizarSnapshot, resumirMetricas } from './margenFinanciero';
+export type { MargenFinanciero } from './margenFinanciero';
+export { simularEscenario } from './simulador';
+export type { Escenario, SimulationProyeccion } from './simulador';
+export { sumaCuotas, sumaSaldos, cuotasDesdeDeudas, DEUDA_TIPO_LABELS } from './deudas';
+export type { DeudaInput } from './deudas';
