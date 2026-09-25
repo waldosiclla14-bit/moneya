@@ -9,8 +9,8 @@ export default function DatosPage() {
       <div>
         <h1 className="font-display text-3xl font-semibold tracking-tight">Contexto LATAM</h1>
         <p className="mt-1 text-neutral-600">
-          4 indicadores de Global Findex 2025 (Banco Mundial) para Chile y Perú. MONEYA solo publica cifras
-          verificadas: hoy, la cobertura de cuenta de Chile (85,1%, 2024).
+          4 indicadores de Global Findex 2025 (Banco Mundial) para Chile y Perú. Solo cifras verificadas: Perú
+          cuenta 59,3% · ahorro formal 31,4% · crédito formal 20,8% y Chile cuenta 85,1%.
         </p>
       </div>
       <ContextoLatam />

@@ -9,6 +9,9 @@ export function ContextoLatam() {
           return (
             <section key={pais.code} className="rounded-xl border border-neutral-200 bg-white p-5">
               <h2 className="font-semibold">{pais.name}</h2>
+              <p className="mt-1 text-[11px] uppercase tracking-wide text-neutral-400">
+                Población adulta · escala 0–100%
+              </p>
               <div className="mt-4 space-y-3">
                 {INDICADOR_DEFS.map((def) => {
                   const valor = filas.find((f) => f.key === def.key);
@@ -23,7 +26,18 @@ export function ContextoLatam() {
                           <span className="text-xs text-neutral-400">En verificación</span>
                         )}
                       </div>
-                      <p className="mt-1 text-xs leading-relaxed text-neutral-500">{def.definition}</p>
+                      <div
+                        className="mt-2 h-2.5 overflow-hidden rounded-full bg-neutral-100"
+                        aria-label={verificado ? `${def.label}: ${valor?.value}%` : `${def.label}: sin dato verificado`}
+                      >
+                        {verificado && (
+                          <div
+                            className="h-full rounded-full bg-clay/80"
+                            style={{ width: `${valor?.value}%` }}
+                          />
+                        )}
+                      </div>
+                      <p className="mt-2 text-xs leading-relaxed text-neutral-500">{def.definition}</p>
                       {!verificado && (
                         <p className="mt-1 text-[11px] text-neutral-400">
                           Código Findex: <span className="font-mono">{def.fndCode}</span>
