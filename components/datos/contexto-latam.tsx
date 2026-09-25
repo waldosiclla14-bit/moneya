@@ -13,7 +13,7 @@ export function ContextoLatam() {
                 Población adulta · escala 0–100%
               </p>
               <div className="mt-4 space-y-3">
-                {INDICADOR_DEFS.map((def) => {
+                {INDICADOR_DEFS.map((def, indice) => {
                   const valor = filas.find((f) => f.key === def.key);
                   const verificado = valor && valor.value !== null;
                   return (
@@ -32,8 +32,8 @@ export function ContextoLatam() {
                       >
                         {verificado && (
                           <div
-                            className="h-full rounded-full bg-clay/80"
-                            style={{ width: `${valor?.value}%` }}
+                            className="barra h-full rounded-full bg-clay/80"
+                            style={{ width: `${valor?.value}%`, animationDelay: `${indice * 60}ms` }}
                           />
                         )}
                       </div>
