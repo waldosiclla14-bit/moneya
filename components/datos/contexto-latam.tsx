@@ -1,4 +1,5 @@
 import { INDICADOR_DEFS, PAISES, VALORES, FUENTE } from '../../lib/datos';
+import { CountUp } from '../ui/count-up';
 
 export function ContextoLatam() {
   return (
@@ -21,7 +22,14 @@ export function ContextoLatam() {
                       <div className="flex items-baseline justify-between gap-3">
                         <span className="text-sm text-neutral-700">{def.label}</span>
                         {verificado ? (
-                          <span className="font-display text-2xl font-semibold tracking-tight text-ink">{valor?.value}%</span>
+                          <>
+                            <CountUp
+                              value={valor!.value!}
+                              suffix="%"
+                              className="font-display text-2xl font-semibold tracking-tight text-ink"
+                            />
+                            <span className="sr-only">{valor!.value}%</span>
+                          </>
                         ) : (
                           <span className="text-xs text-neutral-400">En verificación</span>
                         )}
