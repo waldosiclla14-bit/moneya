@@ -20,7 +20,7 @@ const sans = Inter({
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://waldosiclla14-bit.github.io/moneya';
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || '';
 const CANONICAL = new URL(BASE_PATH || '/', SITE_URL).toString();
-const OG_IMAGE = `${CANONICAL}og.png`;
+const OG_IMAGE = new URL('og.png', CANONICAL.endsWith('/') ? CANONICAL : `${CANONICAL}/`).toString();
 const TITLE = 'MONEYA — Bienestar financiero';
 const DESCRIPTION =
   'Entiende tus decisiones de dinero, no solo cuánto gastas. Diagnóstico conductual y simulación de escenarios.';
