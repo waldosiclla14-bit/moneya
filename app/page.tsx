@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { HeroDemo } from '../components/home/hero-demo';
 
 const rutas = [
   { href: '/finanzas', t: 'Tu foto financiera', d: 'Ingresos, gastos y deuda en un snapshot mensual.' },
@@ -9,26 +10,29 @@ const rutas = [
 export default function Home() {
   return (
     <div className="space-y-12">
-      <section className="max-w-3xl space-y-6 py-6">
-        <p className="eyebrow">Bienestar financiero, no solo gastos</p>
-        <h1 className="font-display text-4xl font-semibold leading-[1.1] tracking-tight text-ink sm:text-5xl">
-          ¿Por qué tomas esas decisiones de dinero?
-        </h1>
-        <p className="max-w-2xl text-lg leading-relaxed text-muted">
-          MONEYA combina un diagnóstico conductual validado con simulación de escenarios «qué pasa si».
-          Todo calculado de forma transparente: cada resultado muestra su fórmula y sus inputs.
-        </p>
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-1">
-          <Link href="/simular" className="btn-primary">
-            Probar el simulador
-          </Link>
-          <Link href="/perfil" className="link-soft">
-            o hacer el test de bienestar →
-          </Link>
+      <section className="grid items-center gap-8 py-6 lg:grid-cols-[1.1fr,0.9fr]">
+        <div className="max-w-3xl space-y-6">
+          <p className="eyebrow">Bienestar financiero, no solo gastos</p>
+          <h1 className="font-display text-4xl font-semibold leading-[1.1] tracking-tight text-ink sm:text-5xl">
+            ¿Por qué tomas esas decisiones de dinero?
+          </h1>
+          <p className="max-w-2xl text-lg leading-relaxed text-muted">
+            MONEYA combina un diagnóstico conductual validado con simulación de escenarios «qué pasa si».
+            Todo calculado de forma transparente: cada resultado muestra su fórmula y sus inputs.
+          </p>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-1">
+            <Link href="/simular" className="btn-primary">
+              Probar el simulador
+            </Link>
+            <Link href="/perfil" className="link-soft">
+              o hacer el test de bienestar →
+            </Link>
+          </div>
+          <p className="text-sm text-muted">
+            Sin cuenta y sin registro · los cálculos corren en tu navegador
+          </p>
         </div>
-        <p className="text-sm text-muted">
-          Sin cuenta y sin registro · los cálculos corren en tu navegador
-        </p>
+        <HeroDemo />
       </section>
 
       <section aria-label="Con qué te lo garantizamos">
