@@ -1,11 +1,47 @@
 import Link from 'next/link';
+import type { ReactNode } from 'react';
 import { HeroDemo } from '../components/home/hero-demo';
 import { Reveal } from '../components/ui/reveal';
 
-const rutas = [
-  { href: '/finanzas', t: 'Tu foto financiera', d: 'Ingresos, gastos y deuda en un snapshot mensual.' },
-  { href: '/datos', t: 'Contexto LATAM', d: 'Indicadores de inclusión financiera con fuente. (V1: Global Findex 2025)' },
-  { href: '/aprender', t: 'Aprender', d: 'Biblioteca de artículos sobre tus hábitos de dinero.' },
+const icono = 'h-5 w-5';
+
+const rutas: { href: string; t: string; d: string; icon: ReactNode }[] = [
+  {
+    href: '/finanzas',
+    t: 'Tu foto financiera',
+    d: 'Ingresos, gastos y deuda en un snapshot mensual.',
+    icon: (
+      <svg viewBox="0 0 24 24" className={icono} fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M3 3v18h18" />
+        <path d="M8 17v-3" />
+        <path d="M13 17V7" />
+        <path d="M18 17v-6" />
+      </svg>
+    ),
+  },
+  {
+    href: '/datos',
+    t: 'Contexto LATAM',
+    d: 'Indicadores de inclusión financiera con fuente. (V1: Global Findex 2025)',
+    icon: (
+      <svg viewBox="0 0 24 24" className={icono} fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="10" />
+        <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
+        <path d="M2 12h20" />
+      </svg>
+    ),
+  },
+  {
+    href: '/aprender',
+    t: 'Aprender',
+    d: 'Biblioteca de artículos sobre tus hábitos de dinero.',
+    icon: (
+      <svg viewBox="0 0 24 24" className={icono} fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M12 7v14" />
+        <path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z" />
+      </svg>
+    ),
+  },
 ];
 
 export default function Home() {
@@ -70,9 +106,12 @@ export default function Home() {
             <Reveal key={c.href} delay={i * 90}>
               <Link
                 href={c.href}
-                className="card block p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-muted/40 hover:shadow-md"
+                className="card block h-full p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-muted/40 hover:shadow-md"
               >
-                <h2 className="font-display text-lg font-semibold tracking-tight text-ink">{c.t}</h2>
+                <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-cream text-clayDeep">
+                  {c.icon}
+                </span>
+                <h2 className="mt-3 font-display text-lg font-semibold tracking-tight text-ink">{c.t}</h2>
                 <p className="mt-1 text-sm leading-relaxed text-muted">{c.d}</p>
               </Link>
             </Reveal>

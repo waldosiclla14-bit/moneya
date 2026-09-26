@@ -20,6 +20,7 @@ const sans = Inter({
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://waldosiclla14-bit.github.io/moneya';
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || '';
 const CANONICAL = new URL(BASE_PATH || '/', SITE_URL).toString();
+const OG_IMAGE = `${CANONICAL}og.png`;
 const TITLE = 'MONEYA — Bienestar financiero';
 const DESCRIPTION =
   'Entiende tus decisiones de dinero, no solo cuánto gastas. Diagnóstico conductual y simulación de escenarios.';
@@ -36,11 +37,20 @@ export const metadata: Metadata = {
     siteName: 'MONEYA',
     title: TITLE,
     description: DESCRIPTION,
+    images: [
+      {
+        url: OG_IMAGE,
+        width: 1200,
+        height: 630,
+        alt: 'MONEYA — Bienestar financiero, no solo gastos',
+      },
+    ],
   },
   twitter: {
-    card: 'summary',
+    card: 'summary_large_image',
     title: TITLE,
     description: DESCRIPTION,
+    images: [OG_IMAGE],
   },
 };
 
