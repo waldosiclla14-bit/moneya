@@ -7,7 +7,6 @@ const links = [
   { href: '/misiones', label: 'Misiones' },
   { href: '/datos', label: 'Datos LATAM' },
   { href: '/aprender', label: 'Aprender' },
-  { href: '/onboarding', label: 'Onboarding' },
   { href: '/login', label: 'Entrar' },
 ];
 
