@@ -21,7 +21,7 @@ export function ContextoLatam() {
                       <div className="flex items-baseline justify-between gap-3">
                         <span className="text-sm text-neutral-700">{def.label}</span>
                         {verificado ? (
-                          <span className="text-lg font-semibold text-neutral-900">{valor?.value}%</span>
+                          <span className="font-display text-2xl font-semibold tracking-tight text-ink">{valor?.value}%</span>
                         ) : (
                           <span className="text-xs text-neutral-400">En verificación</span>
                         )}

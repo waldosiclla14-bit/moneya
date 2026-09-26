@@ -283,27 +283,27 @@ export function FotoFinanciera() {
         </section>
 
         <section>
-          <h2 className="mb-2 font-semibold">Resumen del mes</h2>
+          <h2 className="mb-2 font-display font-semibold">Resumen del mes</h2>
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="card p-4 text-sm text-neutral-600">
               Ingreso total
-              <div className="mt-1 text-xl font-semibold text-neutral-900">{money.format(margen.ingresoMensual)}</div>
+              <div className="mt-1 font-display text-2xl font-semibold tracking-tight text-ink">{money.format(margen.ingresoMensual)}</div>
             </div>
             <div className="card p-4 text-sm text-neutral-600">
               Gastos del mes
-              <div className="mt-1 text-xl font-semibold text-neutral-900">{money.format(margen.gastosMensuales)}</div>
+              <div className="mt-1 font-display text-2xl font-semibold tracking-tight text-ink">{money.format(margen.gastosMensuales)}</div>
             </div>
             <div className="card p-4 text-sm text-neutral-600">
               Flujo del mes (sobra)
               <div
-                className={`mt-1 text-xl font-semibold ${margen.ahorroMensual < 0 ? 'text-red-600' : ''}`}
+                className={`mt-1 font-display text-2xl font-semibold tracking-tight ${margen.ahorroMensual < 0 ? 'text-red-600' : 'text-ink'}`}
               >
                 {money.format(margen.ahorroMensual)}
               </div>
             </div>
             <div className="card p-4 text-sm text-neutral-600">
               Deuda total
-              <div className="mt-1 text-xl font-semibold text-neutral-900">
+              <div className="mt-1 font-display text-2xl font-semibold tracking-tight text-ink">
                 {money.format(deudas.reduce((a, d) => a + d.saldo, 0))}
               </div>
             </div>

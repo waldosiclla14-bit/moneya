@@ -13,6 +13,7 @@ export default function MetodologiaPage() {
   return (
     <div className="space-y-6">
       <div>
+        <p className="eyebrow mb-2">Trabajo con datos</p>
         <h1 className="font-display text-3xl font-semibold tracking-tight">Metodología</h1>
         <p className="mt-1 max-w-2xl text-neutral-600">
           Cómo calcula MONEYA cada número y de dónde vienen los datos. Actualizado al 24 de septiembre de 2026.

@@ -10,6 +10,7 @@ export default function SimularPage() {
   return (
     <div className="space-y-6">
       <section>
+        <p className="eyebrow mb-2">Explorar escenarios</p>
         <h1 className="font-display text-3xl font-semibold tracking-tight">Simulador «qué pasa si»</h1>
         <p className="mt-1 max-w-2xl text-neutral-600">
           Ingresos, gastos, deuda y ahorro + un escenario. Cada resultado muestra su fórmula y sus inputs. Nada se calcula en texto libre.
