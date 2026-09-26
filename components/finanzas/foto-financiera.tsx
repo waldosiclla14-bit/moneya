@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   analizarSnapshot,
   analizarAtenciones,
@@ -54,6 +54,27 @@ const initialForm = {
   liquidez: '1200000',
 };
 
+const STORAGE_KEY = 'moneya:foto:mes:v1';
+
+type SnapshotGuardado = {
+  form?: Partial<typeof initialForm>;
+  deudas?: DeudaInput[];
+  gastoPuntual?: string;
+  horasLabMes?: string;
+};
+
+function leerGuardado(): SnapshotGuardado | null {
+  if (typeof localStorage === 'undefined') return null;
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === 'object' ? (parsed as SnapshotGuardado) : null;
+  } catch {
+    return null;
+  }
+}
+
 const deudaVacia = (): DeudaInput => ({
   id: nuevoId(),
   nombre: '',
@@ -69,6 +90,40 @@ export function FotoFinanciera() {
   const [deudas, setDeudas] = useState<DeudaInput[]>([]);
   const [gastoPuntual, setGastoPuntual] = useState('300000');
   const [horasLabMes, setHorasLabMes] = useState(String(HORAS_LABORABLES_MES_DEFAULT));
+  const [hidratado, setHidratado] = useState(false);
+
+  useEffect(() => {
+    const guardado = leerGuardado();
+    if (guardado) {
+      setForm((f) => ({ ...initialForm, ...guardado.form }));
+      if (Array.isArray(guardado.deudas)) setDeudas(guardado.deudas);
+      if (guardado.gastoPuntual !== undefined) setGastoPuntual(guardado.gastoPuntual);
+      if (guardado.horasLabMes !== undefined) setHorasLabMes(guardado.horasLabMes);
+    }
+    setHidratado(true);
+  }, []);
+
+  useEffect(() => {
+    if (!hidratado) return;
+    try {
+      const datos: SnapshotGuardado = { form, deudas, gastoPuntual, horasLabMes };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(datos));
+    } catch {
+      /* almacenamiento no disponible */
+    }
+  }, [form, deudas, gastoPuntual, horasLabMes, hidratado]);
+
+  const volverAlEjemplo = () => {
+    setForm(initialForm);
+    setDeudas([]);
+    setGastoPuntual('300000');
+    setHorasLabMes(String(HORAS_LABORABLES_MES_DEFAULT));
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+    } catch {
+      /* almacenamiento no disponible */
+    }
+  };
 
   const set = (key: keyof typeof form, value: string) => setForm((f) => ({ ...f, [key]: value }));
 
@@ -346,12 +401,18 @@ export function FotoFinanciera() {
           </div>
         </section>
 
-        <p className="rounded-xl bg-neutral-100 px-4 py-3 text-sm text-neutral-600">
-          Cálculo local con fórmulas visibles en cada tarjeta. Con tu cuenta, el mes se guarda en{' '}
-          <code className="mx-1 rounded bg-neutral-200 px-1 py-0.5 font-mono text-xs">financial_inputs</code> y las
-          deudas en <code className="mx-1 rounded bg-neutral-200 px-1 py-0.5 font-mono text-xs">liabilities</code>{' '}
-          (RLS ya lista en la migración 0001).
-        </p>
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <p className="max-w-3xl rounded-xl bg-neutral-100 px-4 py-3 text-sm text-neutral-600">
+            Cálculo local con fórmulas visibles en cada tarjeta. Este mes se guarda automáticamente en este
+            navegador. Con tu cuenta también se registra en{' '}
+            <code className="mx-1 rounded bg-neutral-200 px-1 py-0.5 font-mono text-xs">financial_inputs</code> y las
+            deudas en <code className="mx-1 rounded bg-neutral-200 px-1 py-0.5 font-mono text-xs">liabilities</code>{' '}
+            (RLS ya lista en la migración 0001).
+          </p>
+          <button type="button" onClick={volverAlEjemplo} className="link-soft shrink-0 text-sm">
+            Volver a datos de ejemplo
+          </button>
+        </div>
         <SavePanel user={user} ready={ready} label="mes" onSave={guardar} />
       </div>
     </div>
