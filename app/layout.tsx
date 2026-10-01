@@ -52,6 +52,13 @@ export const metadata: Metadata = {
     description: DESCRIPTION,
     images: [OG_IMAGE],
   },
+  manifest: `${BASE_PATH}/manifest.webmanifest`,
+  themeColor: '#1F1E1D',
+  appleWebApp: { capable: true, title: 'MONEYA', statusBarStyle: 'default' },
+  icons: {
+    icon: `${BASE_PATH}/icon-192.png`,
+    apple: `${BASE_PATH}/icon-192.png`,
+  },
 };
 
 const metas = JSON.stringify({
