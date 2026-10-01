@@ -20,13 +20,13 @@ export function LoginForm() {
       <div className="rounded-xl border border-amber-300 bg-amber-50 p-5 text-sm text-amber-900">
         <p className="font-medium">Supabase no está configurado todavía.</p>
         <p className="mt-2">
-          Para activar el guardado por usuario, crea un proyecto en{' '}
-          <code className="rounded bg-amber-100 px-1 font-mono text-xs">supabase.com</code>, aplica las
-          migraciones <code className="rounded bg-amber-100 px-1 font-mono text-xs">0001_create_schema</code>,{' '}
-          <code className="rounded bg-amber-100 px-1 font-mono text-xs">0002_seed_indicators</code> y{' '}
-          <code className="rounded bg-amber-100 px-1 font-mono text-xs">0003_seed_lessons</code>, y define en{' '}
-          <code className="rounded bg-amber-100 px-1 font-mono text-xs">.env</code> las variables de{' '}
-          <code className="rounded bg-amber-100 px-1 font-mono text-xs">.env.example</code>.
+          Para activar el guardado por usuario: crea un proyecto en{' '}
+          <code className="rounded bg-amber-100 px-1 font-mono text-xs">supabase.com</code>, pega una sola vez{' '}
+          <code className="rounded bg-amber-100 px-1 font-mono text-xs">supabase/setup-all-in-one.sql</code> en el SQL
+          Editor, y define en{' '}
+          <code className="rounded bg-amber-100 px-1 font-mono text-xs">.env.local</code> las dos variables de{' '}
+          <code className="rounded bg-amber-100 px-1 font-mono text-xs">.env.example</code>. En la demo web, agrégalas
+          como Secrets de Actions (repo → Settings → Secrets and variables → Actions).
         </p>
       </div>
     );

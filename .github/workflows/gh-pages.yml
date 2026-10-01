@@ -20,8 +20,11 @@ jobs:
     env:
       BUILD_MODE: export
       NEXT_PUBLIC_BASE_PATH: /moneya
-      NEXT_PUBLIC_SUPABASE_URL: ""
-      NEXT_PUBLIC_SUPABASE_ANON_KEY: ""
+      # Si los Secrets no existen, GitHub los reemplaza por string vacío → build en
+      # modo demo (igual que hoy). Cuando agregues SUPABASE_URL/SUPABASE_ANON_KEY en
+      # Settings → Secrets and variables → Actions, el próximo push sale con login real.
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
