@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { Fraunces, Inter } from 'next/font/google';
@@ -53,12 +53,16 @@ export const metadata: Metadata = {
     images: [OG_IMAGE],
   },
   manifest: `${BASE_PATH}/manifest.webmanifest`,
-  themeColor: '#1F1E1D',
   appleWebApp: { capable: true, title: 'MONEYA', statusBarStyle: 'default' },
   icons: {
     icon: `${BASE_PATH}/icon-192.png`,
     apple: `${BASE_PATH}/icon-192.png`,
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: '#1F1E1D',
+  colorScheme: 'light',
 };
 
 const metas = JSON.stringify({
