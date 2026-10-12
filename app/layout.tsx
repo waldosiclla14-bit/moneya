@@ -5,6 +5,7 @@ import { Fraunces, Inter } from 'next/font/google';
 import './globals.css';
 import { NavLinks } from '../components/layout/nav-links';
 import { RegisterServiceWorker } from '../components/pwa/register-service-worker';
+import { InstallPrompt } from '../components/pwa/install-prompt';
 import { RegionProvider } from '../lib/formato/region';
 
 const display = Fraunces({
@@ -103,6 +104,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
           <p className="mt-1 text-[11px] text-muted/80">CL · PE — Global Findex 2025 · Decides con datos, no con miedo.</p>
         </footer>
         </RegionProvider>
+        <InstallPrompt />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: metas }}
