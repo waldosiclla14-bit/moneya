@@ -4,15 +4,13 @@ Fecha: 2026-10-11 · Fase 0 (solo lectura) · Hallazgos **[verificado]** salvo q
 
 ---
 
-## TD-1. `tsconfig.tsbuildinfo` commiteado — [verificado]
-- El artefacto incremental de TypeScript queda versionado: ruido en diffs y potenciales conflictos.
-- **Fix:** añadir `tsconfig.tsbuildinfo` (y `*.tsbuildinfo`) a `.gitignore`; `git rm --cached tsconfig.tsbuildinfo`. Costo trivial.
-- Nota: para el check de typecheck local (script `typecheck`), seguir usando `--noEmit` o un `.tsbuildinfo` en lugar externo.
+## TD-1. `tsconfig.tsbuildinfo` commiteado — [verificado] → **RESUELTO (2026-10-11)**
+- El artefacto incremental de TypeScript quedaba versionado: ruido en diffs y potenciales conflictos.
+- **Fix aplicado:** `*.tsbuildinfo` añadido a `.gitignore`; `git rm --cached tsconfig.tsbuildinfo`; `.gitattributes` fuerza LF en scripts/docs. Verificación: typecheck local en verde; el artefacto deja de trackearse.
 
-## TD-2. Typecheck no ejecutado en CI — [verificado]
-- `package.json` expone `typecheck` (tsc --noEmit) pero `.github/workflows/gh-pages.yml` solo corre vitest + export build.
-- Mitigación parcial **[verificado]**: `next build` (que genera el export) compila TS, así que errores de tipos rompen el build de producción igual.
-- **Fix:** job `typecheck` explícito antes de `deploy`; rápido y alinea con §11. Costo bajo.
+## TD-2. Typecheck no ejecutado en CI — [verificado] → **RESUELTO (2026-10-11)**
+- `package.json` expone `typecheck` (tsc --noEmit) pero `.github/workflows/gh-pages.yml` solo corría vitest + export build.
+- **Fix aplicado:** paso `npm run typecheck` en el job `build` (gatea el deploy); nuevo job `security` (no bloquea) con `sh scripts/scan-secrets.sh` + `npm audit --audit-level=high`. Escáner probado localmente (evidencia: detecta probe con URL/JWT falsos, exit 1; limpio en repo, exit 0).
 
 ## TD-3. Sin tests de componentes UI — [verificado]
 - Vitest cubre solo `lib/**`; los 16 componentes (login, FotoFinanciera, PerfilForm, SimuladorForm, GoalGrid…) no tienen tests de render/interacción.

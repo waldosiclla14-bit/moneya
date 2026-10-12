@@ -1,0 +1,13 @@
+# Line endings: scripts shell y docs en LF (importante para CI en ubuntu)
+*.sh text eol=lf
+*.mjs text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.js text
+*.ts text
+*.tsx text
+*.css text
+*.json text
+*.md text
+*.sql text
+*.env.example text

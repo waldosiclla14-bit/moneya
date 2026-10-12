@@ -5,6 +5,9 @@ node_modules/
 .next/
 out/
 
+# tsbuildinfo (artefacto incremental de tsc)
+*.tsbuildinfo
+
 # env (credenciales Supabase: ver .env.example)
 .env
 .env.local
