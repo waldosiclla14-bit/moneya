@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { createClientClient } from '../../lib/supabase/client';
 import { supabaseEnvConfigured } from '../../lib/supabase/config';
@@ -17,17 +18,28 @@ export function LoginForm() {
 
   if (!supabaseEnvConfigured()) {
     return (
-      <div className="rounded-xl border border-amber-300 bg-amber-50 p-5 text-sm text-amber-900">
-        <p className="font-medium">Supabase no está configurado todavía.</p>
-        <p className="mt-2">
-          Para activar el guardado por usuario: crea un proyecto en{' '}
-          <code className="rounded bg-amber-100 px-1 font-mono text-xs">supabase.com</code>, pega una sola vez{' '}
-          <code className="rounded bg-amber-100 px-1 font-mono text-xs">supabase/setup-all-in-one.sql</code> en el SQL
-          Editor, y define en{' '}
-          <code className="rounded bg-amber-100 px-1 font-mono text-xs">.env.local</code> las dos variables de{' '}
-          <code className="rounded bg-amber-100 px-1 font-mono text-xs">.env.example</code>. En la demo web, agrégalas
-          como Secrets de Actions (repo → Settings → Secrets and variables → Actions).
+      <div className="card p-5">
+        <p className="font-medium text-ink">Estás en modo demo</p>
+        <p className="mt-1 text-sm text-neutral-600">
+          El guardado por usuario aún no está activado. Puedes explorar MONEYA sin cuenta: tu
+          foto financiera, tu test y tu progreso se quedan en tu navegador y no se envían a
+          ningún servidor.
         </p>
+        <Link href="/" className="btn-secondary mt-3 inline-flex">
+          Explorar la demo
+        </Link>
+        <details className="mt-4 text-xs text-neutral-500">
+          <summary className="cursor-pointer">Cómo activar el guardado (administrador)</summary>
+          <p className="mt-2">
+            Crea un proyecto en supabase.com, pega una sola vez{' '}
+            <code className="rounded bg-neutral-100 px-1">supabase/setup-all-in-one.sql</code>{' '}
+            en el SQL Editor, y define en{' '}
+            <code className="rounded bg-neutral-100 px-1">.env.local</code> las dos variables de{' '}
+            <code className="rounded bg-neutral-100 px-1">.env.example</code>. En la demo web,
+            agrégalas como Secrets de Actions (repo → Settings → Secrets and variables →
+            Actions).
+          </p>
+        </details>
       </div>
     );
   }
