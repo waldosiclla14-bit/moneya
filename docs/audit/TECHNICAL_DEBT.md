@@ -32,9 +32,9 @@ Fecha: 2026-10-11 · Fase 0 (solo lectura) · Hallazgos **[verificado]** salvo q
 - **Fix aplicado:** módulo único `lib/formato/moneda.ts` (fuente única `PAISES`, `PAIS_DEFAULT = 'CL'`), `lib/formato/region.tsx` (`RegionProvider` + `useRegion()`) que resuelve el país desde el perfil (`obtenerPerfil`, nuevo en `onboarding-repo`) con sesión y cae a Chile en demo. Refactorizados los 5 puntos de uso. Verificado que la diferencia es visible: CL `1.234.567` / decimal `,`; PE `1,234,567` / decimal `.` (tests en `lib/formato/__tests__/moneda.test.ts`).
 - **Limitación:** sin UI de cambio manual de región; en demo (sin sesión) siempre Chile.
 
-## TD-7. Sin README ni `docs/` — [verificado] → **PARCIAL (2026-10-12)**
-- `README.md` creado (arranque: env, Supabase, deploy, PWA) y `docs/audit` completo. Pendiente: `docs/decisions` (ADRs) para las decisiones de arquitectura (§11).
-- **Fix pendiente:** crear `docs/decisions/` con ADRs de las decisiones J1/O2/O3. Costo bajo–medio.
+## TD-7. Sin README ni `docs/` — [verificado] → **RESUELTO (2026-10-12)**
+- `README.md` creado (arranque: env, Supabase, deploy, PWA) y `docs/audit` completo. `docs/decisions/` creado con 6 ADRs (despliegue, auth client-side, motor determinista, PWA, locale por país, telemetría), que resuelven provisionalmente O2/O3/O4.
+- **Fix aplicado:** `docs/decisions/` con índice, plantilla y 6 ADRs (0001–0006) que registran las decisiones tomadas.
 
 ## TD-8. `mission_progress` sin política de borrado — [verificado] → **RESUELTO (2026-10-12)**
 - 0005 añade políticas `delete` para `profiles` y `events` (derecho al olvido) pero **no** para `mission_progress`; el export/delete del usuario deja basura dependiente.
@@ -53,4 +53,4 @@ Fecha: 2026-10-11 · Fase 0 (solo lectura) · Hallazgos **[verificado]** salvo q
 2. TD-4/TD-5 (junto a la decisión J1 de arquitectura).
 3. TD-6/TD-8 (rápidos, impacto regional y legal).
 4. TD-3 → resuelto (infra RTL/jsdom + primer test de componente).
-5. TD-7/TD-10 (mejoras continuas). TD-9 → resuelto (validación de `properties` + tests).
+5. TD-10 (mejoras continuas). TD-7 y TD-9 → resueltos.

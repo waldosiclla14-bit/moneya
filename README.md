@@ -93,6 +93,7 @@ scripts/             scan-secrets.sh (ejecutado en CI)
 
 - `AGENTS.md`: gobernanza del proyecto (fases, protocolo de tareas, reglas).
 - `docs/audit/`: auditoría Fase 0 (estado real, deuda técnica, seguridad, preguntas abiertas).
+- `docs/decisions/`: ADRs (registro de decisiones de arquitectura y producto).
 
 ## Estado
 
