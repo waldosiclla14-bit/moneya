@@ -40,9 +40,10 @@ Fecha: 2026-10-11 · Fase 0 (solo lectura) · Hallazgos **[verificado]** salvo q
 - 0005 añade políticas `delete` para `profiles` y `events` (derecho al olvido) pero **no** para `mission_progress`; el export/delete del usuario deja basura dependiente.
 - **Fix aplicado:** migración `0006_mission_progress_delete_privacy.sql` (`mission_progress_delete_own`, owner) y bloque equivalente anexado a `supabase/setup-all-in-one.sql`. Cierra el gap: sin esta política, el DELETE de `mission_progress` en `eliminarDatosUsuario` era bloqueado por RLS (borrado silencioso). **Requiere aplicar la migración en el proyecto Supabase** (bloqueado por O1).
 
-## TD-9. `events.properties` validado solo en app — [verificado] + **[opinión]** bajo
-- La regla «no subir valores financieros a properties» se aplica en la capa de app; la DB no la fuerza (supabase-js `properties` es `jsonb` libre).
-- **Fix (opcional):** trigger/check en migración o validación en el repo. No bloqueante para demo.
+## TD-9. `events.properties` validado solo en app — [verificado] + **[opinión]** bajo → **RESUELTO (2026-10-12)**
+- La regla «no subir valores financieros a properties» se aplicaba solo por convención en la capa de app; `registrarEvento` enviaba cualquier `Json` a una columna `jsonb` libre.
+- **Fix aplicado:** `validarPropiedades()` en `lib/supabase/events-repo.ts` (exportada): exige objeto plano, solo valores primitivos finitos, máx. 10 claves y 64 caracteres por texto, y **rechaza claves sensibles/financieras** (monto, ingreso, deuda, saldo, cuota, tasa, email, dni, rut, clave…). `registrarEvento` valida antes de insertar; los llamadores ya envuelven en `.catch(() => {})`, así que un evento inválido se descarta sin romper el flujo. Tests en `lib/supabase/__tests__/events-repo.test.ts`.
+- **Pendiente (opcional):** CHECK/trigger en la DB (migración) para defensa en profundidad; la app ya es la primera barrera.
 
 ## TD-10. Valores nulos de indicadores LATAM — [verificado] + **[opinión]**
 - `lib/datos` tiene `null`s (p. ej. tasas no disponibles para AR); el componente los omite. Riesgo: si en el futuro se exige más exactitud, hay que decidir si delegar a valores oficiales futuros o mantener `null` honesto.
@@ -52,4 +53,4 @@ Fecha: 2026-10-11 · Fase 0 (solo lectura) · Hallazgos **[verificado]** salvo q
 2. TD-4/TD-5 (junto a la decisión J1 de arquitectura).
 3. TD-6/TD-8 (rápidos, impacto regional y legal).
 4. TD-3 → resuelto (infra RTL/jsdom + primer test de componente).
-5. TD-7/TD-9/TD-10 (mejoras continuas).
+5. TD-7/TD-10 (mejoras continuas). TD-9 → resuelto (validación de `properties` + tests).

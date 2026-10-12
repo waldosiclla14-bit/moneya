@@ -26,7 +26,7 @@ Fecha: 2026-10-11 · Fase 0 (solo lectura) · Basado en inspección de código y
 - Migraciones 0001–0005: RLS habilitado en tablas; policies por owner.
   - 0005 añade políticas `delete` para `profiles_delete_own` y `events_delete_own` (derecho al olvido). **[verificado]**
   - **Gap:** `mission_progress` no tiene política `delete` (datos huérfanos al borrar usuario) — ver TECHNICAL_DEBT TD-8.
-- `events.properties` (telemetría interna) valida en app que no se envíen valores financieros; la DB no fuerza la regla (TD-9) — **[verificado, bajo]**.
+- `events.properties` (telemetría interna) valida en app que no se envíen valores financieros: `validarPropiedades()` rechaza claves sensibles, estructuras anidadas y valores no finitos (TD-9 → resuelto); la DB aún no fuerza la regla por CHECK — **[verificado, bajo]**.
 
 ## 4. Logging y telemetría — [verificado]
 
