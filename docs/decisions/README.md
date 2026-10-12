@@ -36,6 +36,7 @@ Creado: 2026-10-12 · Origen: deuda técnica **TD-7** (`docs/audit/TECHNICAL_DEB
 | [0004](0004-pwa-service-worker.md) | PWA con service worker (shell offline) | Aceptado |
 | [0005](0005-locale-por-pais.md) | Locale/moneda por país vía `RegionProvider` | Aceptado |
 | [0006](0006-validacion-telemetria.md) | Validación de `events.properties` (privacidad de telemetría) | Aceptado |
+| [0007](0007-datos-faltantes-null.md) | Datos faltantes se representan como `null` (nunca se inventan) | Aceptado |
 
 ## Relación con las preguntas abiertas
 

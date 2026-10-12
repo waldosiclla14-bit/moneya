@@ -45,12 +45,14 @@ Fecha: 2026-10-11 · Fase 0 (solo lectura) · Hallazgos **[verificado]** salvo q
 - **Fix aplicado:** `validarPropiedades()` en `lib/supabase/events-repo.ts` (exportada): exige objeto plano, solo valores primitivos finitos, máx. 10 claves y 64 caracteres por texto, y **rechaza claves sensibles/financieras** (monto, ingreso, deuda, saldo, cuota, tasa, email, dni, rut, clave…). `registrarEvento` valida antes de insertar; los llamadores ya envuelven en `.catch(() => {})`, así que un evento inválido se descarta sin romper el flujo. Tests en `lib/supabase/__tests__/events-repo.test.ts`.
 - **Pendiente (opcional):** CHECK/trigger en la DB (migración) para defensa en profundidad; la app ya es la primera barrera.
 
-## TD-10. Valores nulos de indicadores LATAM — [verificado] + **[opinión]**
-- `lib/datos` tiene `null`s (p. ej. tasas no disponibles para AR); el componente los omite. Riesgo: si en el futuro se exige más exactitud, hay que decidir si delegar a valores oficiales futuros o mantener `null` honesto.
+## TD-10. Valores nulos de indicadores LATAM — [verificado] + **[opinión]** bajo → **RESUELTO (2026-10-12)**
+- `lib/datos` tenía `null`s (p. ej. ahorro/crédito Chile y fondos de emergencia CL/PE, no publicados en Findex 2025); el componente ya los mostraba como "En verificación" pero no había política escrita ni test de UI.
+- **Fix aplicado:** política fijada en **ADR-0007** (`docs/decisions/0007-datos-faltantes-null.md`): el dato faltante es `value: null`, nunca `0`/promedio/estimación; la UI muestra "En verificación". Test de componente `components/datos/__tests__/contexto-latam.test.tsx` fija que solo aparecen los 4 valores verificados y que los 4 `null` se marcan como tal (sin números inventados).
+- **Pendiente:** al publicarse el dato oficial hay que actualizar `VALORES` + tests (sin ingesta automática).
 
 ## Prioridad sugerida
 1. TD-1 + TD-2 (higiene, hoy mismo).
 2. TD-4/TD-5 (junto a la decisión J1 de arquitectura).
 3. TD-6/TD-8 (rápidos, impacto regional y legal).
 4. TD-3 → resuelto (infra RTL/jsdom + primer test de componente).
-5. TD-10 (mejoras continuas). TD-7 y TD-9 → resueltos.
+5. Mejoras continuas → TD-7, TD-9 y TD-10 resueltos. Pendientes: TD-4/TD-5 (arquitectura) y los bloqueados por O1.
