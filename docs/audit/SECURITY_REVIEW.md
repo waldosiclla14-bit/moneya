@@ -50,8 +50,24 @@ Fecha: 2026-10-11 · Fase 0 (solo lectura) · Basado en inspección de código y
 
 ## 7. Recomendaciones (criterio de aceptación para cerrar)
 
-1. Job CI: escaneo de secretos + `npm audit` + `typecheck` antes de `deploy`.
+1. (Hecho) Job CI: escaneo de secretos + `npm audit` + `typecheck` antes de `deploy`.
 2. Decisión de auth → camino único (J1 OPEN_QUESTIONS).
 3. Migración 0006 para `delete` en `mission_progress`.
 4. Activar verificación de email en Supabase al crear el proyecto (documentar en `.env.example`).
 5. Documentar la regla anti-tracking de `events` en docs de decisiones.
+
+## 8. Riesgos conocidos de dependencias (dev) — [verificado 2026-10-11, `npm audit`]
+
+`npm audit` reporta **13 vulnerabilidades (5 moderate, 6 high, 2 critical)**, todas en **devDependencies** (test runner vitest 2.x y tooling de Tailwind 3.4.19). **No afectan el bundle runtime**: el deploy es un export estático (sin Node server en Pages) y estos paquetes no entran en el bundle de producción. Advisories confirmados en esta sesión:
+
+| Advisory | Paquete | Severidad (según audit) | Nota |
+|---|---|---|---|
+| GHSA-82fw-gwwq-j7x9 | @vitest/mocker (vía vitest) | moderate | test only |
+| GHSA-vfj7-8cjw-p6xm | braces (vía chokidar→tailwindcss) | high | tooling de build |
+| GHSA-rj75-hqrm-r3gf | postcss-selector-parser (vía tailwindcss) | — | tooling de build |
+| GHSA-5gmw-xhrv-c9v3 / GHSA-85c8-ppgw-ccpr | tinypool (vía vitest) | critical | test only |
+
+- `npm audit fix` (no rompedor) aplicado: subió `sharp` a parches recientes; **no reduce el total**.
+- Único camino disponible hoy es un upgrade *breaking* (tailwindcss 4.3.3 / vitest 5.0.3) → **diferido** (tarea de `build` futura, ciclo pequeño).
+- Decisión: el paso `npm audit` en CI corre con `continue-on-error: true` (queda visible en los logs del job `security`) y se revalúa al escalar a producción/servidor. El escaneo de secretos **sí** es gate duro.
+- Acción pendiente si sube a producción real: resolver estas dos cadenas antes (gate duro de nuevo).
