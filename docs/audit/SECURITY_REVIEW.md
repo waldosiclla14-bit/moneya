@@ -56,18 +56,21 @@ Fecha: 2026-10-11 · Fase 0 (solo lectura) · Basado en inspección de código y
 4. Activar verificación de email en Supabase al crear el proyecto (documentar en `.env.example`).
 5. Documentar la regla anti-tracking de `events` en docs de decisiones.
 
-## 8. Riesgos conocidos de dependencias (dev) — [verificado 2026-10-11, `npm audit`]
+## 8. Riesgos conocidos de dependencias (dev) — [verificado 2026-10-11 / actualizado, `npm audit`]
 
-`npm audit` reporta **13 vulnerabilidades (5 moderate, 6 high, 2 critical)**, todas en **devDependencies** (test runner vitest 2.x y tooling de Tailwind 3.4.19). **No afectan el bundle runtime**: el deploy es un export estático (sin Node server en Pages) y estos paquetes no entran en el bundle de producción. Advisories confirmados en esta sesión:
+**Progreso:** la cadena del *test runner* se resolvió subiendo `vitest` a **5.0.3** + `vite` **7.3.7** (vitest 5 declara `vite` como peerDependency). Advisories totales: **13 → 7 (2 moderate, 5 high)**. Los resueltos eran: `@vitest/mocker` (moderate), `tinypool` (critical ×2). Evidencia: typecheck en verde + 79/79 tests con vitest 5.
 
-| Advisory | Paquete | Severidad (según audit) | Nota |
+**Pendientes (todo el tooling de build de Tailwind 3.4.19):**
+
+| Paquete (vía) | range vulnerable | severidad | fix disponible |
 |---|---|---|---|
-| GHSA-82fw-gwwq-j7x9 | @vitest/mocker (vía vitest) | moderate | test only |
-| GHSA-vfj7-8cjw-p6xm | braces (vía chokidar→tailwindcss) | high | tooling de build |
-| GHSA-rj75-hqrm-r3gf | postcss-selector-parser (vía tailwindcss) | — | tooling de build |
-| GHSA-5gmw-xhrv-c9v3 / GHSA-85c8-ppgw-ccpr | tinypool (vía vitest) | critical | test only |
+| braces (chokidar, micromatch) | `*` | high | solo tailwindcss 4.3.3 (breaking) |
+| fast-glob | `*` | high | solo tailwindcss 4.3.3 (breaking) |
+| micromatch | `>=0.2.0` | high | solo tailwindcss 4.3.3 (breaking) |
+| chokidar | `2.0.0 - 3.6.0` | high | solo tailwindcss 4.3.3 (breaking) |
+| postcss-selector-parser (postcss-nested) | `<7.1.6` | moderate | tailwindcss 4.3.3 (breaking) |
 
-- `npm audit fix` (no rompedor) aplicado: subió `sharp` a parches recientes; **no reduce el total**.
-- Único camino disponible hoy es un upgrade *breaking* (tailwindcss 4.3.3 / vitest 5.0.3) → **diferido** (tarea de `build` futura, ciclo pequeño).
-- Decisión: el paso `npm audit` en CI corre con `continue-on-error: true` (queda visible en los logs del job `security`) y se revalúa al escalar a producción/servidor. El escaneo de secretos **sí** es gate duro.
-- Acción pendiente si sube a producción real: resolver estas dos cadenas antes (gate duro de nuevo).
+- `braces`/`fast-glob`/`micromatch` reportan `range=*` → **no existe versión segura**; ningún `overrides` los limpia.
+- **No afectan el runtime**: el deploy es un export estático (sin Node server); estos paquetes no entran en el bundle de producción, solo en el pipeline de build/Tailwind.
+- Único camino: upgrade *breaking* a **Tailwind 4** (config CSS-first, posible reescritura de tema/clases). **Diferido** a un ciclo autorizado aparte con su DoR.
+- Decisión vigente: `npm audit` corre con `continue-on-error: true` (visible en logs del job `security`); el escaneo de secretos **sí** es gate duro. Si la app pasa a producción con servidor, resolver la cadena antes (volver a gate duro).

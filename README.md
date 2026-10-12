@@ -21,7 +21,7 @@ Demo pública: <https://waldosiclla14-bit.github.io/moneya/>
 - Next.js **16** (App Router) con React **19** y TypeScript **5.6**
 - Tailwind CSS **3.4** + framer-motion + lucide-react
 - Supabase (opcional): `@supabase/supabase-js` 2.x
-- Tests: Vitest **2.1** (79 tests / 13 archivos sobre `lib/`)
+- Tests: Vitest **5** (79 tests / 13 archivos sobre `lib/`)
 
 ## Desarrollo local
 
