@@ -5,6 +5,7 @@ import { Fraunces, Inter } from 'next/font/google';
 import './globals.css';
 import { NavLinks } from '../components/layout/nav-links';
 import { RegisterServiceWorker } from '../components/pwa/register-service-worker';
+import { RegionProvider } from '../lib/formato/region';
 
 const display = Fraunces({
   subsets: ['latin'],
@@ -79,6 +80,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
     <html lang="es" className={`${display.variable} ${sans.variable}`}>
       <body className="flex min-h-screen flex-col">
         <RegisterServiceWorker />
+        <RegionProvider>
         <header className="border-b border-hairline bg-paper/90">
           <nav className="mx-auto flex max-w-4xl flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center sm:gap-8">
             <Link href="/" className="font-display text-xl font-semibold tracking-tight text-ink">
@@ -100,6 +102,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
           <p>MONEYA no es asesoría financiera ni de inversión. Los resultados son estimaciones bajo escenarios.</p>
           <p className="mt-1 text-[11px] text-muted/80">CL · PE — Global Findex 2025 · Decides con datos, no con miedo.</p>
         </footer>
+        </RegionProvider>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: metas }}

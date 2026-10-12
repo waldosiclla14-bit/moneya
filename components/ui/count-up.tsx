@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { useRegion } from '../../lib/formato/region';
 
 type Props = {
   value: number;
@@ -13,6 +14,7 @@ type Props = {
 export function CountUp({ value, suffix = '', duration = 900, delay = 120, className }: Props) {
   const [mostrado, setMostrado] = useState(value);
   const internos = useRef(value);
+  const { numero } = useRegion();
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -39,7 +41,7 @@ export function CountUp({ value, suffix = '', duration = 900, delay = 120, class
     };
   }, [value, duration, delay]);
 
-  const texto = internos.current.toLocaleString('es-CL', { maximumFractionDigits: 1 }) + suffix;
+  const texto = numero(internos.current, { maximumFractionDigits: 1 }) + suffix;
   return (
     <span className={className} aria-hidden="true">
       {texto}

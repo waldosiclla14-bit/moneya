@@ -2,23 +2,23 @@
 
 import { useMemo, useState } from 'react';
 import { equivalenciaHoras, HORAS_LABORABLES_MES_DEFAULT } from '../../lib/calculos';
-
-const money = new Intl.NumberFormat('es-CL', { maximumFractionDigits: 0 });
+import { useRegion, type RegionContexto } from '../../lib/formato/region';
 
 function toNum(v: string): number {
   const n = Number(v);
   return Number.isFinite(n) ? n : 0;
 }
 
-function formatoHoras(h: number): string {
+function formatoHoras(h: number, numero: RegionContexto['numero']): string {
   if (h <= 0) return '0';
-  return h < 10 ? h.toFixed(1) : Math.round(h).toLocaleString('es-CL');
+  return h < 10 ? h.toFixed(1) : numero(Math.round(h));
 }
 
 export function HeroDemo() {
   const [monto, setMonto] = useState('35000');
   const [ingreso, setIngreso] = useState('1000000');
   const [horas, setHoras] = useState(String(HORAS_LABORABLES_MES_DEFAULT));
+  const { money, numero } = useRegion();
 
   const eq = useMemo(() => equivalenciaHoras(toNum(monto), toNum(ingreso), toNum(horas) || HORAS_LABORABLES_MES_DEFAULT), [monto, ingreso, horas]);
 
@@ -73,7 +73,7 @@ export function HeroDemo() {
       >
         <p className="text-sm text-neutral-600">Eso equivale a ≈</p>
         <p className="font-display text-4xl font-semibold tracking-tight text-ink">
-          {formatoHoras(eq.horas)}
+          {formatoHoras(eq.horas, numero)}
           <span className="ml-2 font-sans text-base font-medium text-neutral-500">horas de tu ingreso</span>
         </p>
         <p className="mt-1 text-sm text-neutral-500">

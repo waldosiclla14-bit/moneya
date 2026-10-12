@@ -25,7 +25,7 @@ export {
   resetearProgresoMisiones,
 } from './misiones-progress-repo';
 export type { ProgresoMision, MissionIdBySlug } from './misiones-progress-repo';
-export { guardarPerfil, decodificarPerfil } from './onboarding-repo';
+export { guardarPerfil, obtenerPerfil, decodificarPerfil } from './onboarding-repo';
 export type { PerfilInput, PerfilDecoded } from './onboarding-repo';
 export { registrarEvento } from './events-repo';
 export type { EventName } from './events-repo';

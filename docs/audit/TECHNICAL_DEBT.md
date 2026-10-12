@@ -26,9 +26,10 @@ Fecha: 2026-10-11 · Fase 0 (solo lectura) · Hallazgos **[verificado]** salvo q
 - Conviven `BrowserClient` y `createServerClient` (código en `lib/supabase/server.ts` lanza error si faltan envs). Con `output: export` el SSR no existe: `createServerClient` solo tendrá sentido si migramos a Vercel full; si nos quedamos en Pages, sobra y añade una vía de crash.
 - **Fix:** decidir un solo camino (ver TD-4/J1). Costo bajo, dependiente de J1.
 
-## TD-6. Moneda/locale hardcodeado es-CL — [verificado] + **[opinión]** gap regional
-- `FotoFinanciera` formatea montos con `Intl.NumberFormat('es-CL', …)` sin leer la región del perfil. Un usuario argentino/peruano ve formato chileno.
-- **Fix:** mapear moneda por `country_id` (es-AR/ARS, es-CL/CLP, es-PE/PEN) con fallback es-CL. Ver decisión J4. Costo bajo.
+## TD-6. Moneda/locale hardcodeado es-CL — [verificado] + **[opinión]** gap regional → **RESUELTO (2026-10-12)**
+- `FotoFinanciera`, `hero-demo`, `metric-card`, `count-up` y la fecha de `simulador-form` formateaban con `es-CL` fijo; un usuario peruano veía formato chileno.
+- **Fix aplicado:** módulo único `lib/formato/moneda.ts` (fuente única `PAISES`, `PAIS_DEFAULT = 'CL'`), `lib/formato/region.tsx` (`RegionProvider` + `useRegion()`) que resuelve el país desde el perfil (`obtenerPerfil`, nuevo en `onboarding-repo`) con sesión y cae a Chile en demo. Refactorizados los 5 puntos de uso. Verificado que la diferencia es visible: CL `1.234.567` / decimal `,`; PE `1,234,567` / decimal `.` (tests en `lib/formato/__tests__/moneda.test.ts`).
+- **Limitación:** sin UI de cambio manual de región; en demo (sin sesión) siempre Chile.
 
 ## TD-7. Sin README ni `docs/` — [verificado]
 - No existe `README.md`; la carpeta `docs/` se creó en esta Fase 0 (docs/audit). Falta el manual de arranque (env, supabase, deploy) y la documentación de decisiones del §7.

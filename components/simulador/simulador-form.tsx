@@ -13,6 +13,8 @@ import { useSession } from '../../lib/supabase/use-session';
 import { createClientClient } from '../../lib/supabase/client';
 import { guardarSimulacion } from '../../lib/supabase/simulation-repo';
 import { registrarEvento } from '../../lib/supabase/events-repo';
+import { localeDePais } from '../../lib/formato/moneda';
+import { useRegion } from '../../lib/formato/region';
 
 type ScenarioType = Escenario['type'];
 
@@ -23,8 +25,6 @@ const SCENARIO_LABELS: Record<ScenarioType, string> = {
   emergencia: 'Gasto imprevisto',
   personalizado: 'Escenario personalizado',
 };
-
-const money = new Intl.NumberFormat('es-CL', { maximumFractionDigits: 0 });
 
 function toNum(v: string): number {
   const n = Number(v);
@@ -48,6 +48,7 @@ const initialForm = {
 
 export function SimuladorForm() {
   const { user, ready } = useSession();
+  const { countryCode } = useRegion();
   const [form, setForm] = useState(initialForm);
 
   const set = (key: keyof typeof form, value: string) => setForm((f) => ({ ...f, [key]: value }));
@@ -89,7 +90,7 @@ export function SimuladorForm() {
     const client = createClientClient();
     if (!client || !user) return;
 
-    const fecha = new Date().toLocaleDateString('es-CL');
+    const fecha = new Date().toLocaleDateString(localeDePais(countryCode));
     await guardarSimulacion(client, user.id, {
       name: `${SCENARIO_LABELS[form.scenarioType]} · ${fecha}`,
       snapshot,

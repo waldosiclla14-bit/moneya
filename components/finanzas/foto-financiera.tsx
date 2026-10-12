@@ -17,12 +17,11 @@ import { SavePanel } from '../ui/save-panel';
 import { useSession } from '../../lib/supabase/use-session';
 import { createClientClient } from '../../lib/supabase/client';
 import { guardarSnapshotFinanciero, guardarDeuda } from '../../lib/supabase/finanzas-repo';
+import { useRegion, type RegionContexto } from '../../lib/formato/region';
 
-const money = new Intl.NumberFormat('es-CL', { maximumFractionDigits: 0 });
-
-function formatoHoras(h: number): string {
+function formatoHoras(h: number, numero: RegionContexto['numero']): string {
   if (h <= 0) return '0';
-  return h < 10 ? h.toFixed(1) : Math.round(h).toLocaleString('es-CL');
+  return h < 10 ? h.toFixed(1) : numero(Math.round(h));
 }
 
 function formatoMeses(v: number | null): string {
@@ -86,6 +85,7 @@ const deudaVacia = (): DeudaInput => ({
 
 export function FotoFinanciera() {
   const { user, ready } = useSession();
+  const { money, numero } = useRegion();
   const [form, setForm] = useState(initialForm);
   const [deudas, setDeudas] = useState<DeudaInput[]>([]);
   const [gastoPuntual, setGastoPuntual] = useState('300000');
@@ -386,12 +386,12 @@ export function FotoFinanciera() {
               {money.format(equivalenciaPuntual.ingresoPorHora)} / hora)
             </div>
             <div className="mt-2 text-lg font-semibold text-neutral-900">
-              Ese gasto equivale a ≈ {formatoHoras(equivalenciaPuntual.horas)} h de tu ingreso.
+              Ese gasto equivale a ≈ {formatoHoras(equivalenciaPuntual.horas, numero)} h de tu ingreso.
             </div>
             {(snapshot.expenses.esencial > 0 || snapshot.expenses.noEsencial > 0) && (
               <p className="mt-2 text-sm text-neutral-500">
-                Este mes: gastos esenciales ≈ {formatoHoras(equivalenciaEsencial.horas)} h · gastos no esenciales ≈{' '}
-                {formatoHoras(equivalenciaNoEsencial.horas)} h
+                Este mes: gastos esenciales ≈ {formatoHoras(equivalenciaEsencial.horas, numero)} h · gastos no esenciales ≈{' '}
+                {formatoHoras(equivalenciaNoEsencial.horas, numero)} h
               </p>
             )}
             <details className="mt-2 text-xs text-neutral-500">

@@ -2,14 +2,20 @@
 
 import { useEffect, useState } from 'react';
 import type { MetricResult } from '../../lib/calculos';
+import { crearFormateadorMoneda, PAIS_DEFAULT } from '../../lib/formato/moneda';
+import { useRegion } from '../../lib/formato/region';
 
-const money = new Intl.NumberFormat('es-CL', { maximumFractionDigits: 0 });
+const moneyDefault = crearFormateadorMoneda(PAIS_DEFAULT);
 
 function prefiereMovimientoReducido(): boolean {
   return typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 }
 
-export function formatMetricValue(m: MetricResult, value: number | null = m.value): string {
+export function formatMetricValue(
+  m: MetricResult,
+  value: number | null = m.value,
+  money: Intl.NumberFormat = moneyDefault,
+): string {
   if (value === null) return '—';
   switch (m.unit) {
     case 'meses':
@@ -58,6 +64,7 @@ export function MetricCard({
   highlight?: 'neutral' | 'down' | 'up';
 }) {
   const visible = useCountUp(metric.value);
+  const { money } = useRegion();
   const tone =
     highlight === 'down'
       ? 'border-red-200 bg-red-50'
@@ -69,7 +76,7 @@ export function MetricCard({
     <div className={`rounded-xl border p-4 ${tone}`}>
       <div className="text-sm text-neutral-600">{metric.label}</div>
       <div className="mt-1 font-display text-3xl font-semibold tracking-tight text-neutral-900">
-        {formatMetricValue(metric, visible)}
+        {formatMetricValue(metric, visible, money)}
       </div>
       <details className="mt-2 text-xs text-neutral-500">
         <summary className="cursor-pointer">Ver fórmula e inputs</summary>

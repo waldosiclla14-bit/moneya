@@ -28,6 +28,16 @@ export function decodificarPerfil(row: ProfileRow): PerfilDecoded {
   };
 }
 
+export async function obtenerPerfil(
+  client: SupabaseClient<Database>,
+  userId: string,
+): Promise<PerfilDecoded | null> {
+  const { data, error } = await client.from('profiles').select('*').eq('id', userId).maybeSingle();
+
+  if (error) throw new Error(`No se pudo leer el perfil: ${error.message}`);
+  return data ? decodificarPerfil(data) : null;
+}
+
 export async function guardarPerfil(
   client: SupabaseClient<Database>,
   userId: string,
