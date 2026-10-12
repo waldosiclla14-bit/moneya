@@ -59,6 +59,12 @@ Sin variables (o vacías) la app sigue funcionando en **modo demo**. Los pasos d
 - **GitHub Pages** (demo viva): push a `master` dispara el workflow que corre typecheck + tests + build `export` y publica en `/moneya`. Para activar login real, agrega como Secrets del repo `SUPABASE_URL` y `SUPABASE_ANON_KEY` (Settings → Secrets and variables → Actions).
 - **Vercel** (`moneya.vercel.app`): build SSR, mismas variables. Puede requerir redeploy manual tras cada cambio.
 
+## PWA (instalable)
+
+- `manifest.webmanifest` (standalone, iconos 192/512) + `theme-color` + registro de service worker en producción.
+- `public/sw.js`: red-primero para navegación con fallback a `offline.html`; cache-primero para estáticos del mismo origen. No cachea ni intercepta peticiones de terceros (p. ej. Supabase).
+- Instalable desde el menú del navegador (Android/Chrome, iOS/Safari "Añadir a pantalla de inicio", escritorio).
+
 ## Estructura
 
 ```
