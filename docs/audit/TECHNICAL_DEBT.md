@@ -31,13 +31,13 @@ Fecha: 2026-10-11 · Fase 0 (solo lectura) · Hallazgos **[verificado]** salvo q
 - **Fix aplicado:** módulo único `lib/formato/moneda.ts` (fuente única `PAISES`, `PAIS_DEFAULT = 'CL'`), `lib/formato/region.tsx` (`RegionProvider` + `useRegion()`) que resuelve el país desde el perfil (`obtenerPerfil`, nuevo en `onboarding-repo`) con sesión y cae a Chile en demo. Refactorizados los 5 puntos de uso. Verificado que la diferencia es visible: CL `1.234.567` / decimal `,`; PE `1,234,567` / decimal `.` (tests en `lib/formato/__tests__/moneda.test.ts`).
 - **Limitación:** sin UI de cambio manual de región; en demo (sin sesión) siempre Chile.
 
-## TD-7. Sin README ni `docs/` — [verificado]
-- No existe `README.md`; la carpeta `docs/` se creó en esta Fase 0 (docs/audit). Falta el manual de arranque (env, supabase, deploy) y la documentación de decisiones del §7.
-- **Fix:** README breve + estructura `docs/audit` (hoy) y luego `docs/decisions`. Costo bajo–medio.
+## TD-7. Sin README ni `docs/` — [verificado] → **PARCIAL (2026-10-12)**
+- `README.md` creado (arranque: env, Supabase, deploy, PWA) y `docs/audit` completo. Pendiente: `docs/decisions` (ADRs) para las decisiones de arquitectura (§11).
+- **Fix pendiente:** crear `docs/decisions/` con ADRs de las decisiones J1/O2/O3. Costo bajo–medio.
 
-## TD-8. `mission_progress` sin política de borrado — [verificado]
+## TD-8. `mission_progress` sin política de borrado — [verificado] → **RESUELTO (2026-10-12)**
 - 0005 añade políticas `delete` para `profiles` y `events` (derecho al olvido) pero **no** para `mission_progress`; el export/delete del usuario deja basura dependiente.
-- **Fix (si se aprueba, J5):** migración `0006` con política `delete` para `mission_progress` (owner). Costo bajo.
+- **Fix aplicado:** migración `0006_mission_progress_delete_privacy.sql` (`mission_progress_delete_own`, owner) y bloque equivalente anexado a `supabase/setup-all-in-one.sql`. Cierra el gap: sin esta política, el DELETE de `mission_progress` en `eliminarDatosUsuario` era bloqueado por RLS (borrado silencioso). **Requiere aplicar la migración en el proyecto Supabase** (bloqueado por O1).
 
 ## TD-9. `events.properties` validado solo en app — [verificado] + **[opinión]** bajo
 - La regla «no subir valores financieros a properties» se aplica en la capa de app; la DB no la fuerza (supabase-js `properties` es `jsonb` libre).
