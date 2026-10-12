@@ -21,7 +21,7 @@ Demo pública: <https://waldosiclla14-bit.github.io/moneya/>
 - Next.js **16** (App Router) con React **19** y TypeScript **5.6**
 - Tailwind CSS **3.4** + framer-motion + lucide-react
 - Supabase (opcional): `@supabase/supabase-js` 2.x
-- Tests: Vitest **5** (98 tests / 18 archivos; `lib/` + tests de componente con React Testing Library + jsdom)
+- Tests: Vitest **5** (101 tests / 19 archivos; `lib/` + tests de componente con React Testing Library + jsdom)
 
 ## Desarrollo local
 
@@ -97,6 +97,6 @@ scripts/             scan-secrets.sh (ejecutado en CI)
 
 ## Estado
 
-- Motor financiero: verificado con 98 tests unitarios; CI en verde.
+- Motor financiero: verificado con 101 tests unitarios; CI en verde.
 - Supabase: pendiente de credenciales reales (hoy demo sin persistencia en DB).
 - Vercel: sirve un build previo.

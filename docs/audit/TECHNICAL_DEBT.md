@@ -16,7 +16,7 @@ Fecha: 2026-10-11 · Fase 0 (solo lectura) · Hallazgos **[verificado]** salvo q
 - Vitest cubría solo `lib/**`; los componentes (login, FotoFinanciera, PerfilForm, SimuladorForm, GoalGrid…) no tenían tests de render/interacción.
 - Riesgo: regresiones de UX/a11y pasaban CI.
 - **Fix aplicado:** añadidos `@testing-library/react`, `@testing-library/dom` y `jsdom` (devDeps); `vitest.config.ts` amplía `include` a `{lib,components}/**/*.test.{ts,tsx}` (entorno por archivo: `// @vitest-environment jsdom`). Primer test: `components/home/__tests__/hero-demo.test.tsx` (render + recálculo del simulador héroe). Local **86/86 (15 archivos)**. Prioridad siguiente: flujo registro → perfil → finanzas.
-- **Limitación:** los tests de UI aún necesitan mocks de sesión/Supabase para los flujos con datos; por ahora se cubren componentes con lógica pura + `useRegion` por defecto.
+- **Avance (2026-10-12):** añadido `components/onboarding/__tests__/perfil-form.test.tsx` (perfil con `useSession` y repos de Supabase simulados: guarda país/edad/situación y registra eventos). Total **101/101 (19 archivos)**. Falta el paso "registro" (login) y "finanzas" del flujo.
 
 ## TD-4. Autenticación sin gateo de rutas — [verificado] + **[opinión]** riesgo alto
 - No hay `middleware.ts`; los 6 componentes que usan `useSession` lo hacen cliente-side; no hay redirect server-side.
