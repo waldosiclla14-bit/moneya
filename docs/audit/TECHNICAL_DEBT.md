@@ -12,10 +12,11 @@ Fecha: 2026-10-11 · Fase 0 (solo lectura) · Hallazgos **[verificado]** salvo q
 - `package.json` expone `typecheck` (tsc --noEmit) pero `.github/workflows/gh-pages.yml` solo corría vitest + export build.
 - **Fix aplicado:** paso `npm run typecheck` en el job `build` (gatea el deploy); nuevo job `security` (no bloquea) con `sh scripts/scan-secrets.sh` + `npm audit --audit-level=high`. Escáner probado localmente (evidencia: detecta probe con URL/JWT falsos, exit 1; limpio en repo, exit 0).
 
-## TD-3. Sin tests de componentes UI — [verificado]
-- Vitest cubre solo `lib/**`; los 16 componentes (login, FotoFinanciera, PerfilForm, SimuladorForm, GoalGrid…) no tienen tests de render/interacción.
-- Riesgo: regresiones de UX/a11y pasan CI.
-- **Fix (a medio plazo):** añadir React Testing Library con un script `test:ui` (jsdom), priorizando el flujo registro → perfil → finanzas. Costo medio.
+## TD-3. Sin tests de componentes UI — [verificado] → **RESUELTO (2026-10-12)**
+- Vitest cubría solo `lib/**`; los componentes (login, FotoFinanciera, PerfilForm, SimuladorForm, GoalGrid…) no tenían tests de render/interacción.
+- Riesgo: regresiones de UX/a11y pasaban CI.
+- **Fix aplicado:** añadidos `@testing-library/react`, `@testing-library/dom` y `jsdom` (devDeps); `vitest.config.ts` amplía `include` a `{lib,components}/**/*.test.{ts,tsx}` (entorno por archivo: `// @vitest-environment jsdom`). Primer test: `components/home/__tests__/hero-demo.test.tsx` (render + recálculo del simulador héroe). Local **86/86 (15 archivos)**. Prioridad siguiente: flujo registro → perfil → finanzas.
+- **Limitación:** los tests de UI aún necesitan mocks de sesión/Supabase para los flujos con datos; por ahora se cubren componentes con lógica pura + `useRegion` por defecto.
 
 ## TD-4. Autenticación sin gateo de rutas — [verificado] + **[opinión]** riesgo alto
 - No hay `middleware.ts`; los 6 componentes que usan `useSession` lo hacen cliente-side; no hay redirect server-side.
@@ -50,5 +51,5 @@ Fecha: 2026-10-11 · Fase 0 (solo lectura) · Hallazgos **[verificado]** salvo q
 1. TD-1 + TD-2 (higiene, hoy mismo).
 2. TD-4/TD-5 (junto a la decisión J1 de arquitectura).
 3. TD-6/TD-8 (rápidos, impacto regional y legal).
-4. TD-3 (cambio de alcance, agendar).
+4. TD-3 → resuelto (infra RTL/jsdom + primer test de componente).
 5. TD-7/TD-9/TD-10 (mejoras continuas).
