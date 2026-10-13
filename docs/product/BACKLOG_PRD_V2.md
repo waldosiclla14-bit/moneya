@@ -28,6 +28,9 @@ CFPB 10 ítems + tramos de edad · métricas separadas · 4 indicadores LATAM ·
 - Qué: CMF/SBS (¿cobertura/liquidez = asesoría regulada?), datos personales, disclaimers del test CFPB (PRD §14). Requiere abogado; el disclaimer actual es provisional.
 - Aceptación: concepto legal archivado con fecha; sin esto no hay lanzamiento.
 
-### B6. Datos de mercado §5 — supuestos del doc
-- Qué: cifras Principal/CEBR y citas de prensa aportadas por el PRD; no verificadas en sesión. No usarlas en UI ni decisiones hasta verificar fuente primaria.
-- Aceptación: registro en `docs/` con URL, fecha de consulta y extracto, o retiro de la afirmación.
+### B6. Datos de mercado §5 — **PARCIALMENTE VERIFICADO (2026-10-13)**
+- ✅ LATAM 44,7 (+0,1): informe Global Financial Inclusion Index 2025 — "LATIN AMERICA 44.6 → 44.7 (+0.1)". Fuente: `https://ent.news/2025/10/1159.pdf` (réplica del informe Enterprise), consultado 2026-10-13.
+- ✅ Perú/Brasil/Colombia en el bottom 10 global: mismo informe — "Six of the bottom 10… (Brazil, Colombia, Peru, Kenya, Nigeria, Ghana)". Misma fuente y fecha.
+- ✅ Brasil entre los que más mejoran (junto a Argentina, Corea del Sur, Tailandia, Singapur): comunicado Principal 20-10-2025 (`https://investors.principal.com/node/36826/pdf`), consultado 2026-10-13. El matiz "gracias a Pix" queda como [supuesto del doc] (el informe cita pagos instantáneos/open banking como motor, sin nombrar Pix en el extracto).
+- ❌ Caída de 8,8 puntos en percepción (cita elporvenir.mx, oct-2025): **no encontrada en esta sesión → no verificado, revisar a mano**. No usar esa cifra en UI ni narrativa hasta verificarla.
+- ➕ Segunda fuente hallada: Credicorp IIF 2024 — región 38,2→47,6 (4 años de mejora), Chile 58,3 / Perú 46,1. Fuente: `https://grupocredicorp.com/en/for-four-consecutive-years-latin-america-has-improved-its-level-of-financial-inclusion`, consultado 2026-10-13.
