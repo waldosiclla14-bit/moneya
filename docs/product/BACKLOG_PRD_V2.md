@@ -15,9 +15,10 @@ CFPB 10 ítems + tramos de edad · métricas separadas · 4 indicadores LATAM ·
 - Existen: `lib/perfil/exploratorias.ts` con 10 preguntas (`PREGUNTAS_EXPLORATORIAS`) — [verificado].
 - Etiquetado: `wellbeing-test.tsx` las muestra bajo "Tus hábitos de dinero · exploratorio" con el texto "No generan puntaje: son exploratorias y no están validadas científicamente como la escala CFPB" — [verificado]. Sin fix.
 
-### B3. Biblioteca: originalidad vs. Housel — pendiente de revisar
-- Qué: revisar los ~10 seeds (`0003_seed_lessons.sql` + `components/aprender/library.tsx`): redacción 100% original, sin resúmenes que repliquen estructura protegida (PRD §8).
-- Aceptación: revisión línea por línea registrada; reescritura de lo que replique.
+### B3. Biblioteca: originalidad vs. Housel — **VERIFICADO (2026-10-13)**
+- Revisión línea por línea de `supabase/migrations/0003_seed_lessons.sql` (10 artículos): títulos propios en español (ningún título de capítulo del libro), prosa original con voz LATAM (refrigerador, colegio, vitrina, peso), ideas a nivel de concepto atadas a métricas de la app (meses de cobertura, margen), cero citas verbales, cero menciones al autor/libro, cero cifras inventadas (todo cualitativo) — [verificado].
+- Paridad semilla↔app: los mismos 10 slugs y cuerpos en `lib/aprender/data/*.ts` (spot-check `room-for-error` OK); `library.tsx` no menciona la fuente externa — [verificado].
+- Observación [opinión]: el título "La riqueza es lo que no ves" traduce un título de capítulo; los títulos/frases cortas no son protegibles y no hay réplica de estructura (10 lecciones en 5 ejes PRD vs. 20 capítulos), así que no se reescribe. Si se quiere máxima cautela, renombrar es un follow-up menor (requiere nueva migración, no editar la 0003 aplicada).
 
 ### B4. Eventos de activación/retención — **RESUELTO (2026-10-13)**
 - Los 5 eventos emitidos (`onboarding_completed`, `test_completed`, `profile_saved` en perfil/bienestar; `simulation_created` en simulador; `mission_completed` en misiones) coinciden exactamente con el enum `public.event_name` de la migración 0001; ningún call site envía `properties` con valores — [verificado].
