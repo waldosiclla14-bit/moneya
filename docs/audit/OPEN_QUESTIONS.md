@@ -4,26 +4,27 @@ Fecha: 2026-10-11 · Fase 0 · Ítems que requieren decisión explícita del mae
 
 ---
 
-## O0. Autorización de la siguiente fase — **[bloqueante]**
-- AGENTS.md §14: nada de commit/push/deploy sin autorización explícita.
-- Pendiente: ¿autorizas commitear `AGENTS.md` + `docs/audit/` y proceder con la tarea de `build` (o con la auditoría de MONEYA Emprende, §15)?
+## O0. Autorización de la siguiente fase — **resuelta**
+- Autorización continua vigente del dueño ("continua" = siguiente pendiente + commit/push/CI). AGENTS §14 sigue aplicando para deploy/datos sensibles.
 
 ## O1. Credenciales de Supabase — **[bloqueante, requiere acción del usuario]**
 - Faltan `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_ANON_KEY` (proyecto nuevo, región `sa-east-1`, plan Free; pegar `supabase/setup-all-in-one.sql` UNA vez en SQL Editor).
 - Hoy: demo sin persistencia real. Al recibir claves se pasa a `.env.local`, se prueban typecheck/tests/build con env y se verifica registro real (auth.users / financial_inputs).
 
-## O2. Despliegue: Pages vs Vercel (arquitectura) — **resuelta provisionalmente → ADR-0001**
+## O2. Despliegue: Pages vs Vercel (arquitectura) — **resuelta definitiva → ADR-0009 (J1, 2026-10-13)**
 - Opciones: (a) quedarse en GitHub Pages (`export`) → auth 100 % client-side, sin middleware; (b) migrar a Vercel full → habilita SSR/auth server y quita el problema TD-5. Implica redirigir dominio/CI.
 - **Resolución [opinión, 2026-10-12]:** mantener Pages mientras el objetivo sea demo pública con URL estable (ver `docs/decisions/0001-despliegue-github-pages.md`); revisar Vercel si el MVP requiere SSR o verificación de sesión en server.
+- **Decisión del dueño (2026-10-13):** Pages estático + gateo client-side (`RequireAuth`), un solo camino `createClientClient()`. Ver ADR-0009; TD-4/TD-5 resueltos.
 
-## O3. Alcance del auth (demo-first vs real) — **resuelta provisionalmente → ADR-0002**
+## O3. Alcance del auth (demo-first vs real) — **resuelta definitiva → ADR-0009**
 - Gateo completo de rutas (+ redirect) vs navegación libre con degradación (como hoy). **Resolución [opinión, 2026-10-12]:** navegación libre con degradación en modo demo (ver `docs/decisions/0002-autenticacion-cliente.md`); gateo/redirect cuando haya Supabase real y/o SSR. Según O2.
+- **Decisión del dueño (2026-10-13):** guard `RequireAuth` listo y testeado; páginas demo abiertas a propósito; RLS como frontera real. Ver ADR-0009.
 
 ## O4. Monedas/monedas locales — **resuelta → ADR-0005**
 - ¿Corregir locale por país del perfil? **Hecho (2026-10-12):** `RegionProvider` + `useRegion()` formatean por país con fallback a Chile en demo (ver `docs/decisions/0005-locale-por-pais.md`; TD-6).
 
-## O5. Segmento inicial y métricas (§8/§13) — **[requiere decisión]**
-- AGENTS pide definir segmento y métricas **antes** del piloto; aún no documentado en `docs/`. Propuesta pendiente de revisión con el maestro.
+## O5. Segmento inicial y métricas (§8/§13) — **[propuesta lista, requiere decisión]**
+- AGENTS pide definir segmento y métricas **antes** del piloto. Propuesta en `docs/product/SEGMENTO_Y_METRICAS.md` (2026-10-13), pendiente de revisión del dueño: sin aprobación no hay metas ni piloto.
 
 ## O6. `mission_progress`: añadir política `delete` — **resuelta (TD-8)**
 - **Hecho (2026-10-12):** migración `0006_mission_progress_delete_privacy.sql` + anexo en `setup-all-in-one.sql` (política `mission_progress_delete_own`). Pendiente aplicar en la instancia Supabase (O1).
@@ -31,8 +32,8 @@ Fecha: 2026-10-11 · Fase 0 · Ítems que requieren decisión explícita del mae
 ## O7. README y estructura de docs — **resuelta**
 - **Hecho:** `README.md` (arranque, deploy, PWA) + `docs/audit/*` + `docs/decisions/` (ADRs). Formato en Markdown, en español.
 
-## O8. Vercel (moneya.vercel.app) desactualizado — **[requiere acción del usuario]**
-- El live correcto hoy es GitHub Pages; Vercel sirve un build viejo. ¿Redeploy manual u olvidarlo en favor de O2?
+## O8. Vercel (moneya.vercel.app) desactualizado — **resuelta (J1, 2026-10-13)**
+- El live canónico es GitHub Pages; por decisión J1 no se redeploya Vercel. Acción del usuario (opcional): olvidar el deploy o apuntarlo a Pages; no requiere trabajo en el repo.
 
 ## O9. `npm audit` / vulnerabilidades de dependencias — **resuelta (TD-2)**
 - **Hecho:** job `security` en `gh-pages.yml` (escaneo de secretos con gate duro + `npm audit` como señal no bloqueante) y `typecheck` en el job `build`. Advisories restantes: Tailwind 3→4 (ver `SECURITY_REVIEW.md`).
