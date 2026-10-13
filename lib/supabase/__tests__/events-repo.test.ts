@@ -1,5 +1,13 @@
-﻿import { describe, it, expect } from "vitest";
-import { validarPropiedades } from "../events-repo";
+﻿import { describe, it, expect, vi } from "vitest";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { validarPropiedades, registrarEvento, EVENTOS_PERMITIDOS } from "../events-repo";
+import type { Database } from "../db-types";
+
+function clienteOk() {
+  const insert = vi.fn(async () => ({ error: null }));
+  const client = { from: () => ({ insert }) } as unknown as SupabaseClient<Database>;
+  return { client, insert };
+}
 
 describe("validarPropiedades (privacidad de la telemetria)", () => {
   it("acepta un objeto vacio (caso por defecto)", () => {
@@ -34,6 +42,30 @@ describe("validarPropiedades (privacidad de la telemetria)", () => {
     const muchas: Record<string, number> = {};
     for (let i = 0; i < 11; i += 1) muchas["campo_" + i] = i;
     expect(() => validarPropiedades(muchas)).toThrow(/máximo de 10/);
+  });
+});
+
+describe("EVENTOS_PERMITIDOS (set fijo de telemetría, PRD V2 §18)", () => {
+  it("son exactamente los 5 eventos del enum public.event_name", () => {
+    expect([...EVENTOS_PERMITIDOS].sort()).toEqual(
+      ["mission_completed", "onboarding_completed", "profile_saved", "simulation_created", "test_completed"],
+    );
+  });
+
+  it("registrarEvento acepta un evento permitido sin properties financieras", async () => {
+    const { client, insert } = clienteOk();
+
+    await registrarEvento(client, "u1", "test_completed");
+
+    expect(insert).toHaveBeenCalledTimes(1);
+    expect(insert).toHaveBeenCalledWith({ user_id: "u1", event_name: "test_completed", properties: {} });
+  });
+
+  it("registrarEvento rechaza un nombre fuera del set antes de tocar la DB", async () => {
+    const { client, insert } = clienteOk();
+
+    await expect(registrarEvento(client, "u1", "pantalla_vista" as never)).rejects.toThrow(/no permitido/);
+    expect(insert).not.toHaveBeenCalled();
   });
 });
 

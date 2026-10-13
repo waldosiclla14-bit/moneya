@@ -27,6 +27,6 @@ export {
 export type { ProgresoMision, MissionIdBySlug } from './misiones-progress-repo';
 export { guardarPerfil, obtenerPerfil, decodificarPerfil } from './onboarding-repo';
 export type { PerfilInput, PerfilDecoded } from './onboarding-repo';
-export { registrarEvento, validarPropiedades } from './events-repo';
+export { registrarEvento, validarPropiedades, EVENTOS_PERMITIDOS } from './events-repo';
 export type { EventName } from './events-repo';
 export { exportarDatosUsuario, eliminarDatosUsuario } from './datos-usuario-repo';

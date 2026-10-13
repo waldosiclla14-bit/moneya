@@ -3,6 +3,17 @@ import type { Database, Json } from './db-types';
 
 export type EventName = Database['public']['Enums']['event_name'];
 
+// Set permitido de eventos (PRD V2 §18 + regla 7: telemetría sin valores
+// financieros). Espeja el enum `public.event_name` de la migración 0001:
+// la DB es la barrera final, esta lista es la primera.
+export const EVENTOS_PERMITIDOS: readonly EventName[] = [
+  'onboarding_completed',
+  'test_completed',
+  'profile_saved',
+  'simulation_created',
+  'mission_completed',
+];
+
 const EMPTY_PROPERTIES: Json = {};
 
 const MAX_PROPIEDADES = 10;
@@ -74,6 +85,9 @@ export async function registrarEvento(
   eventName: EventName,
   properties: Json = EMPTY_PROPERTIES,
 ): Promise<void> {
+  if (!EVENTOS_PERMITIDOS.includes(eventName)) {
+    throw new Error(`Evento no permitido: ${String(eventName)}.`);
+  }
   const propiedadesSeguras = validarPropiedades(properties);
 
   const { error } = await client

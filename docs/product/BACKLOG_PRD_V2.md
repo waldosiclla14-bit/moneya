@@ -19,10 +19,9 @@ CFPB 10 ítems + tramos de edad · métricas separadas · 4 indicadores LATAM ·
 - Qué: revisar los ~10 seeds (`0003_seed_lessons.sql` + `components/aprender/library.tsx`): redacción 100% original, sin resúmenes que repliquen estructura protegida (PRD §8).
 - Aceptación: revisión línea por línea registrada; reescritura de lo que replique.
 
-### B4. Eventos de activación/retención — emisión no verificada
-- Qué: confirmar que se emiten `test_completed`, `simulation_created`, `mission_completed` (además de `onboarding_completed`/`profile_saved`, ya vistos) y que ninguno lleva valores financieros (PRD §18 + regla 7).
-- Aceptación: grep + test que fije el set de eventos permitido.
-- Pista (2026-10-13): `wellbeing-test.tsx` ya emite `test_completed` al guardar; `perfil-form.tsx` emite `onboarding_completed` + `profile_saved` — [verificado]. Falta confirmar `simulation_created` y `mission_completed`.
+### B4. Eventos de activación/retención — **RESUELTO (2026-10-13)**
+- Los 5 eventos emitidos (`onboarding_completed`, `test_completed`, `profile_saved` en perfil/bienestar; `simulation_created` en simulador; `mission_completed` en misiones) coinciden exactamente con el enum `public.event_name` de la migración 0001; ningún call site envía `properties` con valores — [verificado].
+- **Fix aplicado:** `EVENTOS_PERMITIDOS` exportado en `lib/supabase/events-repo.ts` (espejo del enum; la DB sigue siendo la barrera final); `registrarEvento` rechaza nombres fuera del set antes de tocar la DB; re-exportado en `lib/supabase/index.ts`. Tests: set exacto + acepta permitido + rechaza desconocido sin insertar (9 tests en `events-repo.test.ts`).
 
 ### B5. Revisión legal Chile/Perú — pendiente externo
 - Qué: CMF/SBS (¿cobertura/liquidez = asesoría regulada?), datos personales, disclaimers del test CFPB (PRD §14). Requiere abogado; el disclaimer actual es provisional.
