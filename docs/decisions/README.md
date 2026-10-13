@@ -38,6 +38,7 @@ Creado: 2026-10-12 · Origen: deuda técnica **TD-7** (`docs/audit/TECHNICAL_DEB
 | [0006](0006-validacion-telemetria.md) | Validación de `events.properties` (privacidad de telemetría) | Aceptado |
 | [0007](0007-datos-faltantes-null.md) | Datos faltantes se representan como `null` (nunca se inventan) | Aceptado |
 | [0008](0008-adopcion-prd-v2.md) | Adopción del PRD V2 como especificación vigente (+ backlog B1–B6) | Aceptado |
+| [0009](0009-auth-pages-client-side.md) | Auth en Pages estático con gateo client-side (J1: sin middleware, RLS como frontera) | Aceptado |
 
 ## Relación con las preguntas abiertas
 

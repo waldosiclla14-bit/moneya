@@ -18,14 +18,16 @@ Fecha: 2026-10-11 · Fase 0 (solo lectura) · Hallazgos **[verificado]** salvo q
 - **Fix aplicado:** añadidos `@testing-library/react`, `@testing-library/dom` y `jsdom` (devDeps); `vitest.config.ts` amplía `include` a `{lib,components}/**/*.test.{ts,tsx}` (entorno por archivo: `// @vitest-environment jsdom`). Primer test: `components/home/__tests__/hero-demo.test.tsx` (render + recálculo del simulador héroe). Local **86/86 (15 archivos)**. Prioridad siguiente: flujo registro → perfil → finanzas.
 - **Avance (2026-10-12):** `components/onboarding/__tests__/perfil-form.test.tsx` (perfil con `useSession` y repos simulados) y `components/finanzas/__tests__/foto-financiera.test.tsx` (panorama, recálculo del ratio de deuda y guardado de snapshot/deudas). Flujo registro→perfil→finanzas cubierto de extremo a extremo de forma simulada. Total **104/104 (20 archivos)**.
 
-## TD-4. Autenticación sin gateo de rutas — [verificado] + **[opinión]** riesgo alto
+## TD-4. Autenticación sin gateo de rutas — [verificado] + **[opinión]** riesgo alto → **RESUELTO (2026-10-13, decisión J1)**
 - No hay `middleware.ts`; los 6 componentes que usan `useSession` lo hacen cliente-side; no hay redirect server-side.
 - En demo funciona (UX degradada) pero es inapropiado para producción real con datos financieros.
 - **Fix (decisión de arquitectura):** ver PROJECT_AUDIT J1/J3 y OPEN_QUESTIONS. Opciones: middleware + `createServerClient` (aleja de `output: export`) o redirect client-side con un provider explícito.
+- **Resolución J1 (dueño, 2026-10-13): Pages estático + gateo client-side.** ADR-0009: nuevo `components/auth/require-auth.tsx` (redirect a `/login` si hay sesión lista sin usuario; placeholder si no; hijos si hay usuario), testeado (3 casos). Las páginas demo quedan abiertas a propósito ("sin cuenta y sin registro"); la frontera real sigue siendo RLS. Con O1 activo convendrá aplicar el guard en `/cuenta`; Vercel se reevalúa si hay necesidad server-side.
 
-## TD-5. Enfoque `supabase` mixto SSR/client — [verificado] + **[opinión]**
-- Conviven `BrowserClient` y `createServerClient` (código en `lib/supabase/server.ts` lanza error si faltan envs). Con `output: export` el SSR no existe: `createServerClient` solo tendrá sentido si migramos a Vercel full; si nos quedamos en Pages, sobra y añade una vía de crash.
+## TD-5. Enfoque `supabase` mixto SSR/client — [verificado] + **[opinión]** → **RESUELTO (2026-10-13, decisión J1)**
+- Convivían `BrowserClient` y `createServerClient` (código en `lib/supabase/server.ts` lanza error si faltan envs). Con `output: export` el SSR no existe: `createServerClient` solo tendrá sentido si migramos a Vercel full; si nos quedamos en Pages, sobra y añade una vía de crash.
 - **Fix:** decidir un solo camino (ver TD-4/J1). Costo bajo, dependiente de J1.
+- **Resolución:** un solo camino, `createClientClient()` (nulo-seguro, modo demo). `lib/supabase/server.ts` eliminado tras verificar cero imports en app (solo re-export en `index.ts`, también retirado). ADR-0009.
 
 ## TD-6. Moneda/locale hardcodeado es-CL — [verificado] + **[opinión]** gap regional → **RESUELTO (2026-10-12)**
 - `FotoFinanciera`, `hero-demo`, `metric-card`, `count-up` y la fecha de `simulador-form` formateaban con `es-CL` fijo; un usuario peruano veía formato chileno.

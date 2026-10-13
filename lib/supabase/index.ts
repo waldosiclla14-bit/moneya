@@ -1,5 +1,4 @@
 export { createClientClient } from './client';
-export { createServerClient } from './server';
 export { supabaseEnvConfigured } from './config';
 export type * from './db-types';
 export { guardarSimulacion, listarSimulaciones, eliminarSimulacion } from './simulation-repo';
