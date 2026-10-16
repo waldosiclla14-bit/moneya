@@ -9,6 +9,7 @@ import {
   type FinancialSnapshot,
 } from '../../lib/calculos';
 import { useRegion } from '../../lib/formato/region';
+import { cargarDemo } from '../../lib/demo/seed-demo';
 
 const STORAGE_KEY = 'moneya:foto:mes:v1';
 
@@ -43,6 +44,7 @@ function formatoPorcentaje(v: number | null): string {
 export function ResumenHoy() {
   const { money } = useRegion();
   const [listo, setListo] = useState(false);
+  const [semilla, setSemilla] = useState(0);
   const [snapshot, setSnapshot] = useState<FinancialSnapshot | null>(null);
   const [mes, setMes] = useState('');
 
@@ -76,7 +78,7 @@ export function ResumenHoy() {
       /* dato ilegible: se muestra el llamado a armar la foto */
     }
     setListo(true);
-  }, []);
+  }, [semilla]);
 
   if (!listo) return null;
 
@@ -93,6 +95,21 @@ export function ResumenHoy() {
         <Link href="/finanzas" className="btn-primary mt-4 inline-block">
           Armar mi foto del mes
         </Link>
+        <div className="mt-2">
+          <button
+            type="button"
+            onClick={() => {
+              cargarDemo();
+              setSemilla((s) => s + 1);
+            }}
+            className="link-soft text-sm"
+          >
+            o carga los datos de ejemplo para probar
+          </button>
+        </div>
+        <p className="mt-2 text-xs text-neutral-500">
+          La demo reemplaza lo guardado en este navegador.
+        </p>
       </section>
     );
   }

@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { ResumenHoy } from "../resumen-hoy";
 
 const KEY = "moneya:foto:mes:v1";
@@ -51,5 +51,16 @@ describe("ResumenHoy (panel del dashboard)", () => {
     render(<ResumenHoy />);
 
     expect(screen.getByText("Aún no armas tu foto del mes")).toBeDefined();
+  });
+
+  it("el botón de demo siembra datos y muestra el panel sin recargar", () => {
+    render(<ResumenHoy />);
+
+    fireEvent.click(screen.getByRole("button", { name: /datos de ejemplo/i }));
+
+    expect(screen.getByText("Tu foto de hoy · 2026-09")).toBeDefined();
+    expect(screen.getByText("3.0")).toBeDefined();
+    expect(screen.getByText("13%")).toBeDefined();
+    expect(screen.getByText("550.000")).toBeDefined();
   });
 });
