@@ -1,6 +1,6 @@
 # Segmento inicial y métricas — propuesta pendiente de revisión
 
-Fecha: 2026-10-13 · Estado: **propuesta, sin aprobar** (O5 sigue abierto hasta decisión del dueño).
+Fecha: 2026-10-13 · Estado: **segmento aprobado por el dueño (A+B)**; métricas definidas, sin metas hasta línea base.
 Fuentes: PRD V2 §4/§13/§18, AGENTS §8/§13. Sin cifras inventadas ni metas numéricas (no hay línea base).
 
 ## 1. Segmento inicial propuesto: A + B

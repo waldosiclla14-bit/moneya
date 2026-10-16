@@ -24,8 +24,8 @@ Fecha: 2026-10-11 · Fase 0 · Ítems que requieren decisión explícita del mae
 ## O4. Monedas/monedas locales — **resuelta → ADR-0005**
 - ¿Corregir locale por país del perfil? **Hecho (2026-10-12):** `RegionProvider` + `useRegion()` formatean por país con fallback a Chile en demo (ver `docs/decisions/0005-locale-por-pais.md`; TD-6).
 
-## O5. Segmento inicial y métricas (§8/§13) — **[propuesta lista, requiere decisión]**
-- AGENTS pide definir segmento y métricas **antes** del piloto. Propuesta en `docs/product/SEGMENTO_Y_METRICAS.md` (2026-10-13), pendiente de revisión del dueño: sin aprobación no hay metas ni piloto.
+## O5. Segmento inicial y métricas (§8/§13) — **[resuelta: segmento A+B aprobado 2026-10-13]**
+- Propuesta en `docs/product/SEGMENTO_Y_METRICAS.md`: métricas definidas sin metas (sin línea base). Siguiente: 8–10 entrevistas CL/PE antes del piloto.
 
 ## O6. `mission_progress`: añadir política `delete` — **resuelta (TD-8)**
 - **Hecho (2026-10-12):** migración `0006_mission_progress_delete_privacy.sql` + anexo en `setup-all-in-one.sql` (política `mission_progress_delete_own`). Pendiente aplicar en la instancia Supabase (O1).
