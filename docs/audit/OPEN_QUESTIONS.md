@@ -7,9 +7,10 @@ Fecha: 2026-10-11 · Fase 0 · Ítems que requieren decisión explícita del mae
 ## O0. Autorización de la siguiente fase — **resuelta**
 - Autorización continua vigente del dueño ("continua" = siguiente pendiente + commit/push/CI). AGENTS §14 sigue aplicando para deploy/datos sensibles.
 
-## O1. Credenciales de Supabase — **[bloqueante, requiere acción del usuario]**
+## O1. Credenciales de Supabase — **[diferida por decisión del dueño, 2026-10-13 → ADR-0010]**
 - Faltan `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_ANON_KEY` (proyecto nuevo, región `sa-east-1`, plan Free; pegar `supabase/setup-all-in-one.sql` UNA vez en SQL Editor).
 - Hoy: demo sin persistencia real. Al recibir claves se pasa a `.env.local`, se prueban typecheck/tests/build con env y se verifica registro real (auth.users / financial_inputs).
+- **Decisión:** límite Free agotado; demo local es el modo oficial hasta usuarios reales. Ruta de reactivación intacta (`.env.example`, `README`, setup-all-in-one con 0001–0006, Secrets CI).
 
 ## O2. Despliegue: Pages vs Vercel (arquitectura) — **resuelta definitiva → ADR-0009 (J1, 2026-10-13)**
 - Opciones: (a) quedarse en GitHub Pages (`export`) → auth 100 % client-side, sin middleware; (b) migrar a Vercel full → habilita SSR/auth server y quita el problema TD-5. Implica redirigir dominio/CI.
