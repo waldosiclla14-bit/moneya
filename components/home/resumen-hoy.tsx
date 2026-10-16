@@ -126,19 +126,21 @@ export function ResumenHoy() {
       </div>
       <div className="mt-3 grid gap-3 sm:grid-cols-3">
         <div className="rounded-xl bg-cream p-4">
-          <p className="text-xs text-neutral-600">Colchón · meses</p>
+          <p className="text-xs text-neutral-600">Colchón · meses que cubres lo esencial</p>
           <p className="mt-1 font-display text-3xl font-semibold tracking-tight text-ink">
             {formatoMeses(margen.mesesCobertura.value)}
           </p>
+          <p className="mt-1 text-[11px] text-neutral-500">Meta sana: ≥3 meses.</p>
         </div>
         <div className="rounded-xl bg-cream p-4">
-          <p className="text-xs text-neutral-600">Deuda · % en cuotas</p>
+          <p className="text-xs text-neutral-600">Deuda · % de tu ingreso que se va en cuotas</p>
           <p className="mt-1 font-display text-3xl font-semibold tracking-tight text-ink">
             {formatoPorcentaje(margen.ratioDeuda.value)}
           </p>
+          <p className="mt-1 text-[11px] text-neutral-500">Atención: ≥40%.</p>
         </div>
         <div className="rounded-xl bg-cream p-4">
-          <p className="text-xs text-neutral-600">Flujo del mes</p>
+          <p className="text-xs text-neutral-600">Flujo · lo que sobra en el mes</p>
           <p className="mt-1 font-display text-3xl font-semibold tracking-tight text-ink">
             {money.format(margen.ahorroMensual)}
           </p>

@@ -268,6 +268,7 @@ export function FotoFinanciera() {
                   Tu saldo líquido de <span className="font-semibold text-neutral-700">{money.format(margen.liquidBalance)}</span>{' '}
                   cubre gastos esenciales de <span className="font-semibold text-neutral-700">{money.format(margen.gastosEsenciales)} por mes</span>.
                 </p>
+                <p className="mt-1 text-xs text-neutral-500">Meta sana: ≥3 meses · sólido: ≥6 meses.</p>
               </div>
               <EstadoColchon value={margen.mesesCobertura.value} />
             </div>
@@ -288,6 +289,7 @@ export function FotoFinanciera() {
               <p className="mt-1 font-display text-3xl font-semibold tracking-tight text-ink">
                 {formatoPorcentaje(margen.ratioDeuda.value)}
               </p>
+              <p className="mt-1 text-xs text-neutral-500">Atención: ≥40% del ingreso en cuotas.</p>
               <details className="mt-2 text-xs text-neutral-500">
                 <summary className="cursor-pointer">Ver fórmula</summary>
                 <p className="mt-1 italic">{margen.ratioDeuda.formula} · atención ≥ 40%</p>
@@ -303,6 +305,7 @@ export function FotoFinanciera() {
               <p className="mt-1 font-display text-3xl font-semibold tracking-tight text-ink">
                 {formatoPorcentaje(margen.concentracionIngreso.value)}
               </p>
+              <p className="mt-1 text-xs text-neutral-500">Atención: ≥60% de una sola fuente.</p>
               <details className="mt-2 text-xs text-neutral-500">
                 <summary className="cursor-pointer">Ver fórmula</summary>
                 <p className="mt-1 italic">{margen.concentracionIngreso.formula} · atención ≥ 60%</p>
@@ -369,11 +372,11 @@ export function FotoFinanciera() {
           <div className="flex items-center justify-between">
             <h2 className="font-display font-semibold">Tu tiempo vale dinero</h2>
             <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-[11px] text-neutral-500">
-              Your Money or Your Life
+              El valor de tu hora
             </span>
           </div>
           <p className="mt-1 text-sm text-neutral-600">
-            Ver un gasto como horas de trabajo revela su costo real. Probá con una compra puntual.
+            Ver un gasto como horas de trabajo revela su costo real. Prueba con una compra puntual.
           </p>
           <div className="mt-3 grid grid-cols-2 gap-3">
             <Field label="Monto de la compra" value={gastoPuntual} onChange={setGastoPuntual} />
@@ -404,10 +407,7 @@ export function FotoFinanciera() {
         <div className="flex flex-wrap items-start justify-between gap-3">
           <p className="max-w-3xl rounded-xl bg-neutral-100 px-4 py-3 text-sm text-neutral-600">
             Cálculo local con fórmulas visibles en cada tarjeta. Este mes se guarda automáticamente en este
-            navegador. Con tu cuenta también se registra en{' '}
-            <code className="mx-1 rounded bg-neutral-200 px-1 py-0.5 font-mono text-xs">financial_inputs</code> y las
-            deudas en <code className="mx-1 rounded bg-neutral-200 px-1 py-0.5 font-mono text-xs">liabilities</code>{' '}
-            (RLS ya lista en la migración 0001).
+            navegador. Con tu cuenta también se sincroniza en tu espacio privado.
           </p>
           <button type="button" onClick={volverAlEjemplo} className="link-soft shrink-0 text-sm">
             Volver a datos de ejemplo

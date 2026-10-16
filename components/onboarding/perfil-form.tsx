@@ -106,8 +106,7 @@ export function PerfilForm() {
       <p className="mt-4 rounded-lg bg-neutral-100 px-3 py-2 text-sm text-neutral-600">
         Tu test CFPB ({CFPB_ITEMS.length} afirmaciones) usará la columna de la escala para{' '}
         <span className="font-medium">{ageBucket === '62_plus' ? '62 años o más' : '18–61'}</span>, según la
-        tabla oficial. Al conectar tu cuenta, este perfil se guarda en{' '}
-        <code className="mx-1 rounded bg-neutral-200 px-1 py-0.5 font-mono text-xs">profiles</code>.
+        tabla oficial. Al conectar tu cuenta, este perfil se sincroniza con ella.
       </p>
 
       <div className="mt-4">
