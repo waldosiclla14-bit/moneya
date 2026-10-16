@@ -12,9 +12,45 @@
   --hairline: 232 228 220;
   --clay: 180 83 42;
   --clay-deep: 151 72 31;
+  --n50: 250 249 245;
+  --n100: 242 240 235;
+  --n200: 232 228 220;
+  --n300: 205 198 184;
+  --n400: 164 156 140;
+  --n500: 126 119 107;
+  --n600: 107 102 94;
+  --n700: 83 80 74;
+  --n800: 59 57 52;
+  --n900: 46 44 41;
+  --n950: 31 30 29;
   --dur-fast: 150ms;
   --dur-base: 250ms;
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Tema oscuro: inversión cálida (sin negro puro). Los textos chicos
+   usan pasos 400+ para mantener contraste ≥ 4.5 sobre el fondo. */
+.dark {
+  color-scheme: dark;
+  --paper: 31 30 29;
+  --cream: 59 57 52;
+  --surface: 46 44 41;
+  --ink: 250 249 245;
+  --muted: 164 156 140;
+  --hairline: 83 80 74;
+  --clay: 205 110 66;
+  --clay-deep: 217 123 74;
+  --n50: 31 30 29;
+  --n100: 46 44 41;
+  --n200: 59 57 52;
+  --n300: 83 80 74;
+  --n400: 138 131 117;
+  --n500: 164 156 140;
+  --n600: 201 194 180;
+  --n700: 220 214 200;
+  --n800: 232 228 220;
+  --n900: 242 240 235;
+  --n950: 250 249 245;
 }
 
 *:focus-visible {

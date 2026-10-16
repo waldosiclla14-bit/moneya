@@ -39,8 +39,8 @@ Fecha: 2026-10-11 · Fase 0 · Ítems que requieren decisión explícita del mae
 ## O9. `npm audit` / vulnerabilidades de dependencias — **resuelta (TD-2)**
 - **Hecho:** job `security` en `gh-pages.yml` (escaneo de secretos con gate duro + `npm audit` como señal no bloqueante) y `typecheck` en el job `build`. Advisories restantes: Tailwind 3→4 (ver `SECURITY_REVIEW.md`).
 
-## O10. Modo oscuro — **[requiere decisión, opcional]**
-- Continuación previa dejó a un lado el dark mode. ¿Se agenda o se descarta por ahora (sin demanda actual)?
+## O10. Modo oscuro — **resuelta (implementado 2026-10-13)**
+- Implementado por decisión del dueño: estrategia por variables (cero cambios en componentes) — `darkMode: 'class'` + escala `neutral` y tokens semánticos como vars (`tailwind.config.ts`, `globals.css` con `.dark` cálido sin negro puro y contraste ≥4.5 en textos chicos); `ThemeToggle` en el header con persistencia `moneya:tema`, script pre-pintado anti-destello y `theme-color` dinámico; `color-scheme` conmutado para controles nativos. Tests: 3 casos (`theme-toggle.test.tsx`).
 
 ---
 

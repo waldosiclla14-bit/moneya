@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Fraunces, Inter } from 'next/font/google';
 import './globals.css';
 import { NavLinks } from '../components/layout/nav-links';
+import { ThemeToggle } from '../components/ui/theme-toggle';
 import { RegisterServiceWorker } from '../components/pwa/register-service-worker';
 import { InstallPrompt } from '../components/pwa/install-prompt';
 import { RegionProvider } from '../lib/formato/region';
@@ -79,6 +80,12 @@ const metas = JSON.stringify({
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
     <html lang="es" className={`${display.variable} ${sans.variable}`}>
+      <script
+        dangerouslySetInnerHTML={{
+          __html:
+            "try{var t=localStorage.getItem('moneya:tema');if(t==='oscuro'){document.documentElement.classList.add('dark')}}catch(e){}",
+        }}
+      />
       <body className="flex min-h-screen flex-col">
         <RegisterServiceWorker />
         <RegionProvider>
@@ -88,6 +95,9 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
               MONEYA<span className="text-clay">.</span>
             </Link>
             <NavLinks />
+            <div className="sm:ml-auto">
+              <ThemeToggle />
+            </div>
           </nav>
         </header>
         <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-10">{children}</main>
