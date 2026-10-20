@@ -6,6 +6,19 @@ const icono = 'h-5 w-5';
 
 const rutas: { href: string; t: string; d: string; icon: ReactNode }[] = [
   {
+    href: '/gastos',
+    t: 'Registrar un gasto',
+    d: 'Anota cada gasto con su categoría y mira cuánto llevas y cuánto te queda del presupuesto.',
+    icon: (
+      <svg viewBox="0 0 24 24" className={icono} fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
+        <path d="M5 7h14" />
+        <path d="M6 7v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7" />
+        <path d="M10 12h4" />
+      </svg>
+    ),
+  },
+  {
     href: '/finanzas',
     t: 'Armar mi colchón',
     d: 'Cuántos meses te sostiene tu saldo líquido frente a tus gastos esenciales.',
