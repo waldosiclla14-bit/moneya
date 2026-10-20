@@ -1,0 +1,24 @@
+# ADR-0011. Esquema maestro en SQLite local (OPFS) con sync_outbox opcional
+
+- Estado: Aceptado
+- Fecha: 2026-10-20
+- Contexto:
+  - El dueño entregó el esquema maestro `db/moneya_schema.sql` (v0.1.0), cuyo encabezado declara: *"Motor: SQLite (sqlite-wasm + OPFS en la PWA). Sync opcional vía sync_outbox"* — [verificado] (`db/moneya_schema.sql:3`).
+  - **ADR-0010** dejó Supabase diferido (sin instancia) y la demo local como modo oficial — [verificado] (`docs/decisions/0010-demo-local-oficial.md`).
+  - La app hoy persiste en `localStorage` con claves propias (`moneya:gastos:v1`, `moneya:foto:mes:v1`, `moneya.mission_progress.v1`, `moneya.onboarded.v1`); el módulo de gastos usa `lib/gastos/modelo.ts`, ajeno a este esquema — [verificado] (`lib/gastos/modelo.ts:28`).
+  - El esquema carga en una BD limpia con `integrity_check = ok` y `foreign_key_check = 0`, y Q1–Q5 responden sobre `db/muestra.sql` — [verificado] (ejecución 2026-10-20: `npm run muestra` y `lib/db/__tests__/muestra.test.ts`, 11 tests).
+- Decisión:
+  - El **modelo de datos relacional maestro** de MONEYA es `db/moneya_schema.sql`. Ningún otro artefacto define tablas.
+  - Las **consultas Q1–Q5** (libre hoy, dona por categoría, presupuestos con alerta, bienestar deuda/colchón, resultado de Emprende) son la única fuente de cálculo para esas cifras; deben estar en `db/consultas-muestra.sql` y coincidir con lo documentado en el esquema (test antideriva).
+  - **Local-first**: los datos viven en el dispositivo. `sync_outbox` es la vía opcional futura de sincronización; no hay backend activo.
+  - Convenciones del esquema, ya adoptadas: dinero en unidades mínimas + `currency` (CLP 0 decimales, PEN 2); `occurred_at` (UTC) + `occurred_on` (fecha local); borrado lógico `deleted_at`; todo conteo sale de `v_tx_effective`; `last4` de 4 dígitos y nunca credenciales.
+  - **Reglas automatizadas**: los catálogos legales (`tax_regimes`, `document_types`, `formalization_steps`) se mantienen vacíos hasta tener fuente + fecha de consulta (test); sin deriva entre consultas documentadas y ejecutables (test).
+  - PostgreSQL/Supabase (`supabase/migrations/0001–0006`) **no** es el esquema maestro: se conserva como ruta diferida por ADR-0010.
+- Alternativas consideradas:
+  - Adoptar el esquema Supabase/Postgres como maestro: dejaría dos verdades (tablas duplicadas) y contradice la demo local.
+  - Seguir solo con `localStorage`: no modela relaciones (libros personal/negocio, cuentas, metas, deudas) ni permite Q1–Q5; imposible para Emprende.
+  - Migrar ya los datos de `localStorage` a tablas: sin adapter de ejecución (sqlite-wasm/OPFS) todavía; se separa como tarea propia para no mezclar con esta decisión.
+- Consecuencias:
+  - Positivas: un único modelo verificable en CI; cálculos Q1–Q5 probados con muestra ficticia; reglas de no-invención convertidas en tests.
+  - Negativas / pendientes honestos: **la app todavía no consume este esquema** (el gestor de gastos sigue en `lib/gastos/modelo.ts` sobre `localStorage`) → coexisten dos modelos hasta el adapter; sin adapter no hay escritura desde la UI; la **sincronización multi-dispositivo (#6 del benchmark)** sigue bloqueada; migración de datos locales pendiente; `sqlite-wasm + OPFS` no está instalado en el repo.
+- Referencias: `db/moneya_schema.sql`, `db/muestra.sql`, `db/consultas-muestra.sql`, `db/README.md`, `scripts/muestra-report.mjs`, `lib/db/__tests__/muestra.test.ts`, ADR-0010, `docs/product/COMPARATIVA_GESTORES.md` (brecha #6).
