@@ -18,6 +18,19 @@ let motorEnCurso: Promise<Sqlite3Static> | undefined;
 let baseLocal: Database | undefined;
 
 /**
+ * El entorno no puede ofrecer kvvfs (build node, jsdom de tests o navegador sin
+ * localStorage). No es un fallo de almacenamiento: es "este entorno nunca tendrá
+ * la base SQL", y permite al llamador usar el respaldo local equivalente sin
+ * ocultar fallos reales de cuota o de descarga del wasm (esos propagan otro error).
+ */
+export class ErrorSinKvvfs extends Error {
+  constructor(mensaje: string) {
+    super(mensaje);
+    this.name = 'ErrorSinKvvfs';
+  }
+}
+
+/**
  * Carga e inicializa sqlite-wasm una sola vez por página (singleton).
  *
  * locateFile solo se pasa en navegador: el build `node` del paquete también lo
@@ -31,6 +44,18 @@ export async function abrirMotor(): Promise<Sqlite3Static> {
   return motorEnCurso;
 }
 
+/**
+ * ¿Es un navegador real? jsdom (entorno de tests) tiene `window` pero no ofrece
+ * kvvfs ni sirve el wasm en `/sqlite/`: se trata como "no navegador" para no
+ * pasarle locateFile y para que abrirBaseLocal falle claro (ErrorSinKvvfs) sin
+ * cargar el motor. Verificado 2026-10-20: en jsdom, init() con locateFile →
+ * ENOENT `C:\sqlite\sqlite3.wasm`; sin locateFile carga el build node.
+ */
+function esNavegadorReal(): boolean {
+  if (typeof window === 'undefined' || typeof navigator === 'undefined') return false;
+  return !/jsdom/i.test(navigator.userAgent);
+}
+
 async function cargarMotor(): Promise<Sqlite3Static> {
   const { default: init } = await import('@sqlite.org/sqlite-wasm');
   // index.d.mts declara `init()` sin argumentos, pero dist/index.mjs sí lee
@@ -38,10 +63,9 @@ async function cargarMotor(): Promise<Sqlite3Static> {
   const initConOpciones = init as unknown as (
     opciones?: { locateFile?: (ruta: string) => string },
   ) => Promise<Sqlite3Static>;
-  const opciones =
-    typeof window === 'undefined'
-      ? undefined
-      : { locateFile: (ruta: string) => `${BASE_PATH}/sqlite/${ruta}` };
+  const opciones = esNavegadorReal()
+    ? { locateFile: (ruta: string) => `${BASE_PATH}/sqlite/${ruta}` }
+    : undefined;
   return initConOpciones(opciones);
 }
 
@@ -54,12 +78,12 @@ async function cargarMotor(): Promise<Sqlite3Static> {
  * localStorage; no requiere export/import manual.
  */
 export async function abrirBaseLocal(): Promise<Database> {
-  if (typeof window === 'undefined' || typeof globalThis.localStorage === 'undefined') {
-    throw new Error('abrirBaseLocal: kvvfs requiere un navegador con localStorage (ADR-0012).');
+  if (!esNavegadorReal() || typeof globalThis.localStorage === 'undefined') {
+    throw new ErrorSinKvvfs('abrirBaseLocal: kvvfs requiere un navegador con localStorage (ADR-0012).');
   }
   const sqlite3 = await abrirMotor();
   if (typeof sqlite3.oo1.JsStorageDb !== 'function') {
-    throw new Error('abrirBaseLocal: este build de sqlite-wasm no incluye JsStorageDb (kvvfs).');
+    throw new ErrorSinKvvfs('abrirBaseLocal: este build de sqlite-wasm no incluye JsStorageDb (kvvfs).');
   }
   if (!baseLocal) {
     const db = new sqlite3.oo1.JsStorageDb('local');

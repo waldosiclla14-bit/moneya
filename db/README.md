@@ -11,7 +11,7 @@ Todo el modelo de datos relacional vive aquí (decisión **ADR-0011**; backend d
 ## Cómo verificar (todo corre en CI)
 
 ```bash
-npm test            # lib/db/__tests__/: muestra (11) + esquema (3) + migración (9) + motor (5)
+npm test            # lib/db/__tests__/: muestra (11) + esquema (3) + migración (9) + motor (5) + gastos-repo (10)
 npm run muestra     # esquema + muestra en SQLite en memoria: Q1–Q5 y salud del esquema
 npm run gen:esquema # regenera lib/db/esquema.ts (SQL inyectado en el bundle)
 ```
@@ -29,7 +29,8 @@ Verificado el 2026-10-20: `integrity_check = ok`, `foreign_key_check = 0`, `meta
   - `exchange_rates` → sin tipo de cambio verificado.
 - **Semillas provisionales** en `institutions`: nombres de bancos/billeteras de Chile y Perú; el propio esquema los marca *"revisar antes de publicar"*.
 - **Motor de ejecución (ADR-0012):** `@sqlite.org/sqlite-wasm` instalado; `lib/db/motor.ts` inicializa el motor (singleton), aplica el esquema a una base vacía y ejecuta planes en transacción. Verificado en CI contra el motor real (build `node`): esquema (25 tablas + 2 vistas, `integrity_check = ok`), migración completa y rollback ante error. El wasm se sirve desde `public/sqlite/sqlite3.wasm` (copia de `postinstall`).
-- **Falta:** conectar la UI de gastos a estas tablas (lectura/escritura + migración `moneya:gastos:v1` → tablas al primer uso) y probar en navegador real (kvvfs/`localStorage` no puede ejecutarse en CI). Hasta entonces la app sigue usando `lib/gastos/modelo.ts` sobre `localStorage`.
+- **Repositorio de gastos (UI conectada, 2026-10-20):** `lib/db/gastos-repo.ts` es la fachada que usa `components/gastos/gestor-gastos.tsx`. Primera apertura → migra `moneya:gastos:v1` → tablas si falta `meta['migracion_gastos_v1']` (país del perfil Supabase si hay sesión); después cada operación valida con los reducers de `lib/gastos/modelo.ts`, escribe en SQL (unidades mínimas enteras) y re-hidrata desde la base. En entornos sin kvvfs (jsdom/Node, `ErrorSinKvvfs`) cae a `crearRepositorioLocal()` (mismo contrato sobre localStorage legado). Paridad con `v_tx_effective`, decimales CLP/PEN, soft-delete y presupuestos probados en CI (10 tests).
+- **Falta:** probar en navegador real (kvvfs en `localStorage`, carga del wasm vía `locateFile`, captura de `QuotaExceededError` — no ejecutable en CI); y documentado como pendiente: si el perfil falla al cargar, el libro se crea con el país del contexto, y un cambio de país posterior no re-migra ni reescribe la moneda del libro.
 
 ## Reglas al editar
 

@@ -22,7 +22,7 @@ Demo pública: <https://waldosiclla14-bit.github.io/moneya/>
 - Tailwind CSS **3.4** + framer-motion + lucide-react
 - Supabase (opcional): `@supabase/supabase-js` 2.x
 - SQLite local: `@sqlite.org/sqlite-wasm` (kvvfs sobre `localStorage`, en hilo principal — ADR-0012)
-- Tests: Vitest **5** (164 tests / 30 archivos; `lib/` + tests de componente con React Testing Library + jsdom)
+- Tests: Vitest **5** (174 tests / 31 archivos; `lib/` + tests de componente con React Testing Library + jsdom)
 
 ## Desarrollo local
 
@@ -102,7 +102,7 @@ scripts/             scan-secrets.sh (ejecutado en CI)
 
 ## Estado
 
-- Motor financiero: verificado con 164 tests unitarios; CI en verde.
-- SQLite local (ADR-0012): motor sqlite-wasm instalado; esquema, migración y transacciones probados en CI con el motor real. Falta conectar la UI de gastos y probar kvvfs en navegador.
+- Motor financiero: verificado con 174 tests unitarios; CI en verde.
+- SQLite local (ADR-0012): la UI de gastos (`gestor-gastos.tsx`) ya opera sobre `lib/db/gastos-repo.ts` — migración `moneya:gastos:v1` → tablas al primer uso y CRUD con re-hidratación (CI con el motor real, 10 tests); en entornos sin kvvfs usa el respaldo local. Falta probar kvvfs en navegador real.
 - Supabase: pendiente de credenciales reales (hoy demo sin persistencia en DB).
 - Vercel: sirve un build previo.

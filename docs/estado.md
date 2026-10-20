@@ -4,6 +4,50 @@ Protocolo: AGENTS.md §2.5. Cada sesión cierra con decisiones, archivos, verifi
 
 ---
 
+## 2026-10-20 · Paso 3 del adapter SQLite: UI de gastos conectada a la base local
+
+### Decisiones tomadas y por qué
+
+1. **`lib/db/gastos-repo.ts` como fachada única de la UI.** `gestor-gastos.tsx` ya no importa reducers ni `leerEstado`/`escribirEstado`: cada operación valida con los reducers puros de `lib/gastos/modelo.ts`, escribe en SQLite (unidades mínimas enteras) y **re-hidrata** desde la base — la base es la verdad. Esto resuelve de paso el redondeo CLP (pesos enteros) de forma consistente: lo que se muestra es lo que la base guarda convertido con `DECIMALES_POR_MONEDA`.
+2. **Fallback local solo con `ErrorSinKvvfs`** (clase nueva en `motor.ts`): si kvvfs es imposible en el entorno (Node, jsdom) → `crearRepositorioLocal()` con el mismo contrato sobre localStorage legado; si kvvfs existe pero falla (cuota, wasm 404) → el error se propaga y la UI lo muestra (banner), **sin** respaldo silencioso — evita doble verdad y pérdida de datos cuando ya existe el marcador de migración.
+3. **jsdom ≠ navegador real** (`esNavegadorReal()` en `motor.ts`): verificado en sesión — en jsdom, `init({ locateFile })` → ENOENT `C:\sqlite\sqlite3.wasm`, y sin `locateFile` carga el build `node` (`oo1.JsStorageDb` ausente). Por eso jsdom no recibe `locateFile` y `abrirBaseLocal` lanza `ErrorSinKvvfs` antes de cargar el wasm (los 4 tests del componente siguen en el modo legado y pasan sin cambios).
+4. **`rowid` no existe dentro de la vista `v_tx_effective`** (sonda en sesión: `SQLITE_ERROR: no such column: rowid`; sí funciona sobre la tabla base). La hidratación consulta `transactions` con los mismos predicados que la vista (`status='confirmed' AND deleted_at IS NULL` + libro + tipo) ordenando por `occurred_on DESC, rowid DESC` (conserva el orden de inserción del mismo día); un test verifica la paridad filas/suma entre consulta directa y vista.
+5. **País de la migración desde el perfil:** `paisParaMigracion()` en el componente pide el país a Supabase (`obtenerPerfil`) antes de migrar, para no crear el libro con el país por defecto mientras `RegionProvider` aún carga el perfil; sin cliente/sesión o con error → país del contexto.
+6. **Presupuestos: borrado duro** (DELETE) en vez de soft-delete: `budgets` es `UNIQUE(ledger_id, category_id)` y una fila borrada lógicamente dejaría la cláusula `ON CONFLICT` sin poder recrear el presupuesto. Upsert con `ON CONFLICT DO UPDATE` sin objetivo de conflicto (SQLite ≥ 3.35; motor real 3.54.1).
+
+### Archivos creados/modificados
+
+| Archivo | Qué |
+|---|---|
+| `lib/db/gastos-repo.ts` (nuevo) | `RepositorioGastos` (leer/guardar/quitar/crear categoría/presupuesto), `abrirRepositorioGastos(ctx)` (abre + migra si falta marcador), `crearRepositorio(db)` (SQL), `crearRepositorioLocal()` (legado), `tzDelDispositivo()` |
+| `lib/db/__tests__/gastos-repo.test.ts` (nuevo) | 10 tests: fallback sin kvvfs, round-trip migración→hidratación (`toEqual`), decimales PEN/CLP y rechazo de montos que redondean a 0, categoría desconocida sin escritura, soft-delete, sort_order y duplicados de categorías, presupuestos (upsert/update/0→borrar→recrear), paridad con `v_tx_effective`, formato de tz |
+| `lib/db/motor.ts` | `ErrorSinKvvfs`, `esNavegadorReal()` (jsdom excluido de locateFile/guard kvvfs) |
+| `components/gastos/gestor-gastos.tsx` | init async (país del perfil → `abrirRepositorioGastos`), `accion()` centraliza try/catch y banner de error de persistencia; sin escritura a localStorage |
+| `README.md` | conteos 174/31, estado (UI conectada) |
+| `db/README.md` | conteos de tests (+gastos-repo 10), estado "UI conectada", "Falta" actualizado |
+| `docs/estado.md` | esta entrada |
+
+### Qué se probó y cómo (comando + resultado)
+
+- `npm run typecheck` → **sin errores** (2 intermedios corregidos: `SqlValue | undefined` no propagaba el narrowing a las closures → `const moneda: string`).
+- `npm test` → **174 passed (174), 31 archivos** (antes: 164/30; +10 del repositorio).
+- `npm run muestra` → salud del esquema OK (`integrity_check = ok`, `fk_errors = 0`, `schema_version = 0.1.0`), invariante Q1 OK.
+- Sonda de `rowid` en sesión: desde la vista → `no such column: rowid`; desde la tabla → OK (documentado en el código).
+- Prueba scratch en jsdom (sesión): carga el build `node` (`libVersion 3.54.1`, `JsStorageDb` ausente); con `locateFile` → ENOENT (origen del cambio `esNavegadorReal`).
+- Tests del componente `gestor-gastos` (jsdom, 4) → pasan con el fallback local, incluida la aserción de persistencia legada.
+
+### Errores pendientes y decisiones que requieren validación humana
+
+- **Prueba manual en navegador pendiente** (AGENTS §15): primer uso con kvvfs (migración real desde localStorage), persistencia entre recargas, `QuotaExceededError` (5 MiB), carga del wasm con `locateFile` en `next dev` y en build `export`.
+- **País:** si `obtenerPerfil` falla por red, el libro se crea con el país del contexto (posible CL vs PE); un cambio de país **posterior** a la migración no re-migra ni cambia la moneda del libro (el marcador lo impide) — decisión de diseño pendiente.
+- I/O síncrono de kvvfs en hilo principal (rendimiento con volúmenes grandes) sin medir.
+- Bug conocido y no abordado (diferido por decisión del usuario): `lib/formato/moneda.ts:22` → `maximumFractionDigits: 0` (montos PEN sin decimales).
+- ADR pendiente si el hosting cambia (OPFS requeriría otro hosting → nuevo ADR).
+
+### Siguiente paso
+
+**Prueba manual en navegador del Paso 3** (checklist arriba) y, con eso verde, definir con Waldosiclla el siguiente bloque (sync/backend diferido O1, o siguiente pantalla del MVP).
+
 ## 2026-10-20 · Paso 2 del adapter SQLite: motor sqlite-wasm + ADR-0012
 
 ### Decisiones tomadas y por qué

@@ -1,26 +1,23 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import { abrirRepositorioGastos, tzDelDispositivo, type RepositorioGastos } from '../../lib/db/gastos-repo';
+import type { CodigoPais } from '../../lib/formato/moneda';
 import { useRegion } from '../../lib/formato/region';
 import {
-  ESTADO_VACIO,
-  actualizarPresupuesto,
-  agregarCategoria,
-  agregarGasto,
   aCSV,
   aJSON,
-  eliminarGasto,
   estadoPresupuesto,
-  escribirEstado,
   filtrarGastos,
   hoyISO,
-  leerEstado,
   mesActual,
   totalesPorCategoria,
   totalGastos,
   type EstadoGastos,
   type EstadoPresupuesto,
 } from '../../lib/gastos/modelo';
+import { createClientClient } from '../../lib/supabase/client';
+import { obtenerPerfil } from '../../lib/supabase/onboarding-repo';
 
 const TONO_PRESUPUESTO: Record<Exclude<EstadoPresupuesto, null>, string> = {
   ok: 'bg-emerald-50 text-emerald-700',
@@ -41,9 +38,31 @@ function nombreMes(mes: string): string {
   return nombre.charAt(0).toUpperCase() + nombre.slice(1);
 }
 
+/**
+ * País con el que se crea el libro (moneda de la base): el del perfil de
+ * Supabase si hay sesión, para no migrar con el país por defecto mientras
+ * RegionProvider aún carga el perfil. Sin cliente/sesión/perfil (o error de
+ * red) se usa el país del contexto.
+ */
+async function paisParaMigracion(paisDeContexto: CodigoPais): Promise<CodigoPais> {
+  const client = createClientClient();
+  if (!client) return paisDeContexto;
+  try {
+    const { data } = await client.auth.getSession();
+    const userId = data.session?.user?.id;
+    if (!userId) return paisDeContexto;
+    const perfil = await obtenerPerfil(client, userId);
+    return perfil?.countryCode ?? paisDeContexto;
+  } catch {
+    return paisDeContexto;
+  }
+}
+
 export function GestorGastos() {
-  const { money } = useRegion();
+  const { money, countryCode } = useRegion();
   const [estado, setEstado] = useState<EstadoGastos | null>(null);
+  const [repo, setRepo] = useState<RepositorioGastos | null>(null);
+  const [errorPersistencia, setErrorPersistencia] = useState<string | null>(null);
   const [mes, setMes] = useState(mesActual());
   const [categoriaFiltro, setCategoriaFiltro] = useState('');
   const [texto, setTexto] = useState('');
@@ -57,8 +76,32 @@ export function GestorGastos() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    setEstado(leerEstado() ?? { ...ESTADO_VACIO, categorias: [...ESTADO_VACIO.categorias] });
-  }, []);
+    let activo = true;
+    void (async () => {
+      try {
+        const pais = await paisParaMigracion(countryCode);
+        if (!activo) return;
+        const abierto = await abrirRepositorioGastos({
+          pais,
+          tz: tzDelDispositivo(),
+          ahora: new Date().toISOString(),
+        });
+        if (!activo) return;
+        setRepo(abierto);
+        setEstado(abierto.leer());
+        setErrorPersistencia(null);
+      } catch (err) {
+        if (activo) {
+          setErrorPersistencia(
+            err instanceof Error ? err.message : 'No se pudo abrir el almacenamiento del navegador.',
+          );
+        }
+      }
+    })();
+    return () => {
+      activo = false;
+    };
+  }, [countryCode]);
 
   const gastosMes = useMemo(
     () => filtrarGastos(estado?.gastos ?? [], { mes, categoriaId: categoriaFiltro, texto }),
@@ -69,34 +112,45 @@ export function GestorGastos() {
   const totalMes = useMemo(() => totalGastos(gastosMes), [gastosMes]);
   const maximo = Math.max(1, ...Object.values(totales));
 
-  if (!estado) return null;
+  if (!estado) {
+    if (errorPersistencia) {
+      return (
+        <section className="card p-5">
+          <p className="eyebrow">Gastos</p>
+          <p className="mt-2 text-sm text-red-600">{errorPersistencia}</p>
+        </section>
+      );
+    }
+    return null;
+  }
   const actual = estado;
 
-  function guardar(next: EstadoGastos) {
-    setEstado(next);
-    escribirEstado(next);
+  /** Ejecuta una operación del repositorio y refresca el estado; null si falla. */
+  function accion(mensaje: string, operacion: (r: RepositorioGastos) => EstadoGastos): EstadoGastos | null {
+    if (!repo) return null;
+    try {
+      const siguiente = operacion(repo);
+      setEstado(siguiente);
+      setError(null);
+      return siguiente;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : mensaje);
+      return null;
+    }
   }
 
   function agregar() {
-    try {
-      guardar(agregarGasto(actual, { fecha, monto: Number(monto), categoriaId, nota }));
+    if (accion('No se pudo guardar.', (r) => r.guardarGasto({ fecha, monto: Number(monto), categoriaId, nota }))) {
       setMonto('');
       setNota('');
-      setError(null);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'No se pudo guardar.');
     }
   }
 
   function crearCategoria() {
-    try {
-      const next = agregarCategoria(actual, nuevaCategoria);
-      guardar(next);
-      setCategoriaId(next.categorias[next.categorias.length - 1].id);
+    const siguiente = accion('No se pudo crear la categoría.', (r) => r.crearCategoria(nuevaCategoria));
+    if (siguiente) {
+      setCategoriaId(siguiente.categorias[siguiente.categorias.length - 1].id);
       setNuevaCategoria('');
-      setError(null);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'No se pudo crear la categoría.');
     }
   }
 
@@ -268,8 +322,8 @@ export function GestorGastos() {
                       defaultValue={estado.presupuestos[c.id] ?? ''}
                       placeholder="sin límite"
                       onBlur={(e) =>
-                        guardar(
-                          actualizarPresupuesto(actual, c.id, Number(e.target.value.replace(/\D/g, '')) || 0),
+                        accion('No se pudo guardar el presupuesto.', (r) =>
+                          r.definirPresupuesto(c.id, Number(e.target.value.replace(/\D/g, '')) || 0),
                         )
                       }
                       className="w-28 rounded-md border border-neutral-300 px-2 py-1 text-xs"
@@ -327,7 +381,7 @@ export function GestorGastos() {
                     <span className="font-medium text-ink">{money.format(g.monto)}</span>
                     <button
                       type="button"
-                      onClick={() => guardar(eliminarGasto(actual, g.id))}
+                      onClick={() => accion('No se pudo quitar el gasto.', (r) => r.quitarGasto(g.id))}
                       className="rounded-md border border-red-200 px-2 py-1 text-xs text-red-600 hover:border-red-400"
                     >
                       Quitar
