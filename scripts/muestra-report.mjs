@@ -77,6 +77,17 @@ const resultados = consultas.map((sql, i) => {
   return filas;
 });
 
+const integridad = db.prepare('PRAGMA integrity_check').all();
+const fks = db.prepare('PRAGMA foreign_key_check').all();
+const version = db.prepare("SELECT value FROM meta WHERE key='schema_version'").get();
+imprimir('Salud del esquema', [
+  {
+    schema_version: version.value,
+    integrity_check: integridad[0].integrity_check,
+    fk_errors: fks.length,
+  },
+]);
+
 const conteo = db
   .prepare(
     `SELECT 'transacciones' AS tabla, COUNT(*) AS n FROM transactions

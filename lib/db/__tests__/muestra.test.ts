@@ -145,3 +145,60 @@ describe('muestra (db/muestra.sql)', () => {
     expect(par[0].linked_b).toBe('0199f100-0021-7000-8000-000000000011');
   });
 });
+
+describe('salud del esquema (db/moneya_schema.sql)', () => {
+  let db: DatabaseSync;
+
+  /** SQL sin comentarios y con espacios colapsados, para comparar textos iguales. */
+  const normalizar = (sql: string) =>
+    sql
+      .split('\n')
+      .filter((l) => !l.trim().startsWith('--'))
+      .join(' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+  /** Fragmento con las consultas Q1–Q5 (el esquema las documenta como comentarios). */
+  const consultasDocumentadas = (contenido: string, origen: string) => {
+    const i = contenido.search(/^-- Q1/m);
+    if (i < 0) throw new Error(`No se encontró el bloque "-- Q1" en ${origen}`);
+    return normalizar(contenido.slice(i));
+  };
+
+  beforeAll(() => {
+    db = new DatabaseSync(':memory:');
+    db.exec(leer('../../../db/moneya_schema.sql'));
+    db.exec(leer('../../../db/muestra.sql'));
+  });
+
+  it('pasa integrity_check y foreign_key_check en una BD limpia', () => {
+    const integridad = db.prepare('PRAGMA integrity_check').all() as Record<string, string>[];
+    expect(integridad).toEqual([{ integrity_check: 'ok' }]);
+    const fks = db.prepare('PRAGMA foreign_key_check').all();
+    expect(fks).toEqual([]);
+  });
+
+  it('registra la versión del esquema en meta', () => {
+    const fila = db.prepare("SELECT value FROM meta WHERE key = 'schema_version'").get() as
+      | Record<string, string>
+      | undefined;
+    expect(fila?.value).toBe('0.1.0');
+  });
+
+  it('mantiene vacíos los catálogos legales (se pueblan solo con fuente y fecha)', () => {
+    const fila = db
+      .prepare(
+        `SELECT (SELECT COUNT(*) FROM tax_regimes) AS regimenes,
+                (SELECT COUNT(*) FROM document_types) AS documentos,
+                (SELECT COUNT(*) FROM formalization_steps) AS pasos`,
+      )
+      .get() as Record<string, number>;
+    expect(fila).toEqual({ regimenes: 0, documentos: 0, pasos: 0 });
+  });
+
+  it('las consultas ejecutables coinciden con las documentadas en el esquema', () => {
+    const enEsquema = consultasDocumentadas(leer('../../../db/moneya_schema.sql'), 'moneya_schema.sql');
+    const ejecutables = consultasDocumentadas(leer('../../../db/consultas-muestra.sql'), 'consultas-muestra.sql');
+    expect(ejecutables).toBe(enEsquema);
+  });
+});
