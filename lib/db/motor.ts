@@ -33,11 +33,18 @@ export class ErrorSinKvvfs extends Error {
 /**
  * Carga e inicializa sqlite-wasm una sola vez por página (singleton).
  *
- * locateFile solo se pasa en navegador: el build `node` del paquete también lo
- * respeta y una ruta de navegador rompería la carga (verificado 2026-10-20:
- * locateFile con ruta inexistente → ENOENT en Node). En el navegador el wasm se
- * sirve desde public/sqlite/sqlite3.wasm (copiado por scripts/copy-sqlite-wasm.mjs
- * en postinstall; servido en ${NEXT_PUBLIC_BASE_PATH}/sqlite/sqlite3.wasm).
+ * En navegador el módulo se sirve como **ESM nativo fuera del bundle**
+ * (${BASE_PATH}/sqlite/index.mjs, copiado por scripts/copy-sqlite-wasm.mjs).
+ * El import usa una expresión (no un literal) a propósito: con un literal el
+ * bundler seguía dist/index.mjs → new Worker(new URL("sqlite3-worker1.mjs"))
+ * → sqlite3-worker1.mjs, cuyo `new Worker(new URL(proxyUri, ...))` con
+ * proxyUri dinámico rompe el build de Turbopack ("Can't resolve <dynamic>",
+ * CI 2026-10-20 run 39501321016). Fuera del navegador (tests/CI) la misma
+ * expresión resuelve el bare specifier con el build `node`.
+ *
+ * locateFile solo se pasa en navegador: el build `node` también lo respeta y
+ * una ruta de navegador rompería la carga (verificado 2026-10-20: locateFile
+ * con ruta inexistente → ENOENT en Node).
  */
 export async function abrirMotor(): Promise<Sqlite3Static> {
   if (!motorEnCurso) motorEnCurso = cargarMotor();
@@ -57,17 +64,21 @@ function esNavegadorReal(): boolean {
 }
 
 async function cargarMotor(): Promise<Sqlite3Static> {
-  const { default: init } = await import('@sqlite.org/sqlite-wasm');
-  // index.d.mts declara `init()` sin argumentos, pero dist/index.mjs sí lee
-  // args[0]?.locateFile (sIMS.emscriptenLocateFile). Verificado 2026-10-20.
-  const initConOpciones = init as unknown as (
-    opciones?: { locateFile?: (ruta: string) => string },
-  ) => Promise<Sqlite3Static>;
-  const opciones = esNavegadorReal()
+  const navegadorReal = esNavegadorReal();
+  const modulo = navegadorReal ? `${BASE_PATH}/sqlite/index.mjs` : '@sqlite.org/sqlite-wasm';
+  // Import con expresión: el bundler no analiza el destino (ver doc de abrirMotor).
+  const paquete = (await import(modulo)) as { default: InitDelPaquete };
+  const opciones = navegadorReal
     ? { locateFile: (ruta: string) => `${BASE_PATH}/sqlite/${ruta}` }
     : undefined;
-  return initConOpciones(opciones);
+  return paquete.default(opciones);
 }
+
+// index.d.mts declara `init()` sin argumentos, pero dist/index.mjs sí lee
+// args[0]?.locateFile (sIMS.emscriptenLocateFile). Verificado 2026-10-20.
+type InitDelPaquete = (
+  opciones?: { locateFile?: (ruta: string) => string },
+) => Promise<Sqlite3Static>;
 
 /**
  * Abre (o reabre) la base de datos local kvvfs en `localStorage` y aplica el
