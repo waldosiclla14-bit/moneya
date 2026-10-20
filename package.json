@@ -10,6 +10,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "muestra": "node scripts/muestra-report.mjs",
+    "gen:esquema": "node scripts/gen-esquema.mjs",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {

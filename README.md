@@ -21,7 +21,7 @@ Demo pública: <https://waldosiclla14-bit.github.io/moneya/>
 - Next.js **16** (App Router) con React **19** y TypeScript **5.6**
 - Tailwind CSS **3.4** + framer-motion + lucide-react
 - Supabase (opcional): `@supabase/supabase-js` 2.x
-- Tests: Vitest **5** (147 tests / 27 archivos; `lib/` + tests de componente con React Testing Library + jsdom)
+- Tests: Vitest **5** (159 tests / 29 archivos; `lib/` + tests de componente con React Testing Library + jsdom)
 
 ## Desarrollo local
 
@@ -40,6 +40,7 @@ Comandos útiles:
 | `npm run typecheck` | `tsc --noEmit` |
 | `npm test` | suite Vitest (`{lib,components}/**/*.test.{ts,tsx}`; componentes corren en jsdom) |
 | `npm run muestra` | carga `db/moneya_schema.sql` + `db/muestra.sql` en SQLite en memoria y ejecuta Q1–Q5 |
+| `npm run gen:esquema` | regenera `lib/db/esquema.ts` desde `db/moneya_schema.sql` (la deriva la detecta un test) |
 | `npm run build` | build; usa `BUILD_MODE=export` para Pages, SSR para Vercel |
 
 Nota: en equipos con poca RAM el build `export` puede no terminar localmente; se valida en CI.
@@ -100,6 +101,6 @@ scripts/             scan-secrets.sh (ejecutado en CI)
 
 ## Estado
 
-- Motor financiero: verificado con 147 tests unitarios; CI en verde.
+- Motor financiero: verificado con 159 tests unitarios; CI en verde.
 - Supabase: pendiente de credenciales reales (hoy demo sin persistencia en DB).
 - Vercel: sirve un build previo.

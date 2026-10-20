@@ -8,11 +8,12 @@ Todo el modelo de datos relacional vive aquí (decisión **ADR-0011**).
 | `muestra.sql` | Dataset de demostración. **100 % ficticio**: personas, negocios y montos inventados para probar el esquema. Ventana: 2026-10-01 a 2026-10-31, "hoy" = 2026-10-20, CLP. |
 | `consultas-muestra.sql` | Q1–Q5 con parámetros (`:ledger :from :to :today`), versiones ejecutables de lo documentado en el esquema. |
 
-## Cómo verificar (ambos corren en CI)
+## Cómo verificar (todo corre en CI)
 
 ```bash
-npm test          # lib/db/__tests__/muestra.test.ts (11 tests)
-npm run muestra   # carga esquema + muestra en SQLite en memoria e imprime Q1–Q5 y la salud del esquema
+npm test            # lib/db/__tests__/: muestra (11) + esquema (3) + migración (9)
+npm run muestra     # esquema + muestra en SQLite en memoria: Q1–Q5 y salud del esquema
+npm run gen:esquema # regenera lib/db/esquema.ts (SQL inyectado en el bundle)
 ```
 
 Verificado el 2026-10-20: `integrity_check = ok`, `foreign_key_check = 0`, `meta.schema_version = 0.1.0`, 34 transacciones y Q1 = 1.460.320 CLP libres — [verificado].
@@ -20,12 +21,14 @@ Verificado el 2026-10-20: `integrity_check = ok`, `foreign_key_check = 0`, `meta
 ## Estado al 2026-10-20
 
 - **Esquema:** v0.1.0, carga sin errores de integridad ni claves foráneas.
+- **SQL inyectado:** `lib/db/esquema.ts` se genera desde este archivo; un test falla si derivan (nunca editar a mano).
+- **Migración localStorage → tablas:** `lib/db/migracion.ts` planifica la migración del estado de gastos (`moneya:gastos:v1`) de forma determinista y validada (fechas, montos, categorías). Probada contra el esquema real: totales, presupuestos, idempotencia, y que **no inventa saldo** (la cuenta migrada queda con `include_in_safe_to_spend = 0` porque este módulo no modela ingresos; `v_account_balance` de esa cuenta = −gastos migrados y "libre hoy" (Q1) = 0).
 - **Poblado por la muestra:** 2 libros (personal y negocio), 6 cuentas, 21 categorías, 2 metas, 1 deuda, 5 presupuestos, 5 reglas recurrentes, 34 transacciones, 1 captura IA con 4 ítems de recibo.
 - **Vacío a propósito (regla de no-invención, garantizada por test):**
   - `tax_regimes`, `document_types`, `formalization_steps` → solo con fuente oficial + fecha de consulta (`docs/emprede/FORMALIZATION_*.md`).
   - `exchange_rates` → sin tipo de cambio verificado.
 - **Semillas provisionales** en `institutions`: nombres de bancos/billeteras de Chile y Perú; el propio esquema los marca *"revisar antes de publicar"*.
-- **No integrado:** la app no lee ni escribe este esquema todavía (el gestor de gastos usa `lib/gastos/modelo.ts` sobre `localStorage`). Falta el adapter `sqlite-wasm + OPFS` y el plan de migración de datos locales.
+- **Falta:** el motor de ejecución en el navegador (`sqlite-wasm + OPFS`, ADR-0011) y que la UI de gastos lea/escriba estas tablas. Hasta entonces la app sigue usando `lib/gastos/modelo.ts` sobre `localStorage`.
 
 ## Reglas al editar
 
