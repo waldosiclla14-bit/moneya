@@ -21,7 +21,7 @@ Demo pública: <https://waldosiclla14-bit.github.io/moneya/>
 - Next.js **16** (App Router) con React **19** y TypeScript **5.6**
 - Tailwind CSS **3.4** + framer-motion + lucide-react
 - Supabase (opcional): `@supabase/supabase-js` 2.x
-- Tests: Vitest **5** (136 tests / 26 archivos; `lib/` + tests de componente con React Testing Library + jsdom)
+- Tests: Vitest **5** (143 tests / 27 archivos; `lib/` + tests de componente con React Testing Library + jsdom)
 
 ## Desarrollo local
 
@@ -39,6 +39,7 @@ Comandos útiles:
 | `npm run dev` | servidor de desarrollo |
 | `npm run typecheck` | `tsc --noEmit` |
 | `npm test` | suite Vitest (`{lib,components}/**/*.test.{ts,tsx}`; componentes corren en jsdom) |
+| `npm run muestra` | carga `db/moneya_schema.sql` + `db/muestra.sql` en SQLite en memoria y ejecuta Q1–Q5 |
 | `npm run build` | build; usa `BUILD_MODE=export` para Pages, SSR para Vercel |
 
 Nota: en equipos con poca RAM el build `export` puede no terminar localmente; se valida en CI.
@@ -70,9 +71,11 @@ Sin variables (o vacías) la app sigue funcionando en **modo demo**. Los pasos d
 ```
 app/                 páginas (server components) y metadata/rutas (sitemap, robots, manifest)
 components/          UI (formularios, tarjetas, count-up, goal grid, etc.)
+db/                  esquema SQLite (moneya_schema.sql), muestra ficticia y consultas Q1–Q5
 lib/calculos/        motor financiero determinista (con __tests__)
 lib/cfpb/            scoring CFPB (con __tests__)
 lib/datos/           indicadores LATAM (con __tests__)
+lib/db/              prueba de la muestra sobre SQLite (con __tests__)
 lib/aprender/        biblioteca (con __tests__)
 lib/misiones/        misiones (con __tests__)
 lib/perfil/          lógica de perfil (con __tests__)
@@ -97,6 +100,6 @@ scripts/             scan-secrets.sh (ejecutado en CI)
 
 ## Estado
 
-- Motor financiero: verificado con 136 tests unitarios; CI en verde.
+- Motor financiero: verificado con 143 tests unitarios; CI en verde.
 - Supabase: pendiente de credenciales reales (hoy demo sin persistencia en DB).
 - Vercel: sirve un build previo.

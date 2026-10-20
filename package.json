@@ -9,6 +9,7 @@
     "start": "next start",
     "test": "vitest run",
     "test:watch": "vitest",
+    "muestra": "node scripts/muestra-report.mjs",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
