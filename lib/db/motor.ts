@@ -35,12 +35,13 @@ export class ErrorSinKvvfs extends Error {
  *
  * En navegador el módulo se sirve como **ESM nativo fuera del bundle**
  * (${BASE_PATH}/sqlite/index.mjs, copiado por scripts/copy-sqlite-wasm.mjs).
- * El import usa una expresión (no un literal) a propósito: con un literal el
+ * El import se construye con new Function a propósito: con import literal el
  * bundler seguía dist/index.mjs → new Worker(new URL("sqlite3-worker1.mjs"))
  * → sqlite3-worker1.mjs, cuyo `new Worker(new URL(proxyUri, ...))` con
  * proxyUri dinámico rompe el build de Turbopack ("Can't resolve <dynamic>",
- * CI 2026-10-20 run 39501321016). Fuera del navegador (tests/CI) la misma
- * expresión resuelve el bare specifier con el build `node`.
+ * CI 2026-10-20 run 39501321016), e incluso import(expr) falla en Turbopack
+ * (run 39502260266). Fuera del navegador (tests/CI) la misma ruta resuelve el
+ * bare specifier con el build `node`.
  *
  * locateFile solo se pasa en navegador: el build `node` también lo respeta y
  * una ruta de navegador rompería la carga (verificado 2026-10-20: locateFile
@@ -65,9 +66,24 @@ function esNavegadorReal(): boolean {
 
 async function cargarMotor(): Promise<Sqlite3Static> {
   const navegadorReal = esNavegadorReal();
-  const modulo = navegadorReal ? `${BASE_PATH}/sqlite/index.mjs` : '@sqlite.org/sqlite-wasm';
-  // Import con expresión: el bundler no analiza el destino (ver doc de abrirMotor).
-  const paquete = (await import(modulo)) as { default: InitDelPaquete };
+  let cargador = cargadorSqlite;
+  if (!cargador) {
+    if (!navegadorReal) {
+      throw new Error(
+        'cargarMotor: falta inyectar el cargador del paquete (usarCargadorSqlite) fuera del navegador.',
+      );
+    }
+    // Import construido con new Function hacia el ESM servido en public/sqlite/
+    // (el cuerpo es un string: el bundler no lo analiza). En navegador ejecuta
+    // import('/…/sqlite/index.mjs'); requiere no enviar CSP con 'unsafe-eval'
+    // (GitHub Pages no envía cabeceras, ADR-0001). Ver doc de abrirMotor.
+    const importar = new Function('ruta', 'return import(ruta)') as unknown as (
+      ruta: string,
+    ) => Promise<unknown>;
+    cargador = () => importar(`${BASE_PATH}/sqlite/index.mjs`) as Promise<{ default: InitDelPaquete }>;
+    cargadorSqlite = cargador;
+  }
+  const paquete = await cargador();
   const opciones = navegadorReal
     ? { locateFile: (ruta: string) => `${BASE_PATH}/sqlite/${ruta}` }
     : undefined;
@@ -76,9 +92,24 @@ async function cargarMotor(): Promise<Sqlite3Static> {
 
 // index.d.mts declara `init()` sin argumentos, pero dist/index.mjs sí lee
 // args[0]?.locateFile (sIMS.emscriptenLocateFile). Verificado 2026-10-20.
-type InitDelPaquete = (
+export type InitDelPaquete = (
   opciones?: { locateFile?: (ruta: string) => string },
 ) => Promise<Sqlite3Static>;
+
+export type CargadorSqlite = () => Promise<{ default: InitDelPaquete }>;
+
+let cargadorSqlite: CargadorSqlite | undefined;
+
+/**
+ * Fija cómo se carga el paquete sqlite-wasm. Lo usan los tests (setup de vitest)
+ * para inyectar `() => import('@sqlite.org/sqlite-wasm')`: ese literal no puede
+ * vivir en este archivo porque el bundler de producción lo sigue hasta
+ * dist/sqlite3-worker1.mjs y Turbopack falla allí (CI 2026-10-20). Sin
+ * inyección, solo en navegador real, cargarMotor construye su propio import.
+ */
+export function usarCargadorSqlite(cargador: CargadorSqlite): void {
+  cargadorSqlite = cargador;
+}
 
 /**
  * Abre (o reabre) la base de datos local kvvfs en `localStorage` y aplica el
