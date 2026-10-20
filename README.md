@@ -21,7 +21,8 @@ Demo pública: <https://waldosiclla14-bit.github.io/moneya/>
 - Next.js **16** (App Router) con React **19** y TypeScript **5.6**
 - Tailwind CSS **3.4** + framer-motion + lucide-react
 - Supabase (opcional): `@supabase/supabase-js` 2.x
-- Tests: Vitest **5** (159 tests / 29 archivos; `lib/` + tests de componente con React Testing Library + jsdom)
+- SQLite local: `@sqlite.org/sqlite-wasm` (kvvfs sobre `localStorage`, en hilo principal — ADR-0012)
+- Tests: Vitest **5** (164 tests / 30 archivos; `lib/` + tests de componente con React Testing Library + jsdom)
 
 ## Desarrollo local
 
@@ -43,7 +44,7 @@ Comandos útiles:
 | `npm run gen:esquema` | regenera `lib/db/esquema.ts` desde `db/moneya_schema.sql` (la deriva la detecta un test) |
 | `npm run build` | build; usa `BUILD_MODE=export` para Pages, SSR para Vercel |
 
-Nota: en equipos con poca RAM el build `export` puede no terminar localmente; se valida en CI.
+Nota: `npm install` copia `sqlite3.wasm` a `public/sqlite/` (postinstall, ADR-0012; ese destino está en `.gitignore`). En equipos con poca RAM el build `export` puede no terminar localmente; se valida en CI.
 
 ## Configuración de entorno
 
@@ -101,6 +102,7 @@ scripts/             scan-secrets.sh (ejecutado en CI)
 
 ## Estado
 
-- Motor financiero: verificado con 159 tests unitarios; CI en verde.
+- Motor financiero: verificado con 164 tests unitarios; CI en verde.
+- SQLite local (ADR-0012): motor sqlite-wasm instalado; esquema, migración y transacciones probados en CI con el motor real. Falta conectar la UI de gastos y probar kvvfs en navegador.
 - Supabase: pendiente de credenciales reales (hoy demo sin persistencia en DB).
 - Vercel: sirve un build previo.

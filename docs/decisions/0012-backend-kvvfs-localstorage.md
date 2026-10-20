@@ -1,0 +1,34 @@
+# ADR-0012. Backend de almacenamiento kvvfs (localStorage) en hilo principal, en vez de OPFS
+
+- Estado: Aceptado
+- Fecha: 2026-10-20
+- Contexto:
+  - **ADR-0011** adoptó como backend el encabezado del esquema: *"SQLite (sqlite-wasm + OPFS en la PWA)"* — [verificado] (`db/moneya_schema.sql:3`), con hosting en GitHub Pages [verificado] (ADR-0001, ADR-0009).
+  - **[verificado 2026-10-20]** README de `@sqlite.org/sqlite-wasm@3.54.1-build1` (leído en `node_modules`): el worker + OPFS exige las cabeceras `Cross-Origin-Opener-Policy: same-origin` y `Cross-Origin-Embedder-Policy: require-corp` (README líneas 42–44) y dice textual: *"the worker variant requires special HTTP headers, so it can't be hosted on GitHub Pages"* (líneas 140–141).
+  - **[verificado 2026-10-20]** El propio paquete aborta sin `SharedArrayBuffer`/`Atomics` y pide las cabeceras (`opfsUtil.vfsInstallationFeatureCheck`, `dist/index.mjs`).
+  - **[verificado 2026-10-20]** GitHub Pages no permite fijar cabeceras HTTP: la petición de la comunidad "Allow setting COOP and COEP headers in Github Pages" sigue abierta (`github.com/orgs/community/discussions/13309`; localizada vía búsqueda este día).
+  - **[verificado 2026-10-20]** kvvfs existe en el paquete: `sqlite3.oo1.JsStorageDb('local' | 'session')` fuerza `vfs = 'kvvfs'` y persiste la base en Web Storage (`dist/index.mjs`; tipos: `dist/index.d.mts:929`).
+  - **[verificado 2026-10-20]** Cuota: MDN, *Storage quotas and eviction criteria* — Web Storage limita a **5 MiB de localStorage por origen** (10 MiB total con sessionStorage) y al superarlo el navegador lanza `QuotaExceededError`; los datos en navegador son *best-effort* por defecto (developer.mozilla.org/en-US/docs/Web/API/Storage_API/Storage_quotas_and_eviction_criteria, consultado 2026-10-20).
+  - **[verificado 2026-10-20]** `init({ locateFile })` sí se procesa aunque `index.d.mts` declara `init()` sin argumentos (`dist/index.mjs`: `sIMS.emscriptenLocateFile = args[0]?.locateFile`); en Node también aplica (prueba en sesión: ruta inexistente → ENOENT).
+  - **[verificado 2026-10-20]** El motor corre en Node: `init()` → SQLite 3.54.1 con `oo1.DB(':memory:')` operativo (prueba en sesión + `lib/db/__tests__/motor.test.ts`).
+  - **Decisión de Waldosiclla (2026-10-20, pregunta en sesión):** usar kvvfs sobre localStorage.
+- Decisión:
+  - El **backend de persistencia local** de MONEYA es **kvvfs en hilo principal**: `new sqlite3.oo1.JsStorageDb('local')` (`abrirBaseLocal()` en `lib/db/motor.ts`), con `ESQUEMA_SQL` aplicado solo si la base está vacía (idempotente).
+  - El wasm se sirve desde `public/sqlite/sqlite3.wasm`, copiado por `scripts/copy-sqlite-wasm.mjs` en `postinstall` (destino en `.gitignore`), y `locateFile` apunta a `${NEXT_PUBLIC_BASE_PATH}/sqlite/` **solo en navegador** (en Node rompería la carga: verificado con ENOENT).
+  - Sin worker, sin `SharedArrayBuffer`, sin cabeceras COOP/COEP. La inicialización es un singleton perezoso (se carga al abrir la vista de gastos, no en el arranque).
+  - **CI:** esquema, plan de migración y transacciones se ejecutan en el motor real del paquete (build `node`, en memoria) — `lib/db/__tests__/motor.test.ts`.
+  - **ADR-0011 sigue vigente en todo lo demás** (esquema maestro, Q1–Q5, convenciones de dinero/fechas, reglas de no-invención); solo cambia el backend "OPFS" → "kvvfs" y su estado se anota en consecuencia.
+- Alternativas consideradas:
+  - **OPFS** (lo que contemplaba ADR-0011): descartado — incompatible con GitHub Pages sin cabeceras COOP/COEP [verificado; ver contexto].
+  - **Memoria + snapshot a IndexedDB**: más código propio (export/import, posible pérdida ante cierre abrupto) sin beneficio comprobado a la escala actual; la cuota de Web Storage cubre el caso de uso de gastos [verificado MDN; el uso real no se midió → hipótesis].
+  - **Híbrido OPFS/kvvfs por detección de `crossOriginIsolated`**: dos caminos de almacenamiento, el de OPFS imposible de probar en este entorno (sin navegador, AGENTS §15); se retoma si cambia el hosting (nuevo ADR).
+  - **Cambiar hosting** (p. ej. Vercel) para habilitar OPFS: contradice ADR-0001/0008 (Pages canónico) y requiere decisión explícita del dueño sobre despliegue y costos; no elegida hoy.
+- Consecuencias:
+  - Positivas: funciona en el hosting oficial; misma API `oo1` que habría dado OPFS; sin cabeceras ni worker; esquema y migración probados en CI con el motor real; migración y lectura/escritura quedan en una sola tecnología (SQLite).
+  - Negativas / pendientes honestos:
+    - **Cuota 5 MiB de localStorage por origen** [verificado MDN]: hay que capturar `QuotaExceededError` en la UI (pendiente del paso de cableado); el volumen actual de gastos queda muy por debajo de la cuota — [hipótesis razonable, sin medir].
+    - I/O síncrono en el hilo principal y persistencia **por origen y navegador** (sin multi-dispositivo: ya declarado en ADR-0010/0011); datos *best-effort*: el navegador puede evacuarlos bajo presión de almacenamiento [verificado MDN].
+    - **Prueba manual en navegador pendiente** (no hay navegador en este entorno; AGENTS §15).
+    - La migración `localStorage → tablas` todavía no está conectada a la UI (siguiente paso, tras este ADR).
+    - OPFS queda como mejora futura si el hosting gana soporte de cabeceras (nuevo ADR entonces).
+- Referencias: `lib/db/motor.ts`, `lib/db/__tests__/motor.test.ts`, `scripts/copy-sqlite-wasm.mjs`, `node_modules/@sqlite.org/sqlite-wasm/README.md` (líneas 42–44, 140–142), `node_modules/@sqlite.org/sqlite-wasm/dist/index.mjs` (`vfsInstallationFeatureCheck`, kvvfs, `locateFile`), `node_modules/@sqlite.org/sqlite-wasm/dist/index.d.mts` (`JsStorageDb`), ADR-0011, ADR-0001, ADR-0009.

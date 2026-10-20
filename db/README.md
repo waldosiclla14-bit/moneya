@@ -1,6 +1,6 @@
 # `db/` — esquema maestro y muestra
 
-Todo el modelo de datos relacional vive aquí (decisión **ADR-0011**).
+Todo el modelo de datos relacional vive aquí (decisión **ADR-0011**; backend de almacenamiento local: **ADR-0012**, kvvfs sobre `localStorage`).
 
 | Archivo | Qué es |
 |---|---|
@@ -11,7 +11,7 @@ Todo el modelo de datos relacional vive aquí (decisión **ADR-0011**).
 ## Cómo verificar (todo corre en CI)
 
 ```bash
-npm test            # lib/db/__tests__/: muestra (11) + esquema (3) + migración (9)
+npm test            # lib/db/__tests__/: muestra (11) + esquema (3) + migración (9) + motor (5)
 npm run muestra     # esquema + muestra en SQLite en memoria: Q1–Q5 y salud del esquema
 npm run gen:esquema # regenera lib/db/esquema.ts (SQL inyectado en el bundle)
 ```
@@ -28,7 +28,8 @@ Verificado el 2026-10-20: `integrity_check = ok`, `foreign_key_check = 0`, `meta
   - `tax_regimes`, `document_types`, `formalization_steps` → solo con fuente oficial + fecha de consulta (`docs/emprede/FORMALIZATION_*.md`).
   - `exchange_rates` → sin tipo de cambio verificado.
 - **Semillas provisionales** en `institutions`: nombres de bancos/billeteras de Chile y Perú; el propio esquema los marca *"revisar antes de publicar"*.
-- **Falta:** el motor de ejecución en el navegador (`sqlite-wasm + OPFS`, ADR-0011) y que la UI de gastos lea/escriba estas tablas. Hasta entonces la app sigue usando `lib/gastos/modelo.ts` sobre `localStorage`.
+- **Motor de ejecución (ADR-0012):** `@sqlite.org/sqlite-wasm` instalado; `lib/db/motor.ts` inicializa el motor (singleton), aplica el esquema a una base vacía y ejecuta planes en transacción. Verificado en CI contra el motor real (build `node`): esquema (25 tablas + 2 vistas, `integrity_check = ok`), migración completa y rollback ante error. El wasm se sirve desde `public/sqlite/sqlite3.wasm` (copia de `postinstall`).
+- **Falta:** conectar la UI de gastos a estas tablas (lectura/escritura + migración `moneya:gastos:v1` → tablas al primer uso) y probar en navegador real (kvvfs/`localStorage` no puede ejecutarse en CI). Hasta entonces la app sigue usando `lib/gastos/modelo.ts` sobre `localStorage`.
 
 ## Reglas al editar
 

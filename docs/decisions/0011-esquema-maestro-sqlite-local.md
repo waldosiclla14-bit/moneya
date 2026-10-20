@@ -1,6 +1,6 @@
 # ADR-0011. Esquema maestro en SQLite local (OPFS) con sync_outbox opcional
 
-- Estado: Aceptado
+- Estado: Aceptado · el backend de almacenamiento (OPFS) pasa a **ADR-0012** (kvvfs/localStorage); el resto, vigente
 - Fecha: 2026-10-20
 - Contexto:
   - El dueño entregó el esquema maestro `db/moneya_schema.sql` (v0.1.0), cuyo encabezado declara: *"Motor: SQLite (sqlite-wasm + OPFS en la PWA). Sync opcional vía sync_outbox"* — [verificado] (`db/moneya_schema.sql:3`).

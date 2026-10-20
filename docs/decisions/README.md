@@ -40,7 +40,8 @@ Creado: 2026-10-12 · Origen: deuda técnica **TD-7** (`docs/audit/TECHNICAL_DEB
 | [0008](0008-adopcion-prd-v2.md) | Adopción del PRD V2 como especificación vigente (+ backlog B1–B6) | Aceptado |
 | [0009](0009-auth-pages-client-side.md) | Auth en Pages estático con gateo client-side (J1: sin middleware, RLS como frontera) | Aceptado |
 | [0010](0010-demo-local-oficial.md) | Demo local como modo oficial; backend Supabase diferido hasta usuarios reales | Aceptado |
-| [0011](0011-esquema-maestro-sqlite-local.md) | Esquema maestro en SQLite local (OPFS) con `sync_outbox` opcional | Aceptado |
+| [0011](0011-esquema-maestro-sqlite-local.md) | Esquema maestro en SQLite local (OPFS) con `sync_outbox` opcional | Aceptado (backend → ADR-0012) |
+| [0012](0012-backend-kvvfs-localstorage.md) | Backend de almacenamiento kvvfs (localStorage) en hilo principal, en vez de OPFS | Aceptado |
 
 ## Relación con las preguntas abiertas
 
