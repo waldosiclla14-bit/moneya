@@ -48,6 +48,18 @@ Ejemplos de la línea base: `rgb(126,119,107)` sobre blanco = **4.43:1** (`text-
 ### Siguiente paso
 Cerrar el ciclo con push + CI (incluye el job nuevo `auditoria-visual` sobre la demo desplegada) y confirmar el resultado en `https://waldosiclla14-bit.github.io/moneya/`. Después, decidir el bloque siguiente: tipografía/jerarquía visual (escala de títulos y densidad) o medición de las páginas con sesión.
 
+### Cierre del ciclo (2026-10-21, verificado)
+- Commits: `3eaeb6c` (script de auditoría) · `971f0ee` (fix de accesibilidad) · `b9e306f` (docs) · `22cc70c` (fix de resolución de URL en CI).
+- CI run `39663377460`: **build ✓ · security ✓ · deploy ✓ · Auditoria visual ✓** (primer run con el job nuevo en verde).
+- Auditoría contra la **demo desplegada** (`https://waldosiclla14-bit.github.io/moneya`): **0 hallazgos** en 28 pasadas (7 rutas × tema claro/oscuro × 390/1280 px), `exit=0`.
+- Capturas del resultado (para revisión visual humana): `C:\Users\LENOVO\AppData\Local\Temp\opencode\moneya-shots-nuevo\` (home móvil/escritorio en claro y oscuro, gastos, finanzas, aprender, datos).
+
+### Lo que quedó fuera de este bloque (para el siguiente)
+1. **Tipografía y jerarquía visual**: hoy el H1 mide 36 px en la home y 30 px en el resto; el H2, 18–20 px contra 16 px; y hay párrafos que llegan a 36 px (compiten con el título). Falta una escala única.
+2. **Densidad**: la home móvil mide 3216 px de alto y `/finanzas` 3543 px. Medir con personas reales si compensa plegar bloques.
+3. **Acento**: el color clay ocupa entre 0.03 % y 0.15 % de los píxeles; la interfaz es casi monocroma. Decidir si el acento debe guiar la mirada.
+4. **Páginas con sesión** (`/perfil`, `/cuenta`, `/misiones`, `/onboarding`, `/simulador`): sin auditar porque exigen autenticación.
+
 ---
 
 ## 2026-10-20 · Paso 3 del adapter SQLite: UI de gastos conectada a la base local
