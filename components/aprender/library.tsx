@@ -36,7 +36,7 @@ export function Library() {
                 className="w-full p-5 text-left"
               >
                 <div className="flex items-center justify-between gap-4">
-                  <h3 className="font-display font-semibold text-neutral-900">{lesson.title}</h3>
+                  <h2 className="font-display font-semibold text-neutral-900">{lesson.title}</h2>
                   <span className="shrink-0 text-xs text-neutral-400">
                     {lesson.readingMinutes} min · {LESSON_TOPIC_LABELS[lesson.topic]}
                   </span>
@@ -82,7 +82,7 @@ function Chip({
       type="button"
       onClick={onClick}
       className={`rounded-full border px-3 py-1.5 text-sm transition-colors ${
-        active ? 'border-neutral-900 bg-neutral-900 text-white' : 'border-neutral-300 bg-white text-neutral-600 hover:border-neutral-500'
+        active ? 'border-ink bg-ink text-paper' : 'border-neutral-500 bg-surface text-neutral-600 hover:border-neutral-700'
       }`}
     >
       {children}

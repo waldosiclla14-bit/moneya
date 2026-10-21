@@ -202,7 +202,7 @@ export function FotoFinanciera() {
             <button
               type="button"
               onClick={() => setDeudas((ds) => [...ds, deudaVacia()])}
-              className="rounded-lg border border-neutral-300 px-3 py-1.5 text-sm text-neutral-700 hover:border-neutral-500"
+              className="rounded-lg border border-neutral-500 px-3 py-1.5 text-sm text-neutral-700 hover:border-neutral-500"
             >
               + Agregar deuda
             </button>
@@ -224,7 +224,7 @@ export function FotoFinanciera() {
                     <select
                       value={d.tipo}
                       onChange={(e) => setDeuda(d.id, { tipo: e.target.value as LiabilityKind })}
-                      className="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2"
+                      className="mt-1 w-full rounded-lg border border-neutral-500 px-3 py-2"
                     >
                       {(Object.keys(DEUDA_TIPO_LABELS) as LiabilityKind[]).map((t) => (
                         <option key={t} value={t}>
@@ -436,7 +436,7 @@ function Field({
         inputMode="numeric"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2"
+        className="mt-1 w-full rounded-lg border border-neutral-500 px-3 py-2"
       />
     </label>
   );

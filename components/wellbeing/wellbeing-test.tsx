@@ -70,7 +70,7 @@ export function WellbeingTest() {
                   {optionsDe(item.block).map((op) => (
                     <label
                       key={op.value}
-                      className="cursor-pointer rounded-lg border border-neutral-300 px-3 py-2 text-sm text-neutral-700"
+                      className="cursor-pointer rounded-lg border border-neutral-500 px-3 py-2 text-sm text-neutral-700"
                     >
                       <input
                         type="radio"
@@ -98,7 +98,7 @@ export function WellbeingTest() {
           {(Object.keys(AGE_BUCKET_LABELS) as AgeBucket[]).map((bucket) => (
             <label
               key={bucket}
-              className="cursor-pointer rounded-lg border border-neutral-300 px-3 py-2 text-sm text-neutral-700"
+              className="cursor-pointer rounded-lg border border-neutral-500 px-3 py-2 text-sm text-neutral-700"
             >
               <input
                 type="radio"
@@ -129,7 +129,7 @@ export function WellbeingTest() {
                 {p.options.map((op) => (
                   <label
                     key={op.value}
-                    className="cursor-pointer rounded-lg border border-neutral-300 px-2 py-1.5 text-center text-xs text-neutral-700"
+                    className="cursor-pointer rounded-lg border border-neutral-500 px-2 py-1.5 text-center text-xs text-neutral-700"
                   >
                     <input
                       type="radio"
@@ -162,7 +162,7 @@ export function WellbeingTest() {
           <p className="mt-2 text-sm text-emerald-800">{resultado.note}</p>
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
             {resultado.dimensions.map((d) => (
-              <div key={d.key} className="rounded-lg border border-emerald-100 bg-white p-4">
+              <div key={d.key} className="rounded-lg border border-emerald-100 bg-surface p-4">
                 <div className="text-sm text-neutral-600">{d.label}</div>
                 <div className="mt-1 font-display text-2xl font-semibold tracking-tight text-neutral-900">{d.value} / 100</div>
                 <details className="mt-2 text-xs text-neutral-500">

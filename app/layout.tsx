@@ -111,7 +111,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
             </Link>
           </div>
           <p>MONEYA no es asesoría financiera ni de inversión. Los resultados son estimaciones bajo escenarios.</p>
-          <p className="mt-1 text-[11px] text-muted/80">CL · PE — Global Findex 2025 · Decides con datos, no con miedo.</p>
+          <p className="mt-1 text-[11px] text-muted">CL · PE — Global Findex 2025 · Decides con datos, no con miedo.</p>
         </footer>
         </RegionProvider>
         <InstallPrompt />

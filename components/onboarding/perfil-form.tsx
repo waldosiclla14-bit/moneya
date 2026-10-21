@@ -65,7 +65,7 @@ export function PerfilForm() {
           <select
             value={pais}
             onChange={(e) => setPais(e.target.value as 'CL' | 'PE')}
-            className="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2"
+            className="mt-1 w-full rounded-lg border border-neutral-500 px-3 py-2"
           >
             {PAISES.map((p) => (
               <option key={p.code} value={p.code}>
@@ -80,7 +80,7 @@ export function PerfilForm() {
           <select
             value={ageBucket}
             onChange={(e) => setAgeBucket(e.target.value as AgeBucket)}
-            className="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2"
+            className="mt-1 w-full rounded-lg border border-neutral-500 px-3 py-2"
           >
             <option value="18_61">18 a 61 años</option>
             <option value="62_plus">62 años o más</option>
@@ -92,7 +92,7 @@ export function PerfilForm() {
           <select
             value={employment}
             onChange={(e) => setEmployment(e.target.value as EmploymentStatus)}
-            className="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2"
+            className="mt-1 w-full rounded-lg border border-neutral-500 px-3 py-2"
           >
             {(Object.keys(EMPLOYMENT_LABELS) as EmploymentStatus[]).map((s) => (
               <option key={s} value={s}>

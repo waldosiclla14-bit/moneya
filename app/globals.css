@@ -16,10 +16,13 @@
   --n100: 242 240 235;
   --n200: 232 228 220;
   --n300: 205 198 184;
-  --n400: 164 156 140;
-  --n500: 126 119 107;
-  --n600: 107 102 94;
-  --n700: 83 80 74;
+  /* Pasos 400-700: todos cumplen AA (>= 4.5:1) sobre n200, n100, paper y
+     surface. 300 queda para bordes decorativos; 800+ para texto de máximo
+     contraste. Verificado con scripts/auditar-visual.mjs. */
+  --n400: 104 99 90;
+  --n500: 95 90 83;
+  --n600: 86 82 75;
+  --n700: 78 75 70;
   --n800: 59 57 52;
   --n900: 46 44 41;
   --n950: 31 30 29;
@@ -28,26 +31,27 @@
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/* Tema oscuro: inversión cálida (sin negro puro). Los textos chicos
-   usan pasos 400+ para mantener contraste ≥ 4.5 sobre el fondo. */
+/* Tema oscuro: inversión cálida (sin negro puro). Los pasos 400+ son los
+   únicos admitidos como color de texto: todos superan 4.5:1 sobre n50, n100
+   y n200 (los fondos reales de la app). Ver scripts/auditar-visual.mjs. */
 .dark {
   color-scheme: dark;
   --paper: 31 30 29;
   --cream: 59 57 52;
   --surface: 46 44 41;
   --ink: 250 249 245;
-  --muted: 164 156 140;
+  --muted: 172 165 151;
   --hairline: 83 80 74;
   --clay: 205 110 66;
-  --clay-deep: 217 123 74;
+  --clay-deep: 232 146 98;
   --n50: 31 30 29;
   --n100: 46 44 41;
   --n200: 59 57 52;
   --n300: 83 80 74;
-  --n400: 138 131 117;
-  --n500: 164 156 140;
-  --n600: 201 194 180;
-  --n700: 220 214 200;
+  --n400: 172 165 151;
+  --n500: 190 183 167;
+  --n600: 205 198 180;
+  --n700: 218 212 196;
   --n800: 232 228 220;
   --n900: 242 240 235;
   --n950: 250 249 245;
@@ -73,7 +77,7 @@ body {
   }
 
   .btn-secondary {
-    @apply rounded-xl border border-hairline bg-surface px-4 py-2.5 text-sm font-medium text-ink transition-colors duration-200 hover:border-muted/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clay;
+    @apply rounded-xl border border-neutral-400 bg-surface px-4 py-2.5 text-sm font-medium text-ink transition-colors duration-200 hover:border-muted/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clay;
   }
 
   .card {
@@ -110,6 +114,50 @@ body {
   .nav-link:hover::after {
     transform: scaleX(1);
   }
+}
+
+/* Los colores de estado de Tailwind (rojo, verde, ámbar) son fijos y no
+   responden a las variables CSS: en tema oscuro quedaban ilegibles sobre el
+   fondo oscuro o con el texto claro encima. Aquí se invierten. */
+.dark .bg-white {
+  background-color: rgb(var(--surface));
+}
+
+.dark .bg-red-50 {
+  background-color: rgb(58 40 38);
+}
+
+.dark .bg-emerald-50 {
+  background-color: rgb(38 55 46);
+}
+
+.dark .text-red-600 {
+  color: rgb(248 180 180);
+}
+
+.dark .text-emerald-700 {
+  color: rgb(126 222 178);
+}
+
+.dark .text-emerald-800 {
+  color: rgb(152 234 196);
+}
+
+.dark .text-emerald-900 {
+  color: rgb(178 240 210);
+}
+
+.dark .text-amber-700 {
+  color: rgb(240 190 110);
+}
+
+.dark .border-emerald-100,
+.dark .border-emerald-200 {
+  border-color: rgb(70 110 88);
+}
+
+.dark .border-red-200 {
+  border-color: rgb(120 70 66);
 }
 
 .btn-primary,

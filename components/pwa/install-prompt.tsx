@@ -69,7 +69,7 @@ export function InstallPrompt() {
     <div
       role="region"
       aria-label="Instalar MONEYA"
-      className="fixed inset-x-3 bottom-3 z-50 mx-auto max-w-md rounded-xl border border-neutral-200 bg-white p-4 shadow-lg"
+      className="fixed inset-x-3 bottom-3 z-50 mx-auto max-w-md rounded-xl border border-neutral-300 bg-surface p-4 shadow-lg"
     >
       <div className="flex items-start justify-between gap-3">
         <div>
@@ -97,7 +97,7 @@ export function InstallPrompt() {
           <button
             type="button"
             onClick={instalar}
-            className="rounded-lg bg-ink px-3 py-2 text-sm font-medium text-white hover:opacity-90"
+            className="rounded-lg bg-ink px-3 py-2 text-sm font-medium text-paper hover:opacity-90"
           >
             Instalar app
           </button>

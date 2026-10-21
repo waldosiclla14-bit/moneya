@@ -50,7 +50,7 @@ export function ThemeToggle() {
       aria-pressed={oscuro}
       aria-label={oscuro ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
       title={oscuro ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
-      className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-hairline bg-surface text-muted transition-colors hover:text-ink"
+      className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-neutral-500 bg-surface text-muted transition-colors hover:text-ink"
     >
       {oscuro ? (
         <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true">

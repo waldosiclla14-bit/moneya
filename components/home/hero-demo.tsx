@@ -38,7 +38,7 @@ export function HeroDemo() {
             inputMode="numeric"
             value={monto}
             onChange={(e) => setMonto(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2"
+            className="mt-1 w-full rounded-lg border border-neutral-500 px-3 py-2"
           />
         </label>
         <div className="grid grid-cols-2 gap-3">
@@ -50,7 +50,7 @@ export function HeroDemo() {
               inputMode="numeric"
               value={ingreso}
               onChange={(e) => setIngreso(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2"
+              className="mt-1 w-full rounded-lg border border-neutral-500 px-3 py-2"
             />
           </label>
           <label htmlFor="demo-horas" className="block">
@@ -61,7 +61,7 @@ export function HeroDemo() {
               inputMode="numeric"
               value={horas}
               onChange={(e) => setHoras(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2"
+              className="mt-1 w-full rounded-lg border border-neutral-500 px-3 py-2"
             />
           </label>
         </div>

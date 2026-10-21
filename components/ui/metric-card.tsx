@@ -70,7 +70,7 @@ export function MetricCard({
       ? 'border-red-200 bg-red-50'
       : highlight === 'up'
         ? 'border-emerald-200 bg-emerald-50'
-        : 'border-neutral-200 bg-white';
+        : 'border-neutral-200 bg-surface';
 
   return (
     <div className={`rounded-xl border p-4 ${tone}`}>

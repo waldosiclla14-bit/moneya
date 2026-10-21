@@ -133,7 +133,7 @@ export function MisionesList() {
                   <button
                     type="button"
                     onClick={() => cambiar(mision.slug, ciclo(status))}
-                    className="rounded-lg border border-neutral-300 px-3 py-1.5 text-sm text-neutral-700 hover:border-neutral-500"
+                    className="rounded-lg border border-neutral-500 px-3 py-1.5 text-sm text-neutral-700 hover:border-neutral-500"
                   >
                     Cambiar estado
                   </button>

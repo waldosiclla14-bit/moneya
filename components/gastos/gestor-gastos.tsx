@@ -181,7 +181,7 @@ export function GestorGastos() {
               const [y, m] = mes.split('-').map(Number);
               setMes(`${y}-${`${m - 1}`.padStart(2, '0')}`);
             }}
-            className="rounded-lg border border-neutral-300 px-3 py-1.5 text-sm"
+            className="rounded-lg border border-neutral-500 px-3 py-1.5 text-sm"
           >
             ‹
           </button>
@@ -192,7 +192,7 @@ export function GestorGastos() {
               const [y, m] = mes.split('-').map(Number);
               setMes(`${y}-${`${m + 1}`.padStart(2, '0')}`);
             }}
-            className="rounded-lg border border-neutral-300 px-3 py-1.5 text-sm"
+            className="rounded-lg border border-neutral-500 px-3 py-1.5 text-sm"
           >
             ›
           </button>
@@ -210,7 +210,7 @@ export function GestorGastos() {
               value={monto}
               onChange={(e) => setMonto(e.target.value)}
               placeholder="ej. 12500"
-              className="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2"
+              className="mt-1 w-full rounded-lg border border-neutral-500 px-3 py-2"
             />
           </label>
           <label className="block">
@@ -219,7 +219,7 @@ export function GestorGastos() {
               type="date"
               value={fecha}
               onChange={(e) => setFecha(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2"
+              className="mt-1 w-full rounded-lg border border-neutral-500 px-3 py-2"
             />
           </label>
           <label className="block">
@@ -227,7 +227,7 @@ export function GestorGastos() {
             <select
               value={categoriaId}
               onChange={(e) => setCategoriaId(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2"
+              className="mt-1 w-full rounded-lg border border-neutral-500 px-3 py-2"
             >
               {estado.categorias.map((c) => (
                 <option key={c.id} value={c.id}>
@@ -244,7 +244,7 @@ export function GestorGastos() {
               onChange={(e) => setNota(e.target.value)}
               placeholder="ej. almuerzo"
               maxLength={80}
-              className="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2"
+              className="mt-1 w-full rounded-lg border border-neutral-500 px-3 py-2"
             />
           </label>
         </div>
@@ -258,8 +258,9 @@ export function GestorGastos() {
               value={nuevaCategoria}
               onChange={(e) => setNuevaCategoria(e.target.value)}
               placeholder="Nueva categoría…"
+              aria-label="Nombre de la nueva categoría"
               maxLength={24}
-              className="w-44 rounded-lg border border-neutral-300 px-3 py-2 text-sm"
+              className="w-44 rounded-lg border border-neutral-500 px-3 py-2 text-sm"
             />
             <button type="button" onClick={crearCategoria} className="link-soft text-sm">
               Crear categoría
@@ -321,12 +322,13 @@ export function GestorGastos() {
                       inputMode="numeric"
                       defaultValue={estado.presupuestos[c.id] ?? ''}
                       placeholder="sin límite"
+                      aria-label={`Presupuesto mensual de ${c.label}`}
                       onBlur={(e) =>
                         accion('No se pudo guardar el presupuesto.', (r) =>
                           r.definirPresupuesto(c.id, Number(e.target.value.replace(/\D/g, '')) || 0),
                         )
                       }
-                      className="w-28 rounded-md border border-neutral-300 px-2 py-1 text-xs"
+                      className="w-28 rounded-md border border-neutral-500 px-2 py-1 text-xs"
                     />
                   </div>
                 )}
@@ -344,12 +346,14 @@ export function GestorGastos() {
             value={texto}
             onChange={(e) => setTexto(e.target.value)}
             placeholder="Buscar por nota…"
-            className="min-w-44 flex-1 rounded-lg border border-neutral-300 px-3 py-2 text-sm"
+            aria-label="Buscar gastos por nota"
+            className="min-w-44 flex-1 rounded-lg border border-neutral-500 px-3 py-2 text-sm"
           />
           <select
             value={categoriaFiltro}
             onChange={(e) => setCategoriaFiltro(e.target.value)}
-            className="rounded-lg border border-neutral-300 px-3 py-2 text-sm"
+            aria-label="Filtrar gastos por categoría"
+            className="rounded-lg border border-neutral-500 px-3 py-2 text-sm"
           >
             <option value="">Todas las categorías</option>
             {estado.categorias.map((c) => (

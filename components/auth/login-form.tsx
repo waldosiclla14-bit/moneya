@@ -96,7 +96,7 @@ export function LoginForm() {
             type="button"
             onClick={() => setModo(m)}
             className={`rounded-lg px-3 py-1.5 text-sm ${
-              modo === m ? 'bg-ink text-paper' : 'border border-hairline text-muted'
+              modo === m ? 'bg-ink text-paper' : 'border border-neutral-500 text-muted'
             }`}
           >
             {m === 'entrar' ? 'Entrar' : 'Crear cuenta'}
@@ -111,7 +111,7 @@ export function LoginForm() {
           required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2"
+          className="mt-1 w-full rounded-lg border border-neutral-500 px-3 py-2"
         />
       </label>
 
@@ -123,7 +123,7 @@ export function LoginForm() {
           minLength={6}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2"
+          className="mt-1 w-full rounded-lg border border-neutral-500 px-3 py-2"
         />
       </label>
 
