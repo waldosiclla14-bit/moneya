@@ -155,10 +155,23 @@ Objetivo: cubrir lo que CI no puede (MIME de `.mjs`, kvvfs real, cuota). Marcar 
 - [ ] Recargar y confirmar que la app renderiza sin errores rojos en Consola.
 
 ### 1. El runtime de sqlite se sirve bien (MIME + 200)
-- [ ] `GET /moneya/sqlite/index.mjs` → **200** (en local sin `/moneya`).
-- [ ] `GET /moneya/sqlite/sqlite3.wasm` → **200**.
-- [ ] `content-type` de `index.mjs` es `text/javascript` o `application/javascript` (si es `text/plain`/`application/octet-stream` → **FALLA**, el import nativo se rechaza).
-- [ ] Consola sin error de import/404 de `sqlite`.
+> **Verificado por HTTP desde la sesión (2026-10-20), no requiere navegador.** El riesgo de MIME —el que bloqueaba el despliegue— queda **descartado**:
+>
+> | URL | Status | content-type | bytes |
+> |---|---|---|---|
+> | `https://waldosiclla14-bit.github.io/moneya/sqlite/index.mjs` | 200 | `text/javascript; charset=utf-8` | 656.872 |
+> | `https://waldosiclla14-bit.github.io/moneya/sqlite/sqlite3-worker1.mjs` | 200 | `text/javascript; charset=utf-8` | 650.116 |
+> | `https://waldosiclla14-bit.github.io/moneya/sqlite/sqlite3.wasm` | 200 | `application/wasm` | 879.084 |
+> | `https://waldosiclla14-bit.github.io/moneya/` (app) | 200 | `text/html; charset=utf-8` | 38.243 |
+> | `https://moneya.vercel.app/sqlite/index.mjs` (build SSR) | 200 | `application/javascript; charset=utf-8` | — |
+> | `https://moneya.vercel.app/sqlite/sqlite3.wasm` | 200 | `application/wasm` | — |
+>
+> Los `.mjs` se sirven como JavaScript y el `.wasm` como `application/wasm` en **ambos** despliegues → el `import()` nativo y `locateFile` deberían funcionar. Falta confirmar que el **navegador** los pida sin error (parte 2).
+
+- [x] `GET /moneya/sqlite/index.mjs` → **200** (en local sin `/moneya`).
+- [x] `GET /moneya/sqlite/sqlite3.wasm` → **200**.
+- [x] `content-type` de `index.mjs` es `text/javascript` o `application/javascript` (si es `text/plain`/`application/octet-stream` → **FALLA**, el import nativo se rechaza).
+- [ ] Consola sin error de import/404 de `sqlite` (por confirmar en navegador).
 
 ### 2. Migración y persistencia (base = verdad)
 - [ ] Antes de usar la pantalla: `localStorage.getItem('migracion_gastos_v1')` → `null`.
@@ -174,4 +187,8 @@ Objetivo: cubrir lo que CI no puede (MIME de `.mjs`, kvvfs real, cuota). Marcar 
 ### Resultado (a completar por Waldosiclla)
 - Fecha · entorno (Pages / local) · navegador:
 - Observaciones / fallos:
+
+### URLs de la demo
+- GitHub Pages (build `export`, basePath `/moneya`): `https://waldosiclla14-bit.github.io/moneya/`
+- Vercel (build SSR, `homepageUrl` del repo): `https://moneya.vercel.app/`
 
