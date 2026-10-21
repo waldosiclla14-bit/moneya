@@ -98,13 +98,20 @@ jobs:
       - name: Resuelve la URL publica y espera a que Pages responda
         run: |
           set -e
-          BASE="${{ needs.deploy.outputs.page_url }}"
+          RAW="${{ needs.deploy.outputs.page_url }}"
+          RAW="${RAW%/}"
+          case "$RAW" in
+            */moneya) BASE="$RAW" ;;
+            "") BASE="https://waldosiclla14-bit.github.io/moneya" ;;
+            *) BASE="$RAW/moneya" ;;
+          esac
+          echo "page_url=[$RAW] -> BASE=[$BASE]"
           case "$BASE" in
-            */moneya) ;;
-            *) BASE="$BASE/moneya" ;;
+            http*) ;;
+            *) echo "URL publica no resoluble"; exit 1 ;;
           esac
           echo "BASE=$BASE" >> "$GITHUB_ENV"
-          for i in $(seq 1 12); do
+          for i in $(seq 1 20); do
             code=$(curl -s -o /dev/null -w "%{http_code}" "$BASE/" || true)
             if [ "$code" = "200" ]; then
               echo "Pages responde 200 en $BASE"
@@ -115,5 +122,12 @@ jobs:
           done
           echo "Pages no respondio 200 en $BASE"
           exit 1
+      - name: Verifica que Chrome este disponible
+        run: |
+          set -e
+          for p in /usr/bin/google-chrome /usr/bin/google-chrome-stable /usr/bin/chromium; do
+            if [ -x "$p" ]; then echo "CHROME_PATH=$p" >> "$GITHUB_ENV"; echo "Chrome: $p"; exit 0; fi
+          done
+          echo "Chrome no encontrado en el runner"; exit 1
       - name: Auditoria visual (movil y escritorio, claro y oscuro)
         run: npm run auditar:visual -- --url "$BASE" --tema claro,oscuro --ancho 390,1280 --fallo
