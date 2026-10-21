@@ -74,6 +74,46 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     needs: build
+    outputs:
+      page_url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
+
+  # Puerta de calidad visual: mide el sitio ya desplegado en un navegador real
+  # (contraste WCAG, nombres accesibles, bordes de control, jerarquia de
+  # encabezados). Si falla, el workflow queda en rojo como senal visible; el
+  # deploy ya ocurrio, asi que no se revierte nada.
+  auditoria-visual:
+    name: Auditoria visual (contraste y accesibilidad)
+    runs-on: ubuntu-latest
+    needs: deploy
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Resuelve la URL publica y espera a que Pages responda
+        run: |
+          set -e
+          BASE="${{ needs.deploy.outputs.page_url }}"
+          case "$BASE" in
+            */moneya) ;;
+            *) BASE="$BASE/moneya" ;;
+          esac
+          echo "BASE=$BASE" >> "$GITHUB_ENV"
+          for i in $(seq 1 12); do
+            code=$(curl -s -o /dev/null -w "%{http_code}" "$BASE/" || true)
+            if [ "$code" = "200" ]; then
+              echo "Pages responde 200 en $BASE"
+              exit 0
+            fi
+            echo "intento $i: HTTP $code, reintentando"
+            sleep 15
+          done
+          echo "Pages no respondio 200 en $BASE"
+          exit 1
+      - name: Auditoria visual (movil y escritorio, claro y oscuro)
+        run: npm run auditar:visual -- --url "$BASE" --tema claro,oscuro --ancho 390,1280 --fallo

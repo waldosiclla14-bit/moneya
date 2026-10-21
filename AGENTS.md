@@ -274,3 +274,13 @@ Guarda el detalle en `docs/audit/` (sin duplicar docs existentes). No afirmes ha
 ## Criterio final
 
 Construir desde problemas reales, evidencia verificable y resultados medibles. La prioridad no es sumar funciones, sino demostrar que ayudan a las personas a entender su situación, decidir mejor y mejorar su bienestar financiero sin asumir riesgos innecesarios.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+## This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

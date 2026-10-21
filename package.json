@@ -13,6 +13,7 @@
     "sqlite:out": "node scripts/copy-sqlite-wasm.mjs",
     "muestra": "node scripts/muestra-report.mjs",
     "gen:esquema": "node scripts/gen-esquema.mjs",
+    "auditar:visual": "node scripts/auditar-visual.mjs",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
