@@ -142,3 +142,36 @@ Push y `gh run watch` para confirmar el paso de verificación del artefacto; des
 ### Siguiente paso
 
 **Paso 3 del adapter:** cablear la UI de gastos a `lib/db/motor.ts` (lectura/escritura sobre tablas + migración con marcador `migracion_gastos_v1`), con tests de las partes puras y prueba manual en navegador declarada.
+
+---
+
+## Checklist · Prueba manual en navegador (Paso 3) — pendiente de ejecutar
+
+Objetivo: cubrir lo que CI no puede (MIME de `.mjs`, kvvfs real, cuota). Marcar cada casilla con la evidencia observada.
+
+### Preparación
+- [ ] Abrir la app desplegada (`https://<usuario>.github.io/moneya/`) o local (`npm run dev`).
+- [ ] DevTools (F12) → pestañas **Console** y **Network** abiertas; Network filtrado por `sqlite`.
+- [ ] Recargar y confirmar que la app renderiza sin errores rojos en Consola.
+
+### 1. El runtime de sqlite se sirve bien (MIME + 200)
+- [ ] `GET /moneya/sqlite/index.mjs` → **200** (en local sin `/moneya`).
+- [ ] `GET /moneya/sqlite/sqlite3.wasm` → **200**.
+- [ ] `content-type` de `index.mjs` es `text/javascript` o `application/javascript` (si es `text/plain`/`application/octet-stream` → **FALLA**, el import nativo se rechaza).
+- [ ] Consola sin error de import/404 de `sqlite`.
+
+### 2. Migración y persistencia (base = verdad)
+- [ ] Antes de usar la pantalla: `localStorage.getItem('migracion_gastos_v1')` → `null`.
+- [ ] Registrar un gasto en **Gastos** (categoría, monto, fecha) → guarda sin banner de error.
+- [ ] `localStorage.getItem('migracion_gastos_v1')` → ya **no** es `null`.
+- [ ] `localStorage.getItem('moneya:gastos:v1')` → **null o intacto** (el legado ya no se escribe).
+- [ ] Recargar (F5): el gasto persiste y con los **mismos números**.
+
+### 3. Cuota (`QuotaExceededError`) — 5 MiB
+- [ ] Llenar `localStorage` (relleno de ~10 MiB) y registrar un gasto → aparece **banner de error**, sin crash ni pérdida silenciosa.
+- [ ] Limpiar el relleno (`localStorage.removeItem('relleno'+i)`) y recargar.
+
+### Resultado (a completar por Waldosiclla)
+- Fecha · entorno (Pages / local) · navegador:
+- Observaciones / fallos:
+
