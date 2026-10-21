@@ -35,6 +35,16 @@ jobs:
       - run: npm run typecheck
       - run: npm run build
       - run: npm test
+      # El runtime de sqlite-wasm se sirve fuera del bundle: si no llega a out/,
+      # la app cae al respaldo localStorage en silencio (kvvfs nunca activo).
+      - run: npm run sqlite:out
+      - name: Verifica el runtime de sqlite en el artefacto
+        run: |
+          set -e
+          for f in index.mjs sqlite3-worker1.mjs sqlite3.wasm; do
+            test -f "out/sqlite/$f" || { echo "FALTA out/sqlite/$f"; exit 1; }
+          done
+          echo "OK: runtime de sqlite presente en out/sqlite/"
       - uses: actions/upload-pages-artifact@v3
         with:
           path: out

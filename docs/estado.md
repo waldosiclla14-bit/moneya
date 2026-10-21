@@ -58,6 +58,47 @@ Protocolo: AGENTS.md §2.5. Cada sesión cierra con decisiones, archivos, verifi
 
 **Prueba manual en navegador del Paso 3** (checklist arriba) y, con eso verde, definir con Waldosiclla el siguiente bloque (sync/backend diferido O1, o siguiente pantalla del MVP).
 
+---
+
+## 2026-10-20 · Paso 3 (cierre): el runtime de sqlite no llegaba al artefacto desplegado
+
+El build de CI quedó verde (`4b85273`, run 39503503103), pero al revisar el artefacto se encontró un hueco **distinto del bug de Turbopack**:
+
+### Decisiones tomadas y por qué
+
+1. **`public/sqlite/` nunca estuvo commiteado** (está en `.gitignore`) y en el primer checkout de la sesión `out/` no existía, así que la verificación "build verde" **no probó** que `/sqlite/index.mjs|sqlite3-worker1.mjs|sqlite3.wasm` existiera en el artefacto. Con `basePath: /moneya` y `output: export`, el módulo se carga con `import('/moneya/sqlite/index.mjs')`; si ese archivo no está en `out/`, el import da 404 y `abrirRepositorioGastos` cae al respaldo localStorage **en silencio** (kvvfs nunca activo). Es el mismo tipo de fallo que el banner de error buscaba evitar, pero en la ruta del artefacto, no del código.
+2. **Dos redes, no una:** `copy-sqlite-wasm.mjs` ahora copia a `public/sqlite/` y, si `out/` existe, también a `out/sqlite/`. El postinstall omite `out/` (`NEXT_SKIP_SQLITE_OUT=1`, vía `node -e`) para no dejar un `out/` obsoleto en artifacts/CI; en CI, tras `npm run build`, un paso `npm run sqlite:out` **refresca `out/sqlite/`** y otro paso **verifica que los 3 archivos existan** antes de subir el artefacto. Si algún día el volcado de `public/` con `basePath` fallara, el deploy no se sube en silencio: el job falla.
+3. **`.gitignore`:** se añadió `out/sqlite/` explícito (aunque `out/` ya estaba) y se corrigió el comentario, que aún describía solo `sqlite3.wasm`.
+
+### Archivos creados/modificados
+
+| Archivo | Qué |
+|---|---|
+| `scripts/copy-sqlite-wasm.mjs` | copia a `public/sqlite/` y a `out/sqlite/` si `out/` existe; omite `out/` con `NEXT_SKIP_SQLITE_OUT=1`; log con ruta relativa |
+| `package.json` | `postinstall` fija `NEXT_SKIP_SQLITE_OUT=1`; nuevo `sqlite:out` (copia con `out/` si existe) |
+| `.github/workflows/gh-pages.yml` | tras el build: `npm run sqlite:out` + paso que verifica `out/sqlite/{index.mjs,sqlite3-worker1.mjs,sqlite3.wasm}` |
+| `.gitignore` | `out/sqlite/` explícito + comentario corregido |
+| `README.md` | fila `sqlite:out` y nota de postinstall/build |
+| `docs/estado.md` | esta entrada |
+
+### Qué se probó y cómo (comando + resultado)
+
+- `node scripts/copy-sqlite-wasm.mjs` (sin `out/`) → 3 archivos a `public/sqlite/` (656.872 + 650.116 + 879.084 bytes).
+- `npm run postinstall` → solo `public/sqlite/` (no crea `out/`).
+- Con `out/` presente → copia a `public/sqlite/` y a `out/sqlite/`; verificado con `Get-ChildItem out/sqlite` (3 archivos).
+- `npm run typecheck` → sin errores; `npx vitest run` → **174 passed (174), 31 archivos**.
+- `git check-ignore -v out/sqlite/index.mjs` → cubierto por `.gitignore` (sin residuo en el repo). `out/` de prueba eliminado tras verificar.
+
+### Errores pendientes y decisiones que requieren validación humana
+
+- **El chequeo del artefacto es de existencia, no de carga.** Solo la prueba manual en navegador (o un humo automatizado con Playwright, descartado por tamaño) confirma MIME correcto de `.mjs` y carga del wasm en Pages. Sigue pendiente.
+- Sigue pendiente todo lo declarado en la entrada del Paso 3 (carrera de país, `QuotaExceededError`, kvvfs real).
+- **No verifiqué en CI** el paso nuevo hasta el próximo push.
+
+### Siguiente paso
+
+Push y `gh run watch` para confirmar el paso de verificación del artefacto; después, prueba manual en navegador del Paso 3.
+
 ## 2026-10-20 · Paso 2 del adapter SQLite: motor sqlite-wasm + ADR-0012
 
 ### Decisiones tomadas y por qué

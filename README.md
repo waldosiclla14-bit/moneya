@@ -43,8 +43,9 @@ Comandos útiles:
 | `npm run muestra` | carga `db/moneya_schema.sql` + `db/muestra.sql` en SQLite en memoria y ejecuta Q1–Q5 |
 | `npm run gen:esquema` | regenera `lib/db/esquema.ts` desde `db/moneya_schema.sql` (la deriva la detecta un test) |
 | `npm run build` | build; usa `BUILD_MODE=export` para Pages, SSR para Vercel |
+| `npm run sqlite:out` | copia el runtime de sqlite (`index.mjs`, `sqlite3-worker1.mjs`, `sqlite3.wasm`) a `public/sqlite/` y, si existe, `out/sqlite/` |
 
-Nota: `npm install` copia `sqlite3.wasm` a `public/sqlite/` (postinstall, ADR-0012; ese destino está en `.gitignore`). En equipos con poca RAM el build `export` puede no terminar localmente; se valida en CI.
+Nota: `npm install` copia el runtime de sqlite (`index.mjs`, `sqlite3-worker1.mjs`, `sqlite3.wasm`) a `public/sqlite/` (postinstall, ADR-0012; ese destino está en `.gitignore`), y el build `export` lo arrastra a `out/`. El postinstall omite `out/` (`NEXT_SKIP_SQLITE_OUT=1`) para no dejar un `out/` obsoleto en artifacts/CI; el `deploy` de Pages copia también a `out/sqlite/` con `npm run sqlite:out` por si el volcado de `public/` fallara con `basePath`. En equipos con poca RAM el build `export` puede no terminar localmente; se valida en CI.
 
 ## Configuración de entorno
 

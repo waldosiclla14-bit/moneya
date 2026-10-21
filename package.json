@@ -9,7 +9,8 @@
     "start": "next start",
     "test": "vitest run",
     "test:watch": "vitest",
-    "postinstall": "node scripts/copy-sqlite-wasm.mjs",
+    "postinstall": "node -e \"process.env.NEXT_SKIP_SQLITE_OUT='1';import('./scripts/copy-sqlite-wasm.mjs')\"",
+    "sqlite:out": "node scripts/copy-sqlite-wasm.mjs",
     "muestra": "node scripts/muestra-report.mjs",
     "gen:esquema": "node scripts/gen-esquema.mjs",
     "typecheck": "tsc --noEmit"

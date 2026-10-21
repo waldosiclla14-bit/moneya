@@ -5,8 +5,10 @@ node_modules/
 .next/
 out/
 
-# wasm de sqlite copiado por postinstall (scripts/copy-sqlite-wasm.mjs)
+# wasm de sqlite copiado por postinstall/sqlite:out (scripts/copy-sqlite-wasm.mjs).
+# Cubre public/sqlite/, out/sqlite/ y cualquier variante de la copia.
 public/sqlite/
+out/sqlite/
 
 # tsbuildinfo (artefacto incremental de tsc)
 *.tsbuildinfo
