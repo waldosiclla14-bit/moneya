@@ -4,6 +4,52 @@ Protocolo: AGENTS.md §2.5. Cada sesión cierra con decisiones, archivos, verifi
 
 ---
 
+## 2026-10-21 · Auditoría visual real y corrección de accesibilidad (contraste, nombres, bordes)
+
+### Problema (evidencia)
+La app cumplía el contraste en apariencia, pero ninguna medición lo verificaba. Al medir el sitio **desplegado** con un navegador real (Chrome headless + CDP, script nuevo), la línea base sobre 7 páginas públicas fue:
+
+| Métrica | Antes (producción) | Después (local, mismo script) |
+|---|---|---|
+| Textos con contraste < 4.5:1 — tema claro | **58** | **0** |
+| Textos con contraste < 4.5:1 — tema oscuro | **83** | **0** |
+| Bordes de control con contraste < 3:1 (WCAG 1.4.11) | 1–11 por página | **0** |
+| Campos de formulario sin nombre accesible | 3 (en `/gastos`) | **0** |
+| Saltos de encabezado (H1→H3) | 1 (en `/aprender`) | **0** |
+
+Ejemplos de la línea base: `rgb(126,119,107)` sobre blanco = **4.43:1** (`text-neutral-500`), `rgb(164,156,140)` sobre blanco = **2.72:1** (`text-neutral-400`), borde de input `rgb(205,198,184)` = **1.7:1** (`border-neutral-300`).
+
+### Decisiones tomadas y por qué
+1. **Corregir la escala de grises, no los usos puntuales.** Los pasos 400–700 se recalibraron para que *cualquier* texto de la escala cumpla ≥ 4.5:1 sobre los fondos reales (`n200`, `n100`, `paper`, `surface`) en ambos temas. Así se corrigen ~40 usos a la vez y no depende de que alguien recuerde la regla. `n300` queda para bordes decorativos y `800+` para texto de máximo contraste.
+2. **Invertir los colores de estado en tema oscuro.** `bg-white`, `bg-red-50`, `bg-emerald-50`, `text-red-600`, `text-emerald-7/8/900`, `text-amber-700` y `--muted`/`--clay-deep` son fijos en Tailwind o estaban mal calibrados: en oscuro un mensaje de error en rojo quedaba en 2.8:1 y un chip activo con `bg-neutral-900 text-white` quedaba en 1.03:1 (blanco sobre casi blanco). Ahora hay un bloque `.dark` que los invierte.
+3. **Bordes de control a `neutral-500` (≥ 3:1).** Un input cuyo borde no alcanza 3:1 no cumple 1.4.11; el requisito no es estética, es que el campo se vea.
+4. **Nombres accesibles con `aria-label`** en los campos que no dependían de un `<label>` envolvente (búsqueda, filtro de categoría, nueva categoría, presupuesto por categoría).
+5. **Jerarquía de encabezados**: el título de cada lección pasa de `h3` a `h2` (antes había un salto H1→H3 en `/aprender`).
+6. **La auditoría se vuelve puerta de calidad en CI** (job `auditoria-visual`): mide el sitio ya desplegado en Pages, en móvil 390 y escritorio 1280, en tema claro y oscuro, y deja el workflow en rojo si aparece un hallazgo. No bloquea el deploy (ocurre después).
+
+### Archivos creados/modificados
+- `scripts/auditar-visual.mjs` (nuevo) — auditoría en navegador real: contraste de cada texto, nombres accesibles, bordes de control, jerarquía de encabezados. Sin dependencias (WebSocket nativo de Node + CDP).
+- `package.json` — `npm run auditar:visual`.
+- `.github/workflows/gh-pages.yml` — job `auditoria-visual` (tras el deploy) + `outputs.page_url` en el job `deploy`.
+- `app/globals.css` — escala neutra recalibrada (claro y oscuro), `--muted`/`--clay-deep` oscuros, bloque `.dark` para colores de estado, `.btn-secondary` con borde ≥ 3:1.
+- `app/layout.tsx` — pie de página sin `/80` (perdía contraste).
+- `components/aprender/library.tsx`, `components/auth/login-form.tsx`, `components/finanzas/foto-financiera.tsx`, `components/gastos/gestor-gastos.tsx`, `components/home/hero-demo.tsx`, `components/misiones/misiones-list.tsx`, `components/onboarding/perfil-form.tsx`, `components/pwa/install-prompt.tsx`, `components/simulador/simulador-form.tsx`, `components/ui/metric-card.tsx`, `components/ui/theme-toggle.tsx`, `components/wellbeing/wellbeing-test.tsx` — bordes de control, `aria-label`, h3→h2, `bg-white`→`bg-surface`.
+
+### Qué se probó y cómo (comando + resultado)
+- `node scripts/auditar-visual.mjs https://waldosiclla14-bit.github.io/moneya --tema claro` (línea base, producción): **58** textos < 4.5 y bordes < 3:1 → hallazgo confirmado en el sitio desplegado, no solo en código.
+- `npm run auditar:visual -- --url http://localhost:3000 --tema claro,oscuro --ancho 390,1280 --fallo` (dev server local): **Total de hallazgos: 0** en 28 auditorías de página (7 rutas × 2 temas × 2 anchos), `exit=0`.
+- `npm run typecheck` → sin errores. `npm test` → **174/174** tests en 31 archivos.
+
+### Errores pendientes y decisiones que requieren validación humana
+- **El aspecto cambió a propósito**: los grises de texto secundario (notas, metadatos, pies) ahora son más oscuros. Antes se leían como "suaves" y ahora tienen más peso. Es una decisión estética que corresponde a Waldosiclla: se puede aligerar el paso `n500` (4.43:1) solo para texto grande, **nunca** volver a 4.43:1 en texto pequeño.
+- La auditoría solo cubre las 7 páginas públicas. Las que exigen sesión (`/perfil`, `/cuenta`, `/misiones`, `/onboarding`, `/simulador`) no se midieron: requieren autenticación. Pendiente medirlas con una sesión de prueba.
+- `QuotaExceededError` durante una escritura real que **crezca** la base sigue sin reproducirse (ver checklist, parte 3).
+
+### Siguiente paso
+Cerrar el ciclo con push + CI (incluye el job nuevo `auditoria-visual` sobre la demo desplegada) y confirmar el resultado en `https://waldosiclla14-bit.github.io/moneya/`. Después, decidir el bloque siguiente: tipografía/jerarquía visual (escala de títulos y densidad) o medición de las páginas con sesión.
+
+---
+
 ## 2026-10-20 · Paso 3 del adapter SQLite: UI de gastos conectada a la base local
 
 ### Decisiones tomadas y por qué
@@ -174,15 +220,29 @@ Objetivo: cubrir lo que CI no puede (MIME de `.mjs`, kvvfs real, cuota). Marcar 
 - [ ] Consola sin error de import/404 de `sqlite` (por confirmar en navegador).
 
 ### 2. Migración y persistencia (base = verdad)
-- [ ] Antes de usar la pantalla: `localStorage.getItem('migracion_gastos_v1')` → `null`.
-- [ ] Registrar un gasto en **Gastos** (categoría, monto, fecha) → guarda sin banner de error.
-- [ ] `localStorage.getItem('migracion_gastos_v1')` → ya **no** es `null`.
-- [ ] `localStorage.getItem('moneya:gastos:v1')` → **null o intacto** (el legado ya no se escribe).
-- [ ] Recargar (F5): el gasto persiste y con los **mismos números**.
+> **Verificado en navegador real el 2026-10-21** (Chrome headless + CDP contra la demo de Pages, no con DevTools a mano). Resultado: **cumple**.
+>
+> - kvvfs activo: 63 claves `kvvfs-local-*` en `localStorage`; el motor usa la base SQLite local, no el respaldo.
+> - Gasto registrado (monto 12.500, nota "Prueba automatizada CDP") → aparece en la lista, **sin errores de consola**.
+> - Recarga (F5) → el gasto **persiste**.
+> - El legado `localStorage['moneya:gastos:v1']` queda **intacto** (la app ya no escribe ahí).
+>
+> **Corrección a este checklist:** el marcador de migración `migracion_gastos_v1` **no vive en `localStorage`**: se guarda en la tabla `meta` de la base SQLite (`lib/db/migracion.ts` → `IDS.marcadorMigracion`). Por eso los pasos que pedían `localStorage.getItem('migracion_gastos_v1')` estaban mal planteados: en `localStorage` siempre dará `null`.
+
+- [x] Motor SQLite+kvvfs inicializado (claves `kvvfs-local-*` presentes).
+- [x] Registrar un gasto en **Gastos** (categoría, monto, fecha) → guarda sin banner de error.
+- [x] Migración aplicada: marcador `migracion_gastos_v1` presente en la tabla `meta` de SQLite.
+- [x] `localStorage['moneya:gastos:v1']` → **intacto** (el legado ya no se escribe).
+- [x] Recargar (F5): el gasto persiste y con los **mismos números**.
 
 ### 3. Cuota (`QuotaExceededError`) — 5 MiB
-- [ ] Llenar `localStorage` (relleno de ~10 MiB) y registrar un gasto → aparece **banner de error**, sin crash ni pérdida silenciosa.
-- [ ] Limpiar el relleno (`localStorage.removeItem('relleno'+i)`) y recargar.
+> **Parcialmente verificado el 2026-10-21.** Llenar `localStorage` hasta el límite **sí** lanza `QuotaExceededError` (en el relleno), pero la escritura posterior en kvvfs **no falló**: el motor reescribe claves de tamaño similar, así que no hay crecimiento y no se reproduce el error de cuota al guardar. El gasto escrito antes del llenado se conservó tras recargar: **no hubo pérdida silenciosa**.
+>
+> Lo que **queda pendiente**: un escenario donde la escritura **crezca** la base (suficientes gastos nuevos para superar el límite) para ver el banner de error real. Hoy esa ruta no está probada.
+
+- [x] Llenar `localStorage` → `QuotaExceededError` al escribir el relleno.
+- [ ] Registrar un gasto que **incremente** el tamaño → aparece **banner de error**, sin crash ni pérdida silenciosa. *(pendiente)*
+- [x] Limpiar el relleno y recargar → los datos previos siguen ahí.
 
 ### Resultado (a completar por Waldosiclla)
 - Fecha · entorno (Pages / local) · navegador:
