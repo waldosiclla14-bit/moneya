@@ -8,7 +8,7 @@ export default function FinanzasPage() {
     <div className="space-y-6">
       <div>
         <p className="eyebrow mb-2">Tu foto del mes</p>
-        <h1 className="font-display text-3xl font-semibold tracking-tight">Tu foto financiera</h1>
+        <h1 className="font-display text-4xl font-semibold leading-[1.1] tracking-tight text-ink sm:text-5xl">Tu foto financiera</h1>
         <p className="mt-1 text-neutral-600">
           Captura tu mes: ingresos por fuente, gastos y saldo líquido, más tus deudas. Verás tus tres números
           (meses de cobertura, ratio de deuda y concentración de ingreso) calculados al instante, cada uno con

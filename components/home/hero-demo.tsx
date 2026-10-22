@@ -25,7 +25,7 @@ export function HeroDemo() {
   return (
     <div className="card p-5">
       <p className="eyebrow">Demo en vivo</p>
-      <h2 className="mt-1 font-display text-xl font-semibold tracking-tight text-ink">
+      <h2 className="mt-1 font-display text-xl font-semibold tracking-tight text-ink sm:text-2xl">
         ¿Cuánto trabajo es esa compra?
       </h2>
 

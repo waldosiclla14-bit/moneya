@@ -9,7 +9,7 @@ export function ContextoLatam() {
           const filas = VALORES.filter((v) => v.countryCode === pais.code);
           return (
             <section key={pais.code} className="card p-5">
-              <h2 className="font-display font-semibold">{pais.name}</h2>
+              <h2 className="font-display text-xl font-semibold tracking-tight sm:text-2xl">{pais.name}</h2>
               <p className="mt-1 text-[11px] uppercase tracking-wide text-neutral-400">
                 Población adulta · escala 0–100%
               </p>

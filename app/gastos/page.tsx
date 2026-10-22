@@ -11,7 +11,7 @@ export default function GastosPage() {
     <div className="space-y-6">
       <div>
         <p className="eyebrow mb-2">Gestor de gastos</p>
-        <h1 className="font-display text-3xl font-semibold tracking-tight">Tus gastos, en claro</h1>
+        <h1 className="font-display text-4xl font-semibold leading-[1.1] tracking-tight text-ink sm:text-5xl">Tus gastos, en claro</h1>
         <p className="mt-1 max-w-2xl text-neutral-600">
           Registra cada gasto con su categoría y mira cuánto llevas y cuánto te queda del presupuesto. Todo se
           guarda en tu navegador.

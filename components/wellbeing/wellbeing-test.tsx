@@ -50,7 +50,7 @@ export function WellbeingTest() {
   return (
     <div className="space-y-6">
       <div className="card p-5">
-        <h2 className="font-display font-semibold">Escala de Bienestar Financiero del CFPB</h2>
+        <h2 className="font-display text-xl font-semibold tracking-tight sm:text-2xl">Escala de Bienestar Financiero del CFPB</h2>
         <p className="mt-1 text-sm text-neutral-600">
           Son 10 afirmaciones validadas (dominio público). Responde todas: obtienes un puntaje CFPB 0–100 y
           un desglose descriptivo por 4 ejes.
@@ -155,7 +155,7 @@ export function WellbeingTest() {
 
       {completas && resultado && (
         <section className="rounded-xl border border-emerald-200 bg-emerald-50 p-5">
-          <h2 className="font-display font-semibold text-emerald-900">Tu puntaje CFPB</h2>
+          <h2 className="font-display text-xl font-semibold tracking-tight text-emerald-900 sm:text-2xl">Tu puntaje CFPB</h2>
           <div className="mt-2 font-display text-4xl font-semibold tracking-tight text-emerald-900">
             {resultado.score} <span className="text-lg font-semibold">/ 100</span>
           </div>

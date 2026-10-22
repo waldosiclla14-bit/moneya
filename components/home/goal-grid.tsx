@@ -112,7 +112,7 @@ export function GoalGrid() {
             <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-cream text-clayDeep">
               {c.icon}
             </span>
-            <h2 className="mt-3 font-display text-lg font-semibold tracking-tight text-ink">{c.t}</h2>
+            <h2 className="mt-3 font-display text-xl font-semibold tracking-tight text-ink sm:text-2xl">{c.t}</h2>
             <p className="mt-1 text-sm leading-relaxed text-muted">{c.d}</p>
           </Link>
         </Reveal>

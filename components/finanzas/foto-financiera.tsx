@@ -14,6 +14,7 @@ import {
   type LiabilityKind,
 } from '../../lib/calculos';
 import { SavePanel } from '../ui/save-panel';
+import { ComposicionMes } from './composicion-mes';
 import { useSession } from '../../lib/supabase/use-session';
 import { createClientClient } from '../../lib/supabase/client';
 import { guardarSnapshotFinanciero, guardarDeuda } from '../../lib/supabase/finanzas-repo';
@@ -184,7 +185,7 @@ export function FotoFinanciera() {
     <div className="grid gap-6 lg:grid-cols-[1fr,1fr]">
       <div className="space-y-6">
         <section className="card p-5">
-          <h2 className="font-display font-semibold">Snapshot del mes</h2>
+          <h2 className="font-display text-xl font-semibold tracking-tight sm:text-2xl">Snapshot del mes</h2>
           <div className="mt-3 grid grid-cols-2 gap-3">
             <Field label="Mes" value={form.mes} onChange={(v) => set('mes', v)} />
             <Field label="Saldo líquido / ahorro" value={form.liquidez} onChange={(v) => set('liquidez', v)} />
@@ -198,7 +199,7 @@ export function FotoFinanciera() {
 
         <section className="card p-5">
           <div className="flex items-center justify-between">
-            <h2 className="font-display font-semibold">Deudas</h2>
+            <h2 className="font-display text-xl font-semibold tracking-tight sm:text-2xl">Deudas</h2>
             <button
               type="button"
               onClick={() => setDeudas((ds) => [...ds, deudaVacia()])}
@@ -254,25 +255,25 @@ export function FotoFinanciera() {
 
       <div className="space-y-6">
         <section>
-          <h2 className="mb-2 font-display font-semibold">Panorama del mes</h2>
+          <h2 className="mb-2 font-display text-xl font-semibold tracking-tight sm:text-2xl">Panorama del mes</h2>
 
-          <div className="card p-5">
+          <div className="rounded-2xl bg-clay p-5 text-paper shadow-[0_1px_2px_rgba(28,25,21,0.05)]">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-sm text-neutral-600">Colchón · meses de gastos esenciales</p>
-                <p className="mt-1 font-display text-4xl font-semibold tracking-tight text-ink">
+                <p className="text-sm font-medium">Colchón · meses de gastos esenciales</p>
+                <p className="mt-1 font-display text-[40px] font-semibold leading-none tracking-tight sm:text-[56px]">
                   {formatoMeses(margen.mesesCobertura.value)}
-                  <span className="ml-2 font-sans text-base font-medium text-neutral-500">meses</span>
+                  <span className="ml-2 font-sans text-base font-medium">meses</span>
                 </p>
-                <p className="mt-2 max-w-sm text-sm leading-relaxed text-neutral-500">
-                  Tu saldo líquido de <span className="font-semibold text-neutral-700">{money.format(margen.liquidBalance)}</span>{' '}
-                  cubre gastos esenciales de <span className="font-semibold text-neutral-700">{money.format(margen.gastosEsenciales)} por mes</span>.
+                <p className="mt-2 max-w-sm text-sm leading-relaxed">
+                  Tu saldo líquido de <span className="font-semibold">{money.format(margen.liquidBalance)}</span>{' '}
+                  cubre gastos esenciales de <span className="font-semibold">{money.format(margen.gastosEsenciales)} por mes</span>.
                 </p>
-                <p className="mt-1 text-xs text-neutral-500">Meta sana: ≥3 meses · sólido: ≥6 meses.</p>
+                <p className="mt-1 text-xs">Meta sana: ≥3 meses · sólido: ≥6 meses.</p>
               </div>
               <EstadoColchon value={margen.mesesCobertura.value} />
             </div>
-            <details className="mt-3 text-xs text-neutral-500">
+            <details className="mt-3 text-xs">
               <summary className="cursor-pointer">Ver fórmula</summary>
               <p className="mt-1 italic">{margen.mesesCobertura.formula} · umbrales: &lt; 3 meses → atención · ≥ 3 base estándar · ≥ 6 sólido</p>
             </details>
@@ -341,7 +342,7 @@ export function FotoFinanciera() {
         </section>
 
         <section>
-          <h2 className="mb-2 font-display font-semibold">Resumen del mes</h2>
+          <h2 className="mb-2 font-display text-xl font-semibold tracking-tight sm:text-2xl">Resumen del mes</h2>
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="card p-4 text-sm text-neutral-600">
               Ingreso total
@@ -368,9 +369,24 @@ export function FotoFinanciera() {
           </div>
         </section>
 
+        <section>
+          <h2 className="mb-2 font-display text-xl font-semibold tracking-tight sm:text-2xl">Composición del mes</h2>
+          <div className="card p-5">
+            <p className="text-sm text-neutral-600">A dónde se va tu ingreso, con lo que registraste este mes.</p>
+            <div className="mt-4">
+              <ComposicionMes
+                ingreso={margen.ingresoMensual}
+                esenciales={margen.gastosEsenciales}
+                noEsenciales={margen.gastosNoEsenciales}
+                cuotas={snapshot.debtMonthlyPayments}
+              />
+            </div>
+          </div>
+        </section>
+
         <section className="card p-5">
           <div className="flex items-center justify-between">
-            <h2 className="font-display font-semibold">Tu tiempo vale dinero</h2>
+            <h2 className="font-display text-xl font-semibold tracking-tight sm:text-2xl">Tu tiempo vale dinero</h2>
             <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-[11px] text-neutral-500">
               El valor de tu hora
             </span>
@@ -452,7 +468,7 @@ function EstadoColchon({ value }: { value: number | null }) {
   }
   if (value < 3) {
     return (
-      <span className="shrink-0 rounded-full bg-clay/10 px-3 py-1 text-xs font-medium text-clayDeep">
+      <span className="shrink-0 rounded-full bg-paper px-3 py-1 text-xs font-medium text-clayDeep">
         Enfocar colchón
       </span>
     );

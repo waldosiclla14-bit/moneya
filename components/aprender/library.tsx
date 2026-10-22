@@ -36,7 +36,7 @@ export function Library() {
                 className="w-full p-5 text-left"
               >
                 <div className="flex items-center justify-between gap-4">
-                  <h2 className="font-display font-semibold text-neutral-900">{lesson.title}</h2>
+                  <h2 className="font-display text-xl font-semibold tracking-tight text-neutral-900 sm:text-2xl">{lesson.title}</h2>
                   <span className="shrink-0 text-xs text-neutral-400">
                     {lesson.readingMinutes} min · {LESSON_TOPIC_LABELS[lesson.topic]}
                   </span>

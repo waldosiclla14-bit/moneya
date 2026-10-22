@@ -103,7 +103,7 @@ export function SimuladorForm() {
     <div className="grid gap-6 lg:grid-cols-[1fr,1fr]">
       <div className="space-y-6">
         <section className="card p-5">
-          <h2 className="font-display font-semibold">Tu mes actual</h2>
+          <h2 className="font-display text-xl font-semibold tracking-tight sm:text-2xl">Tu mes actual</h2>
           <div className="mt-3 grid grid-cols-2 gap-3">
             <Field label="Ingreso dependiente" value={form.dependiente} onChange={(v) => set('dependiente', v)} />
             <Field label="Ingreso independiente" value={form.independiente} onChange={(v) => set('independiente', v)} />
@@ -115,7 +115,7 @@ export function SimuladorForm() {
         </section>
 
         <section className="card p-5">
-          <h2 className="font-display font-semibold">Escenario «qué pasa si»</h2>
+          <h2 className="font-display text-xl font-semibold tracking-tight sm:text-2xl">Escenario «qué pasa si»</h2>
           <div className="mt-3 space-y-3">
             <label className="block">
               <span className="text-sm text-neutral-600">Escenario</span>
@@ -155,7 +155,7 @@ export function SimuladorForm() {
 
       <div className="space-y-6">
         <section>
-          <h2 className="mb-2 font-semibold">Hoy</h2>
+          <h2 className="mb-2 font-display text-xl font-semibold tracking-tight sm:text-2xl">Hoy</h2>
           <div className="grid gap-3 sm:grid-cols-3">
             <MetricCard metric={base.mesesCobertura} />
             <MetricCard metric={base.ratioDeuda} />
@@ -164,7 +164,7 @@ export function SimuladorForm() {
         </section>
 
         <section>
-          <h2 className="mb-2 font-semibold">
+          <h2 className="mb-2 font-display text-xl font-semibold tracking-tight sm:text-2xl">
             Proyección · <span className="text-neutral-500">{proyeccion.escenario}</span>
           </h2>
           <div className="grid gap-3 sm:grid-cols-3">

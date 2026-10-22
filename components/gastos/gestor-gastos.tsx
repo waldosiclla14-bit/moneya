@@ -169,7 +169,7 @@ export function GestorGastos() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="font-display text-xl font-semibold tracking-tight text-ink">Gastos del mes</h2>
+          <h2 className="font-display text-xl font-semibold tracking-tight text-ink sm:text-2xl">Gastos del mes</h2>
           <p className="mt-1 text-sm text-neutral-600">
             Registra cada gasto con su categoría. El total y el presupuesto se actualizan al instante.
           </p>
