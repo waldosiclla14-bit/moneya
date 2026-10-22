@@ -121,7 +121,7 @@ export function MisionesList() {
                 <div>
                   <div className="flex items-center gap-2">
                     <span className="text-sm font-semibold text-neutral-400">#{mision.sortOrder}</span>
-                    <h3 className="font-display font-semibold text-neutral-900">{mision.title}</h3>
+                    <h2 className="font-display font-semibold text-neutral-900">{mision.title}</h2>
                   </div>
                   <p className="mt-1 text-sm text-neutral-600">{mision.description}</p>
                   <p className="mt-1 text-xs text-neutral-400">{mision.howToComplete}</p>
@@ -158,7 +158,7 @@ export function MisionesList() {
               }
             }
           }}
-          className="rounded-lg border border-red-200 px-3 py-1.5 text-sm text-red-600 hover:border-red-400"
+          className="rounded-lg border border-red-500 px-3 py-1.5 text-sm text-red-600 hover:border-red-600"
         >
           Reiniciar progreso
         </button>

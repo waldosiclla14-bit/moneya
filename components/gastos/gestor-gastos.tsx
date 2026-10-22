@@ -386,7 +386,7 @@ export function GestorGastos() {
                     <button
                       type="button"
                       onClick={() => accion('No se pudo quitar el gasto.', (r) => r.quitarGasto(g.id))}
-                      className="rounded-md border border-red-200 px-2 py-1 text-xs text-red-600 hover:border-red-400"
+                      className="rounded-md border border-red-500 px-2 py-1 text-xs text-red-600 hover:border-red-600"
                     >
                       Quitar
                     </button>

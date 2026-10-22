@@ -6,10 +6,17 @@
 // Uso:
 //   node scripts/auditar-visual.mjs [url] [--tema claro,oscuro] [--ancho 390,1280] [--rutas /,/gastos] [--fallo]
 //   node scripts/auditar-visual.mjs http://localhost:3000 --tema claro --fallo
+//   node scripts/auditar-visual.mjs http://localhost:3000 --sesion --rutas /cuenta
 //
 // Requiere Chrome o Edge instalado (o CHROME_PATH). No usa dependencias.
 // Con --fallo devuelve código 1 si hay texto con contraste < 4.5, campos sin
 // nombre accesible, bordes de control < 3:1 o saltos de encabezado.
+//
+// --sesion: siembra una sesión Supabase falsa (no vencida, sin red) en
+// localStorage antes de cargar la app, para auditar la UI con sesión. Exige
+// NEXT_PUBLIC_SUPABASE_URL (la misma que usó el build) porque el cliente solo
+// se crea si esa env está presente; en /cuenta verifica que la UI con sesión
+// realmente se haya renderizado. En CI no se usa: Pages no tiene secretos.
 import { spawn } from 'node:child_process';
 import { mkdtempSync, existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -26,9 +33,47 @@ const lista = (n, porDefecto) => valor(n, porDefecto).split(',').map((s) => s.tr
 const BASE = valor('--url', args.find((a) => a.startsWith('http')) || 'http://localhost:3000').replace(/\/$/, '');
 const TEMAS = lista('--tema', 'claro,oscuro');
 const ANCHOS = lista('--ancho', '390,1280').map(Number);
-const RUTAS = lista('--rutas', '/,/gastos,/finanzas,/aprender,/datos,/metodologia,/login');
+const RUTAS = lista('--rutas', '/,/gastos,/finanzas,/aprender,/datos,/metodologia,/login,/perfil,/cuenta,/misiones,/onboarding,/simular');
 const CON_FALLO = flag('--fallo');
+const CON_SESION = flag('--sesion');
 const PUERTO = 9331 + (process.pid % 300);
+
+// Siembra de sesión (solo con --sesion): la misma derivación de clave que usa
+// supabase-js v2 (sb-<hostname[0]>-auth-token) y la forma que admite
+// _isValidSession (access_token + refresh_token + expires_at). Sin expiración
+// cercana => __loadSession no intenta refrescar => cero llamadas de red.
+let SCRIPT_SESION = null;
+if (CON_SESION) {
+  const supaUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  if (!supaUrl || !supaUrl.startsWith('https://')) {
+    console.error('--sesion requiere NEXT_PUBLIC_SUPABASE_URL (la misma env con la que compilaste la app).');
+    process.exit(2);
+  }
+  const host = new URL(supaUrl).hostname.split('.')[0];
+  SCRIPT_SESION = `(() => {
+    try {
+      const clave = ${JSON.stringify(`sb-${host}-auth-token`)};
+      if (localStorage.getItem(clave)) return;
+      const exp = Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 365 * 10;
+      const b64 = (o) => btoa(JSON.stringify(o)).replace(/\\+/g, '-').replace(/\\//g, '_').replace(/=+$/, '');
+      const id = '00000000-0000-4000-8000-000000000001';
+      localStorage.setItem(clave, JSON.stringify({
+        access_token: b64({ alg: 'none', typ: 'JWT' }) + '.' + b64({ sub: id, exp, role: 'authenticated', aud: 'authenticated' }) + '.sin-firmar',
+        refresh_token: 'rt-auditoria',
+        expires_at: exp,
+        expires_in: 3600,
+        token_type: 'bearer',
+        user: {
+          id, aud: 'authenticated', role: 'authenticated',
+          email: 'auditoria@demo.local',
+          created_at: new Date().toISOString(), updated_at: new Date().toISOString(),
+          app_metadata: { provider: 'email', providers: ['email'] },
+          user_metadata: {}, identities: [],
+        },
+      }));
+    } catch (e) { console.error('no se pudo sembrar la sesión: ' + e); }
+  })()`;
+}
 
 function buscarChrome() {
   const candidatos = [
@@ -107,6 +152,7 @@ try {
 
   await send('Page.enable');
   await send('Runtime.enable');
+  if (SCRIPT_SESION) await send('Page.addScriptToEvaluateOnNewDocument', { source: SCRIPT_SESION });
 
   // El tema lo guarda el layout en localStorage (moneya:tema) al montar.
   await irA('/');
@@ -161,7 +207,7 @@ try {
     };
   })()`;
 
-  console.log(`Auditoria visual — ${BASE}`);
+  console.log(`Auditoria visual — ${BASE}${CON_SESION ? ' · con sesión sembrada' : ''}`);
   for (const tema of TEMAS) {
     for (const ancho of ANCHOS) {
       await send('Emulation.setDeviceMetricsOverride', { width: ancho, height: 900, deviceScaleFactor: 1, mobile: ancho < 600 });
@@ -195,6 +241,15 @@ try {
         if (r.saltos.length) {
           fallos += r.saltos.length;
           console.log(`    SALTOS DE ENCABEZADO: ${r.saltos.map((s) => s.de + '->' + s.a).join(',')}`);
+        }
+        // Prueba de que la sesión sembrada fue consumida: /cuenta con sesión
+        // muestra la tarjeta de exportación, no el aviso de "inicia sesión".
+        if (CON_SESION && ruta === '/cuenta') {
+          const uiSesion = await evaluar(`document.body.innerText.includes('Exportar mis datos')`);
+          if (!uiSesion) {
+            fallos++;
+            console.log('    SESION NO APLICADA: /cuenta no renderiza la UI con sesión (el build no tiene NEXT_PUBLIC_SUPABASE_URL?)');
+          }
         }
       }
     }
