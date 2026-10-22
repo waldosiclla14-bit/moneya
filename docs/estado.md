@@ -4,6 +4,38 @@ Protocolo: AGENTS.md §2.5. Cada sesión cierra con decisiones, archivos, verifi
 
 ---
 
+## 2026-10-22 · Bloque B: home móvil compacto (3216 → 2881 px, −10.4%)
+
+### Problema (evidencia)
+Medición real por bloques del home a 390 px (Chrome headless + CDP, script `medir-home.cjs`): documento de **3216 px** con el **GoalGrid de 1379 px (42.9 %)**, header de **149 px** (3 filas: logo/enlaces/toggle) vs 61 px en desktop, y el wrapper `space-y-10` sumando 120 px de huecos. Desktop (1280) en 2119 px, sin problema.
+
+### Decisiones tomadas y por qué
+1. **Solo cambios con contraparte `sm:`** — todo lo que se compacta en móvil se restaura al ritmo actual desde 640 px; desktop medido después: 2115 px y header 61 px, prácticamente idéntico (−4 px).
+2. **Header de 3 filas a 2** (`app/layout.tsx` + `nav-links.tsx`): nav pasa de `flex-col` a `flex-wrap` con el bloque de enlaces en `order-last w-full` → en móvil, logo y toggle comparten fila (113 px, −36); en desktop `sm:flex-nowrap sm:order-none sm:w-auto` replica exactamente el layout anterior. Sin tocar niveles de encabezado ni contenido.
+3. **GoalGrid (−162 px)**: `gap-3`, tarjeta `p-4`, icono `h-10`, `mt-2` en móvil; `sm:` devuelve `gap-4/p-5/h-11/mt-3`. **No se tocó el tamaño del H2** (escala unificada del bloque A+C: `text-xl sm:text-2xl`).
+4. **Ritmos de página**: `space-y-6 sm:space-y-10`, `main py-8 sm:py-10`, hero `space-y-3 sm:space-y-4` y párrafo `text-base sm:text-lg`, HeroDemo/confianza con `p-4 sm:p-5` y `mt-2/3 sm:mt-3/4`.
+5. **Sin quitar contenido**: ninguna tarjeta, texto ni enlace se eliminó; la compactación es de densidad (padding/ritmo), no de información.
+
+### Archivos modificados
+`app/layout.tsx` · `app/page.tsx` · `components/layout/nav-links.tsx` · `components/home/goal-grid.tsx` · `components/home/hero-demo.tsx` (5 archivos, ±18 líneas).
+
+### Qué se probó y cómo (comando + resultado)
+- Medición 390 px: **3216 → 2881 px (−335, −10.4 %)**; por bloque: header 149→113, hero 445→413, sección demo+confianza 662→622, módulos 1379→1217.
+- Medición 1280 px: **2119 → 2115 px**, header 61 px (igual), grid 680 px (igual) → sin regresión desktop.
+- `node scripts/auditar-visual.mjs http://localhost:3100 --fallo` → **0 hallazgos** (12 rutas × 4), exit=0.
+- `npm run typecheck` → exit 0. `npm test` → exit 0 (178 tests).
+- CI run `39714364889` → **success**.
+- Producción: auditoría **0 hallazgos en 48 pasadas** + medición `medir-home.cjs` contra Pages → **2881 px @390 y 2115 px @1280** (idéntico a local).
+
+### Errores pendientes y decisiones que requieren validación humana
+- **Aceptación estética de Waldosiclla**: header móvil con logo+toggle en una fila y enlaces debajo (antes eran 3 filas); tarjetas de módulo más densas (`p-4`). Medido y verde, pero la aprobación visual es tuya (capturas: abrir `https://waldosiclla14-bit.github.io/moneya` en 390 px).
+- Si se quiere bajar de 2881 px, las palancas que quedan requieren decisión de contenido (p. ej. descripciones de módulo más cortas o menos ítems visibles en móvil) — fuera de este bloque.
+
+### Siguiente paso
+Esperar dictamen de B. Otras opciones abiertas: checklist de cuota SQLite (Parte 3), O1 (Supabase real), o siguiente ciclo de contenido.
+
+---
+
 ## 2026-10-21 · Auditoría de las páginas "con sesión" (las 5 que quedaban fuera)
 
 ### Problema (evidencia)
