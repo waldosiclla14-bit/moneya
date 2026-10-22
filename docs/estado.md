@@ -4,7 +4,48 @@ Protocolo: AGENTS.md §2.5. Cada sesión cierra con decisiones, archivos, verifi
 
 ---
 
-## 2026-10-21 · Auditoría visual real y corrección de accesibilidad (contraste, nombres, bordes)
+## 2026-10-21 · Bloque A+C: escala tipográfica única, tarjeta héroe clay y donut en /finanzas
+
+### Problema (evidencia)
+Tras la auditoría de contraste (0 hallazgos), quedaba la deuda de **diseño** medida en producción:
+- Escala tipográfica rota: 11 páginas con H1 en `text-3xl` (30 px) vs home en `text-4xl/5xl` (36/48 px); H2 desde 16 px (sin tamaño, heredado) hasta 24 px — sin patrón.
+- El acento clay no estructuraba nada (0.03–0.15 % de los píxeles): el dato principal de `/finanzas` (colchón) era una tarjeta neutra igual a las demás.
+- `/finanzas` tenía solo números en cuadrícula; la referencia visual del usuario pide jerarquía "dato héroe + composición gráfica".
+
+El usuario eligió por pregunta explícita: **A + C** (color con jerarquía + escala tipográfica) y **sí al donut en /finanzas**.
+
+### Decisiones tomadas y por qué
+1. **Escala tipográfica unificada por reemplazos exactos con conteo esperado** (script temporal con validación: 10 patrones, 32 coincidencias, aborta si un conteo no cuadra): H1 → `text-4xl sm:text-5xl` (36/48) idéntico al de home; H2 → `text-xl sm:text-2xl` (20/24). 11 H1 + 21 H2 en 19 archivos.
+2. **Tarjeta héroe = colchón** (el "3 números" insignia de la página) con `bg-clay text-paper`: contraste **4.73:1 (claro) / 4.64:1 (oscuro)**, ambos AA. Sin opacidades en el texto del héroe (paper/80 bajaría a 3.6:1). Dato grande a 40/56 px.
+3. **Chip "Enfocar colchón"** cambió de `bg-clay/10` a `bg-paper`: sobre fondo clay el 10 % sería invisible.
+4. **Donut SVG puro sin dependencias** (AGENTS.md §2.9): nuevo componente `ComposicionMes` con datos **reales** de `margen` + `snapshot.debtMonthlyPayments`. La leyenda en texto es el portador accesible; el SVG es `aria-hidden`.
+5. **Semántica honesta del donut**: si salidas > ingreso, el gráfico pasa a mostrar salidas (base propia) y avisa "superan tu ingreso en X"; si todo es 0, mensaje de estado vacío; valores negativos se ignoran. Segmentos con valor 0 se omiten (defaults: 3 segmentos 40/30/30, no 4).
+6. **`next-env.d.ts` no se commitea**: `next dev` lo reescribe a `.next/dev/types`; se restauró a la versión de CI antes del commit.
+
+### Archivos creados/modificados
+- **Creado** `components/finanzas/composicion-mes.tsx` — donut + leyenda + fórmula.
+- **Creado** `components/finanzas/__tests__/composicion-mes.test.tsx` — 4 tests (defaults, exceso, vacío, negativos).
+- `components/finanzas/foto-financiera.tsx` — héroe clay, chip ajustado, sección "Composición del mes".
+- 11 `app/*/page.tsx` (H1) + 7 componentes (H2): `library`, `contexto-latam`, `gestor-gastos`, `goal-grid`, `hero-demo`, `simulador-form`, `wellbeing-test`, `metodologia`, `onboarding`.
+
+### Qué se probó y cómo (comando + resultado)
+- `npm run typecheck` → **sin errores** (tras restaurar `next-env.d.ts`).
+- `npm test` → **178/178** en 32 archivos (174 previos + 4 nuevos).
+- `npm run auditar:visual -- --fallo` local (dev, 7 rutas × claro/oscuro × 390/1280) → **0 hallazgos, exit=0**.
+- CI run `39701157220` → **success** (typecheck, build, tests, deploy, auditoría visual en Pages).
+- Auditoría contra Pages → **0 hallazgos, exit=0** (28 pasadas).
+- Verificación CDP objetiva contra producción (11 checks, **0 fallos**): H1=36px; héroe `rgb(180,83,42)`; dato=40px; contraste héroe=4.73:1; sección donut presente; 3 segmentos/3 filas/40-30-30; centro=1.000.000; H2=20px.
+- Capturas: `Temp/opencode/moneya-shots-ac/` (local) y `.../produccion/` (8 PNG: héroe y donut en claro/oscuro, móvil/escritorio).
+
+### Errores pendientes y decisiones que requieren validación humana
+- **Aceptación estética** de Waldosiclla: escala nueva (H1 36/48, H2 20/24), héroe clay y donut — medido y verde, pero no se aprueba hasta que lo veas.
+- El donut usa defaults del formulario (ingreso 1M/400k/300k); con cuotas reales aparece el 4º segmento (no probado en UI con deudas cargadas — lógica sí cubierta por test de exceso).
+- `/finanzas` móvil creció de 3936 a 4003 px (nueva sección). La compactación de home (opción B) sigue pendiente y diferida.
+
+### Siguiente paso
+Esperar dictamen de A+C. Opciones abiertas: **B** (compactar home móvil de 3216 px), auditar páginas con sesión, o cerrar el checklist del banner de cuota SQLite.
+
+---
 
 ### Problema (evidencia)
 La app cumplía el contraste en apariencia, pero ninguna medición lo verificaba. Al medir el sitio **desplegado** con un navegador real (Chrome headless + CDP, script nuevo), la línea base sobre 7 páginas públicas fue:
