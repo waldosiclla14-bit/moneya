@@ -6,13 +6,13 @@ import { Reveal } from '../components/ui/reveal';
 
 export default function Home() {
   return (
-    <div className="space-y-10">
-      <section className="max-w-3xl space-y-4 pt-2">
+    <div className="space-y-6 sm:space-y-10">
+      <section className="max-w-3xl space-y-3 pt-2 sm:space-y-4">
         <p className="eyebrow">Tu panel · bienestar financiero, no solo gastos</p>
         <h1 className="font-display text-4xl font-semibold leading-[1.1] tracking-tight text-ink sm:text-5xl">
           ¿Por qué tomas esas decisiones de dinero?
         </h1>
-        <p className="max-w-2xl text-lg leading-relaxed text-muted">
+        <p className="max-w-2xl text-base leading-relaxed text-muted sm:text-lg">
           MONEYA combina un diagnóstico conductual validado con simulación de escenarios «qué pasa si».
           Todo calculado de forma transparente: cada resultado muestra su fórmula y sus inputs.
         </p>
@@ -35,7 +35,7 @@ export default function Home() {
 
       <section className="grid items-start gap-6 lg:grid-cols-[1fr,1fr]">
         <HeroDemo />
-        <div className="card space-y-3 p-5">
+        <div className="card space-y-3 p-4 sm:p-5">
           <p className="eyebrow">Por qué confiar</p>
           <ul className="space-y-2 text-sm text-muted">
             <li className="flex items-center gap-2">
@@ -63,7 +63,7 @@ export default function Home() {
       </section>
 
       <section>
-        <p className="eyebrow mb-4">Tus módulos · ¿qué quieres lograr hoy?</p>
+        <p className="eyebrow mb-3 sm:mb-4">Tus módulos · ¿qué quieres lograr hoy?</p>
         <GoalGrid />
       </section>
     </div>

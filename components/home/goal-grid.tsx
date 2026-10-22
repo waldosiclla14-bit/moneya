@@ -102,17 +102,17 @@ const rutas: { href: string; t: string; d: string; icon: ReactNode }[] = [
 
 export function GoalGrid() {
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="grid gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {rutas.map((c, i) => (
         <Reveal key={c.href} delay={i * 90}>
           <Link
             href={c.href}
-            className="card block h-full p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-muted/40 hover:shadow-md"
+            className="card block h-full p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-muted/40 hover:shadow-md sm:p-5"
           >
-            <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-cream text-clayDeep">
+            <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-cream text-clayDeep sm:h-11 sm:w-11">
               {c.icon}
             </span>
-            <h2 className="mt-3 font-display text-xl font-semibold tracking-tight text-ink sm:text-2xl">{c.t}</h2>
+            <h2 className="mt-2 font-display text-xl font-semibold tracking-tight text-ink sm:mt-3 sm:text-2xl">{c.t}</h2>
             <p className="mt-1 text-sm leading-relaxed text-muted">{c.d}</p>
           </Link>
         </Reveal>

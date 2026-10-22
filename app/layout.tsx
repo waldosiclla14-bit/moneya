@@ -90,17 +90,17 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
         <RegisterServiceWorker />
         <RegionProvider>
         <header className="border-b border-hairline bg-paper/90">
-          <nav className="mx-auto flex max-w-4xl flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center sm:gap-8">
+          <nav className="mx-auto flex max-w-4xl flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3 sm:flex-nowrap sm:gap-8">
             <Link href="/" className="font-display text-xl font-semibold tracking-tight text-ink">
               MONEYA<span className="text-clay">.</span>
             </Link>
             <NavLinks />
-            <div className="sm:ml-auto">
+            <div className="ml-auto">
               <ThemeToggle />
             </div>
           </nav>
         </header>
-        <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-10">{children}</main>
+        <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-8 sm:py-10">{children}</main>
         <footer className="border-t border-hairline bg-cream py-6 text-center text-xs text-muted">
           <div className="mb-2 flex items-center justify-center gap-4">
             <Link href="/metodologia" className="link-soft">

@@ -13,7 +13,7 @@ const links = [
 
 export function NavLinks() {
   return (
-    <div className="flex flex-wrap gap-x-5 gap-y-1 text-sm text-muted">
+    <div className="order-last flex w-full flex-wrap gap-x-5 gap-y-1 text-sm text-muted sm:order-none sm:w-auto">
       {links.map((l) => (
         <Link key={l.href} href={l.href} className="nav-link">
           {l.label}

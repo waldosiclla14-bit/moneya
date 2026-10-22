@@ -23,13 +23,13 @@ export function HeroDemo() {
   const eq = useMemo(() => equivalenciaHoras(toNum(monto), toNum(ingreso), toNum(horas) || HORAS_LABORABLES_MES_DEFAULT), [monto, ingreso, horas]);
 
   return (
-    <div className="card p-5">
+    <div className="card p-4 sm:p-5">
       <p className="eyebrow">Demo en vivo</p>
       <h2 className="mt-1 font-display text-xl font-semibold tracking-tight text-ink sm:text-2xl">
         ¿Cuánto trabajo es esa compra?
       </h2>
 
-      <div className="mt-4 space-y-3">
+      <div className="mt-3 space-y-3 sm:mt-4">
         <label htmlFor="demo-monto" className="block">
           <span className="text-sm text-neutral-600">Monto de la compra</span>
           <input
@@ -69,7 +69,7 @@ export function HeroDemo() {
 
       <div
         aria-live="polite"
-        className="mt-4 rounded-xl border border-hairline bg-cream p-4"
+        className="mt-3 rounded-xl border border-hairline bg-cream p-3 sm:mt-4 sm:p-4"
       >
         <p className="text-sm text-neutral-600">Eso equivale a ≈</p>
         <p className="font-display text-4xl font-semibold tracking-tight text-ink">
@@ -81,11 +81,11 @@ export function HeroDemo() {
         </p>
       </div>
 
-      <details className="mt-3 text-xs text-neutral-500">
+      <details className="mt-2 text-xs text-neutral-500 sm:mt-3">
         <summary className="cursor-pointer">Ver fórmula</summary>
         <p className="mt-1 italic">{eq.formula}</p>
       </details>
-      <p className="mt-3 text-xs text-neutral-500">
+      <p className="mt-2 text-xs text-neutral-500 sm:mt-3">
         La misma lógica corre en el simulador de MONEYA. Sin cuenta y sin conectar bancos.
       </p>
     </div>
