@@ -4,6 +4,42 @@ Protocolo: AGENTS.md §2.5. Cada sesión cierra con decisiones, archivos, verifi
 
 ---
 
+## 2026-10-21 · Auditoría de las páginas "con sesión" (las 5 que quedaban fuera)
+
+### Problema (evidencia)
+La puerta de calidad cubría 7 rutas públicas; `/perfil`, `/cuenta`, `/misiones`, `/onboarding` y `/simular` nunca se auditaron. Primera medición sobre esas rutas en producción: **8 hallazgos**, todos en `/misiones` (4 pasadas × cada tema/ancho): salto `H1→H3` (los títulos de misión eran `h3` sin `h2` intermedio) y borde del botón "Reiniciar progreso" `border-red-200` = **1.37:1 claro / 2.18:1 oscuro** (el override `.dark .border-red-200` de la ronda anterior tampoco alcanzaba 3:1). El mismo patrón de borde rojo existía latente en 3 botones más (`/cuenta`, `/gastos`, `/finanzas`) que no se bandean porque no renderizan en estado vacío.
+
+Hallazgo de contexto **[verificado]**: `gh secret list` → vacío y `gh-pages.yml` inyecta `NEXT_PUBLIC_SUPABASE_URL` desde secretos → **el build de Pages corre sin Supabase** (`createClientClient()=null`); la UI con sesión (p. ej. exportar/eliminar datos en `/cuenta`) solo existe en código y no es auditable en producción.
+
+### Decisiones tomadas y por qué
+1. **Títulos de misión `h3`→`h2`**: H1 de página → H2 por ítem, sin salto de nivel.
+2. **Patrón único de botón destructivo**: `border-red-200 hover:border-red-400` → `border-red-500 hover:border-red-600` en los 4 sitios. Cálculo de contraste contra los 4 fondos reales (surface/papel × claro/oscuro): rojo 500 = 3.76 / 3.57 / 3.70 / 4.42 → **único candidato ≥3:1 en todos**; rojo 600 falla en oscuro (2.88) y rojo 400 en claro (2.77).
+3. **Hover en oscuro** con el mecanismo ya usado en `globals.css`: `.dark .hover\:border-red-600:hover → rgb(248 180 180)` (≈6.9:1) para que el hover también cumpla.
+4. **Cobertura permanente**: las 12 rutas públicas entran al valor por defecto de `--rutas` del script → el CI audita 48 pasadas (antes 28).
+5. **`--sesion` en el script de auditoría**: siembra una sesión Supabase falsa no vencida en `localStorage` (misma derivación de clave que supabase-js v2.117: `sb-<hostname[0]>-auth-token`, forma que admite `_isValidSession`, sin refresco ⇒ cero red) y **verifica** en `/cuenta` que la UI con sesión se haya renderizado (`Exportar mis datos`), fallando el build si el cliente no existe. Requiere `NEXT_PUBLIC_SUPABASE_URL` del mismo build. En CI no se usa (no hay secretos): los estados con sesión se auditan en local.
+
+### Archivos creados/modificados
+- `components/misiones/misiones-list.tsx` — `h2` + borde `red-500`.
+- `components/cuenta/datos-usuario.tsx`, `components/gastos/gestor-gastos.tsx`, `components/finanzas/foto-financiera.tsx` — mismo patrón de borde destructivo.
+- `app/globals.css` — alivio de hover rojo en oscuro (junto al override `border-red-200` existente, que se conserva para `metric-card`).
+- `scripts/auditar-visual.mjs` — 12 rutas por defecto, flag `--sesion` + prueba de UI con sesión en `/cuenta`.
+
+### Qué se probó y cómo (comando + resultado)
+- Auditoría local A (dev, **sin sesión**, 12 rutas × claro/oscuro × 390/1280): **0 hallazgos**, exit=0 (las 8 correcciones verificadas).
+- Auditoría local B (dev + env Supabase simulada, **`--sesion`**, 7 rutas × 4): **0 hallazgos**, exit=0; prueba de sesión OK (4/4) y alturas distintas confirman los estados con sesión (`/finanzas` 4003→3979, `/onboarding` 2643→2599, `/simular` 2205→2161).
+- `npm run typecheck` → exit 0. `npm test` → **178/178** (32 archivos).
+- CI run `39710987238` → **success** (con las 12 rutas nuevas en el job de auditoría).
+- Producción `node scripts/auditar-visual.mjs --url https://waldosiclla14-bit.github.io/moneya --fallo` → **0 hallazgos en 48 pasadas**, exit=0; `/misiones` reporta "saltos: ninguno".
+
+### Errores pendientes y decisiones que requieren validación humana
+- **Decisión de Waldosiclla**: configurar secretos `SUPABASE_URL`/`SUPABASE_ANON_KEY` en GitHub para que la demo publique la UI con sesión (hoy el build sale en modo "sin Supabase"; `/login` muestra instrucciones de setup). Si se configuran, la auditoría `--sesion` podría pasar a CI con credenciales de prueba dedicadas (requiere autorización para crear usuario de prueba y secretos).
+- `/misiones` sigue teniendo el contenido por encima de 4.5:1 bien, pero conviene revisión estética de títulos `h2` (heredan tamaño 20/24 de la escala unificada) — decisión visual, no de accesibilidad.
+
+### Siguiente paso
+Esperar dictamen. Opciones abiertas: **B** (compactar home móvil de 3216 px), banner/queda del checklist de cuota SQLite (Parte 3), o avanzar hacia O1 (Supabase real con RLS).
+
+---
+
 ## 2026-10-21 · Bloque A+C: escala tipográfica única, tarjeta héroe clay y donut en /finanzas
 
 ### Problema (evidencia)
