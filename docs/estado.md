@@ -4,6 +4,31 @@ Protocolo: AGENTS.md §2.5. Cada sesión cierra con decisiones, archivos, verifi
 
 ---
 
+## 2026-10-22 · Cierre: actualización de seguridad Next.js 16.4.0 → 16.4.2 (desplegado)
+
+### Decisión
+Next.js 16.4.0 estaba afectada por un advisory de seguridad publicado (`npm audit` / aviso al ejecutar `next dev`). Se aplicó la actualización del mismo major a la versión exacta 16.4.2 en un **worktree separado** (`moneya-security-upgrade`), se verificó, se mezcló a `master` y se desplegó a GitHub Pages mediante el CI existente.
+
+### Archivos modificados
+`package.json` · `package-lock.json` (next@16.4.2) · `next.config.mjs` (`experimental.agentUpgrade: 'security'`).
+
+### Qué se probó y cómo (comando + resultado)
+- Verificación en worktree separado antes de mezclar:
+  - `next --version` → v16.4.2 (target exacto del advisory) ✓
+  - `npm run typecheck` → exit 0 ✓
+  - `npm test` → **178/178** (32 archivos) ✓
+  - `npm run build` (estático/export) → exit 0 ✓
+- Reporte de éxito enviado a Next.js telemetry (`report-agent-upgrade … success`) ✓
+- Merge a `master` por fast-forward + push → CI run `39886908711` → **success** ✓
+- Producción verificada tras despliegue: auditoría **0 hallazgos en 48 pasadas**, home **2881 px @390 / 2115 px @1280** (idéntico a antes del upgrade) ✓
+
+Worktree y rama temporal eliminados; el repo queda en `master` con la versión parcheada.
+
+### Siguiente paso pendiente (requiere tu decisión/credenciales)
+- **O1: Supabase real** — configurar secretos `SUPABASE_URL`/`SUPABASE_ANON_KEY` en GitHub para que la demo publique la UI con sesión (exportar/eliminar datos, guardados en nube) y pasar la auditoría `--sesion` a CI con un usuario de prueba dedicado. Requiere tus credenciales del proyecto y autorización para tocar secretos.
+
+---
+
 ## 2026-10-22 · Bloque B: home móvil compacto (3216 → 2881 px, −10.4%)
 
 ### Problema (evidencia)
