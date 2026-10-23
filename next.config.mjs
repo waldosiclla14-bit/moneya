@@ -8,6 +8,9 @@ const nextConfig = {
   turbopack: {
     root: path.resolve(__dirname),
   },
+  experimental: {
+    agentUpgrade: 'security',
+  },
   // Build dual: default (server+SSR, Vercel) ó export estático (GitHub Pages).
   // BUILD_MODE=export → genera ./out; NEXT_PUBLIC_BASE_PATH → subruta (hosting estático).
   output: process.env.BUILD_MODE === 'export' ? 'export' : undefined,
