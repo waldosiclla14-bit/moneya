@@ -39,6 +39,21 @@ function nombreMes(mes: string): string {
 }
 
 /**
+ * Traduce los errores de persistencia a un mensaje accionable en español.
+ * El caso crítico es QuotaExceededError (kvvfs escribe SQLite en localStorage):
+ * sin este mensaje, el usuario vería el texto técnico del navegador en inglés.
+ */
+export function mensajeDeError(err: unknown, porDefecto: string): string {
+  const nombre = typeof err === 'object' && err !== null ? (err as { name?: string }).name : undefined;
+  const texto = err instanceof Error ? err.message : '';
+  if (nombre === 'QuotaExceededError' || /quota/i.test(texto)) {
+    return 'El navegador se quedó sin espacio para guardar. Exporta o elimina datos de MONEYA, o libera espacio, y vuelve a intentar.';
+  }
+  if (err instanceof Error && err.message) return err.message;
+  return porDefecto;
+}
+
+/**
  * País con el que se crea el libro (moneda de la base): el del perfil de
  * Supabase si hay sesión, para no migrar con el país por defecto mientras
  * RegionProvider aún carga el perfil. Sin cliente/sesión/perfil (o error de
@@ -92,9 +107,7 @@ export function GestorGastos() {
         setErrorPersistencia(null);
       } catch (err) {
         if (activo) {
-          setErrorPersistencia(
-            err instanceof Error ? err.message : 'No se pudo abrir el almacenamiento del navegador.',
-          );
+          setErrorPersistencia(mensajeDeError(err, 'No se pudo abrir el almacenamiento del navegador.'));
         }
       }
     })();
@@ -117,7 +130,7 @@ export function GestorGastos() {
       return (
         <section className="card p-5">
           <p className="eyebrow">Gastos</p>
-          <p className="mt-2 text-sm text-red-600">{errorPersistencia}</p>
+          <p role="alert" className="mt-2 text-sm text-red-600">{errorPersistencia}</p>
         </section>
       );
     }
@@ -134,7 +147,7 @@ export function GestorGastos() {
       setError(null);
       return siguiente;
     } catch (err) {
-      setError(err instanceof Error ? err.message : mensaje);
+      setError(mensajeDeError(err, mensaje));
       return null;
     }
   }
@@ -267,7 +280,7 @@ export function GestorGastos() {
             </button>
           </div>
         </div>
-        {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
+        {error && <p role="alert" className="mt-2 text-sm text-red-600">{error}</p>}
       </section>
 
       <section className="card p-5">
