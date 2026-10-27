@@ -4,6 +4,36 @@ Protocolo: AGENTS.md §2.5. Cada sesión cierra con decisiones, archivos, verifi
 
 ---
 
+## 2026-10-26 · Dashboard verificado + cuota accionable + hidratación del tema corregida
+
+### Qué se verificó (navegador real: Chrome headless + CDP contra `localhost:3100`, Next 16.4.2)
+- **Dashboard** (`/`, panel "Tu foto de hoy"): sin datos muestra "Aún no armas tu foto del mes"; el botón "o carga los datos de ejemplo para probar" siembra la demo **sin recargar** y muestra **Colchón 3.0 · Deuda 13% · Flujo 550.000**, cifras que coinciden con `DEMO_FOTO` (ingreso 1.200.000; esenciales 400.000; liquidez 1.200.000 → 3.0; 150.000/1.200.000 → 13%; 1.200.000 − 650.000 → 550.000). Tras recargar, el panel **persiste**. **0 excepciones** no capturadas.
+- **`/finanzas`** con los mismos datos: "Colchón · meses de gastos esenciales 3", coherente con el panel. Sin sesión, el bloque de guardado en la nube aparece como aviso; el guardado real en Supabase **no se probó** (no hay secretos configurados).
+- **Cuota**: llenar `localStorage` con 103 claves de 50 KB (~5.15 MB) lanza `QuotaExceededError` real en la clave 104. Con la cuota llena, **registrar un gasto funciona**: se crearon 2 gastos, sin banner ni excepción. No hay pérdida silenciosa, pero el escenario "banner de error de cuota" **no se reproduce con un gasto** (kvvfs reescribe páginas existentes). Queda pendiente forzarlo con crecimiento masivo.
+- **Hallazgo de entorno**: tras el merge de seguridad, `node_modules` local seguía en Next 16.4.0 (el merge solo actualizó `package.json`); `npm install` lo alineó a **16.4.2** y desapareció el aviso de seguridad al arrancar `dev`. El CI de Pages ya instalaba 16.4.2 desde `package-lock.json`.
+
+### Cambio (fix mínimo)
+`components/gastos/gestor-gastos.tsx`: helper `mensajeDeError()` que traduce `QuotaExceededError` a "El navegador se quedó sin espacio para guardar. Exporta o elimina datos de MONEYA, o libera espacio, y vuelve a intentar." y conserva el mensaje de otros errores; los dos avisos de error llevan `role="alert"` para que un lector de pantalla los anuncie.
+
+### Archivos
+`components/gastos/gestor-gastos.tsx` · `components/gastos/__tests__/mensaje-error.test.ts` (nuevo) · este documento.
+
+### Verificación
+- `npm run typecheck` → 0 ✓
+- `npx vitest run components/gastos` → 8/8 ✓ (4 nuevos)
+- `npm test` → **182/182** (33 archivos) ✓
+- Navegador real: clic en "Agregar gasto" con monto vacío → 1 `[role="alert"]` con "El monto debe ser mayor a 0." ✓
+- Los scripts `verificar-dashboard.cjs`, `verificar-cuota.cjs` y `verificar-alert.cjs` viven en el directorio temporal de la sesión (no se commitean).
+
+### Segundo hallazgo y fix (hidratación del tema)
+Al levantar `next dev` aparecieron dos avisos de React: (1) `<script>` hijo directo de `<html>` (HTML inválido) y (2) mismatch de `className` en `<html>` porque el script anti-flash añadía `dark` antes de hidratar. En `app/layout.tsx` se movió el script a `<head>` y se añadió `suppressHydrationWarning` a `<html>` (patrón estándar para scripts de tema). **Verificado en Chrome real con tema claro y oscuro**: `html` solo tiene `head`/`body`, 0 scripts hijos directos, clase `dark` aplicada y **0 problemas de consola**; el aviso de `dev` desapareció.
+
+### Pendiente
+- Banner de cuota E2E: forzar crecimiento (p. ej. muchos gastos con nota larga) hasta que `guardarGasto` falle y confirmar el mensaje nuevo en pantalla.
+- Guardado en Supabase (O1): requiere secretos.
+
+---
+
 ## 2026-10-22 · Cierre: actualización de seguridad Next.js 16.4.0 → 16.4.2 (desplegado)
 
 ### Decisión
@@ -387,7 +417,7 @@ Objetivo: cubrir lo que CI no puede (MIME de `.mjs`, kvvfs real, cuota). Marcar 
 > Lo que **queda pendiente**: un escenario donde la escritura **crezca** la base (suficientes gastos nuevos para superar el límite) para ver el banner de error real. Hoy esa ruta no está probada.
 
 - [x] Llenar `localStorage` → `QuotaExceededError` al escribir el relleno.
-- [ ] Registrar un gasto que **incremente** el tamaño → aparece **banner de error**, sin crash ni pérdida silenciosa. *(pendiente)*
+- [ ] Registrar un gasto que **incremente** el tamaño → aparece **banner de error**, sin crash ni pérdida silenciosa. *(2026-10-26: con `localStorage` lleno hasta el `QuotaExceededError` (~5.15 MB) el gasto **sí se guarda** —2 gastos creados, sin banner ni excepción—. No hay pérdida silenciosa, pero el banner no se reproduce con un gasto: falta forzar crecimiento masivo. El mensaje específico para cuota ya existe y está cubierto por test unitario.)*
 - [x] Limpiar el relleno y recargar → los datos previos siguen ahí.
 
 ### Resultado (a completar por Waldosiclla)
