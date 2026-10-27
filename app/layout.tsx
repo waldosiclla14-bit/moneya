@@ -79,13 +79,15 @@ const metas = JSON.stringify({
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    <html lang="es" className={`${display.variable} ${sans.variable}`}>
-      <script
-        dangerouslySetInnerHTML={{
-          __html:
-            "try{var t=localStorage.getItem('moneya:tema');if(t==='oscuro'){document.documentElement.classList.add('dark')}}catch(e){}",
-        }}
-      />
+    <html lang="es" suppressHydrationWarning className={`${display.variable} ${sans.variable}`}>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "try{var t=localStorage.getItem('moneya:tema');if(t==='oscuro'){document.documentElement.classList.add('dark')}}catch(e){}",
+          }}
+        />
+      </head>
       <body className="flex min-h-screen flex-col">
         <RegisterServiceWorker />
         <RegionProvider>
