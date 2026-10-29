@@ -4,6 +4,28 @@ Protocolo: AGENTS.md §2.5. Cada sesión cierra con decisiones, archivos, verifi
 
 ---
 
+## 2026-10-28 · Cuota E2E: la escritura sí falla y el mensaje técnico se corrige
+
+### Evidencia (navegador real, Chrome headless + CDP)
+- **Estrategia**: llenar `localStorage` con bloques de 50 KB, luego 2 KB y 256 B **hasta el último byte** (113 claves, ~5.16 MB) y registrar un gasto desde `/gastos`.
+- **Resultado**: el gasto **no se guarda**. `guardarGasto` falla con `SQLITE_IOERR: sqlite3 result code 10: disk I/O error`; la consola del navegador muestra la causa real: `kvvfs: kvrecordWrite() QuotaExceededError` en `kvvfs-local-35`. Es decir, kvvfs no propaga `QuotaExceededError` directo a la app, sino que SQLite lo traduce a `SQLITE_IOERR`.
+- El aviso ya aparecía con `role="alert"`, pero con el texto técnico en inglés.
+- **Recuperación**: al borrar el relleno (113 claves), el siguiente gasto se guarda sin error. **0 excepciones** no capturadas.
+
+### Fix
+`mensajeDeError()` detecta además `SQLITE_IOERR` / `disk I/O` / `no space left` y devuelve: "No se pudo guardar en el navegador: falló la escritura en el almacenamiento local. Exporta o elimina datos de MONEYA, o libera espacio, y vuelve a intentar." Test unitario nuevo (5 en el archivo).
+
+### Verificación
+- `npm run typecheck` → 0 ✓
+- `npx vitest run components/gastos` → **9/9** ✓
+- `npm test` → **183/183** (33 archivos) ✓
+- E2E repetido con el mismo llenado: el aviso muestra el mensaje español accionable (sin `SQLITE_IOERR`) y, tras borrar el relleno, vuelve a guardar ✓
+
+### Pendiente
+- Checklist de cuota: las tres casillas quedan verificadas.
+
+---
+
 ## 2026-10-26 · Dashboard verificado + cuota accionable + hidratación del tema corregida
 
 ### Qué se verificó (navegador real: Chrome headless + CDP contra `localhost:3100`, Next 16.4.2)
@@ -417,7 +439,7 @@ Objetivo: cubrir lo que CI no puede (MIME de `.mjs`, kvvfs real, cuota). Marcar 
 > Lo que **queda pendiente**: un escenario donde la escritura **crezca** la base (suficientes gastos nuevos para superar el límite) para ver el banner de error real. Hoy esa ruta no está probada.
 
 - [x] Llenar `localStorage` → `QuotaExceededError` al escribir el relleno.
-- [ ] Registrar un gasto que **incremente** el tamaño → aparece **banner de error**, sin crash ni pérdida silenciosa. *(2026-10-26: con `localStorage` lleno hasta el `QuotaExceededError` (~5.15 MB) el gasto **sí se guarda** —2 gastos creados, sin banner ni excepción—. No hay pérdida silenciosa, pero el banner no se reproduce con un gasto: falta forzar crecimiento masivo. El mensaje específico para cuota ya existe y está cubierto por test unitario.)*
+- [x] Registrar un gasto que **incremente** el tamaño → aparece **banner de error**, sin crash ni pérdida silenciosa. *(2026-10-28: verificado llenando `localStorage` hasta el último byte: el gasto falla con `SQLITE_IOERR` (kvvfs traduce un `QuotaExceededError`), el aviso `role="alert"` muestra el mensaje accionable en español y, tras borrar el relleno, vuelve a guardar. 0 excepciones.)*
 - [x] Limpiar el relleno y recargar → los datos previos siguen ahí.
 
 ### Resultado (a completar por Waldosiclla)
