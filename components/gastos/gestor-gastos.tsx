@@ -49,6 +49,11 @@ export function mensajeDeError(err: unknown, porDefecto: string): string {
   if (nombre === 'QuotaExceededError' || /quota/i.test(texto)) {
     return 'El navegador se quedó sin espacio para guardar. Exporta o elimina datos de MONEYA, o libera espacio, y vuelve a intentar.';
   }
+  // kvvfs traduce el fallo de escritura de localStorage a SQLITE_IOERR:
+  // con el almacenamiento lleno el usuario vería "disk I/O error" en inglés.
+  if (/SQLITE_IOERR|disk\s*I\/O|no space left/i.test(texto)) {
+    return 'No se pudo guardar en el navegador: falló la escritura en el almacenamiento local. Exporta o elimina datos de MONEYA, o libera espacio, y vuelve a intentar.';
+  }
   if (err instanceof Error && err.message) return err.message;
   return porDefecto;
 }

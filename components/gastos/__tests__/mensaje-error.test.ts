@@ -18,6 +18,16 @@ describe('mensajeDeError (cuota y errores de persistencia)', () => {
     expect(mensaje).toMatch(/sin espacio/i);
   });
 
+  it('traduce SQLITE_IOERR (kvvfs sin espacio) a un mensaje accionable', () => {
+    const mensaje = mensajeDeError(
+      new Error('SQLITE_IOERR: sqlite3 result code 10: disk I/O error'),
+      'No se pudo guardar.',
+    );
+    expect(mensaje).toMatch(/No se pudo guardar en el navegador/i);
+    expect(mensaje).toMatch(/almacenamiento local/i);
+    expect(mensaje).not.toMatch(/SQLITE_IOERR|disk I\/O/i);
+  });
+
   it('conserva el mensaje de errores que no son de cuota', () => {
     expect(mensajeDeError(new Error('Base corrupta'), 'No se pudo guardar.')).toBe('Base corrupta');
   });
